@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'power_button.dart';
+import 'power_button.dart'; // Import the PowerButton widget
+import 'emission_button.dart'; // Import the EmissionButton widget
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -11,11 +12,11 @@ class HomeScreen extends StatelessWidget {
         SizedBox(height: 16), // Add spacing from the top
         Container(
           margin: EdgeInsets.only(right: 16), // Add spacing from the right edge
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              PowerButton(),
-            ],
+          child: PowerButton(), // Keep the PowerButton at the top right
+        ),
+        Expanded(
+          child: Center(
+            child: EmissionButton(),
           ),
         ),
       ],

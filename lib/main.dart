@@ -4,7 +4,6 @@ import 'settings_screen.dart';
 import 'data_screen.dart';
 import 'account_screen.dart';
 
-
 void main() {
   runApp(QueApp());
 }
@@ -42,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Que App'),
+        centerTitle: true, // Center the title horizontally
       ),
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -75,10 +75,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-
-
-
-
-
-
