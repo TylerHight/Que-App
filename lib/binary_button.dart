@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 
-class PowerButton extends StatefulWidget {
+// Button used to alternate between two states. Changes between two
+// colors and has a pressing animation.
+
+class BinaryButton extends StatefulWidget {
+  final Color buttonColor;
+  final IconData iconData;
+
+  BinaryButton({
+    required this.buttonColor,
+    required this.iconData,
+  });
+
   @override
-  _PowerButtonState createState() => _PowerButtonState();
+  _BinaryButtonState createState() => _BinaryButtonState();
 }
 
-class _PowerButtonState extends State<PowerButton>
+class _BinaryButtonState extends State<BinaryButton>
     with SingleTickerProviderStateMixin {
   bool isLightOn = false;
   late AnimationController _animationController;
@@ -63,11 +74,11 @@ class _PowerButtonState extends State<PowerButton>
           height: 48,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isLightOn ? Colors.green : Colors.grey[300],
+            color: isLightOn ? widget.buttonColor : Colors.grey[300],
           ),
           child: Center(
             child: Icon(
-              Icons.power_settings_new,
+              widget.iconData,
               color: Colors.white,
               size: 24,
             ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'power_button.dart'; // Import the PowerButton widget
-import 'emission_button.dart'; // Import the EmissionButton widget
+import 'binary_button.dart'; // Import the EmissionButton widget
 import 'settings.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,14 +20,20 @@ class _HomeScreenState extends State<HomeScreen> {
         SizedBox(height: 16), // Add spacing from the top
         Container(
           margin: EdgeInsets.only(right: 16), // Add spacing from the right edge
-          child: PowerButton(), // Keep the PowerButton at the top right
+          child: BinaryButton( // Positive Emission Release Button
+            buttonColor: Colors.green,  // Customize the button color
+            iconData: Icons.power_settings_new, // Customize the icon
+          ), // Keep the Power Button at the top right
         ),
         Expanded(
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                EmissionButton(),
+                BinaryButton(
+                  buttonColor: Colors.cyan,  // Customize the button color
+                  iconData: Icons.air, // Customize the icon
+                ),
                 SizedBox(height: 20), // Add spacing between EmissionButton and sliders
                 Slider( // Emission Duration Slider
                   value: emissionDuration,
