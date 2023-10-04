@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:que_app/device_settings.dart';
 import 'binary_button.dart';
 
 class DeviceRemote extends StatelessWidget {
@@ -21,11 +22,27 @@ class DeviceRemote extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16.0,
+                color: Colors.black,
+                fontSize: 16.0,
               ), // Set text color to black
             ), // Display the title
             Spacer(), // Add space between title and buttons
+            // Settings Button
+            IconButton(
+              icon: Icon(
+                Icons.settings,
+                color: Colors.grey[300], // Set a lighter grey color
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DeviceSettingsScreen()
+                  ),
+                );
+              },
+            ),
+            SizedBox(width: 8), // Add spacing between settings button and other buttons
             BinaryButton( // Power Button
               buttonColor: Colors.green,
               iconData: Icons.power_settings_new,
