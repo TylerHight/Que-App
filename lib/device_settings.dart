@@ -15,8 +15,7 @@ class DeviceSettingsScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete Device'),
-          content: Text('Delete device $deviceName?'),
+          title: Text('Delete device $deviceName?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -45,7 +44,7 @@ class DeviceSettingsScreen extends StatelessWidget {
         title: Text('Device Settings'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.delete, color: Colors.red), // Red delete icon
+            icon: Icon(Icons.delete, color: Colors.blue[800]), // Dark blue delete icon
             onPressed: () {
               _deleteDevice(context); // Call the _deleteDevice function
             },
