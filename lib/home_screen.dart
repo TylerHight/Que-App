@@ -30,7 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 4.0, // Set elevation to alter shadow
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.add), // Plus icon
+            icon: Icon(
+              Icons.add,
+              color: Colors.white, // Set the plus icon color to white
+            ),
             onPressed: addDevice, // Call the addDevice function when pressed
           ),
         ],
