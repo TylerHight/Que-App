@@ -39,16 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Devices',
-          style: TextStyle(color: Colors.white), // Set title text color
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blue, // Set the background color
-        iconTheme: IconThemeData(color: Colors.black), // Set icon color to black
-        elevation: 4.0, // Set elevation to alter shadow
-      ),
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
