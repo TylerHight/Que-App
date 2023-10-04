@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'device_remote.dart'; // Import the DeviceRemote class
+import 'device_remote.dart';
+import 'device_settings.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -7,7 +8,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final int numberOfItems = 10; // Change this to the number of desired items
   final List<String> deviceTitles = List.generate(10, (index) => 'Item $index');
 
   void addDevice() {
@@ -16,25 +16,45 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void deleteDevice(int index) {
+    setState(() {
+      deviceTitles.removeAt(index);
+    });
+  }
+
+  void navigateToDeviceSettings(int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DeviceSettingsScreen(
+          onDelete: () {
+            deleteDevice(index);
+            Navigator.pop(context); // Close the settings screen
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Devices',
-          style: TextStyle(color: Colors.white), // Set title text color
+          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: Colors.blue, // Set the background color
-        iconTheme: IconThemeData(color: Colors.black), // Set icon color to black
-        elevation: 4.0, // Set elevation to alter shadow
+        backgroundColor: Colors.blue,
+        iconTheme: IconThemeData(color: Colors.black),
+        elevation: 4.0,
         actions: <Widget>[
           IconButton(
             icon: Icon(
               Icons.add,
-              color: Colors.white, // Set the plus icon color to white
+              color: Colors.white,
             ),
-            onPressed: addDevice, // Call the addDevice function when pressed
+            onPressed: addDevice,
           ),
         ],
       ),
@@ -42,9 +62,12 @@ class _HomeScreenState extends State<HomeScreen> {
         itemCount: deviceTitles.length,
         itemBuilder: (context, index) {
           return Padding(
-            padding: EdgeInsets.all(2.0), // Add spacing between cards
-            child: DeviceRemote( // Create an instance of the DeviceRemote
-              title: deviceTitles[index], // Pass the title from the list
+            padding: EdgeInsets.all(2.0),
+            child: DeviceRemote(
+              title: deviceTitles[index],
+              onTap: () {
+                navigateToDeviceSettings(index);
+              },
             ),
           );
         },

@@ -1,63 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:que_app/device_settings.dart';
 import 'binary_button.dart';
 
 class DeviceRemote extends StatelessWidget {
   final String title;
+  final VoidCallback onTap;
 
-  DeviceRemote({required this.title});
+  DeviceRemote({
+    required this.title,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0), // Rounded corners
+        borderRadius: BorderRadius.circular(12.0),
       ),
-      elevation: 4.0, // Add elevation for a shadow effect
+      elevation: 4.0,
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 8.0), // Add vertical padding
-        child: Row( // Use a Row to arrange items horizontally
+        padding: EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
           children: [
-            SizedBox(width: 16), // Add spacing from the left
+            SizedBox(width: 16),
             Text(
               title,
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 16.0,
-              ), // Set text color to black
-            ), // Display the title
-            Spacer(), // Add space between title and buttons
-            // Settings Button
+              ),
+            ),
+            Spacer(),
             IconButton(
               icon: Icon(
                 Icons.settings,
-                color: Colors.grey[300], // Set a lighter grey color
+                color: Colors.grey[300],
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DeviceSettingsScreen()
-                  ),
-                );
-              },
+              onPressed: onTap,
             ),
-            SizedBox(width: 8), // Add spacing between settings button and other buttons
-            BinaryButton( // Power Button
+            SizedBox(width: 8),
+            BinaryButton(
               buttonColor: Colors.green,
               iconData: Icons.power_settings_new,
             ),
-            SizedBox(width: 8), // Add spacing between buttons
-            BinaryButton( // Negative emission
+            SizedBox(width: 8),
+            BinaryButton(
               buttonColor: Colors.red,
               iconData: Icons.air,
             ),
-            SizedBox(width: 8), // Add spacing between buttons
-            BinaryButton( // Positive emission
+            SizedBox(width: 8),
+            BinaryButton(
               buttonColor: Colors.cyan,
               iconData: Icons.air,
             ),
-            SizedBox(width: 16), // Add spacing from the right
+            SizedBox(width: 16),
           ],
         ),
       ),
