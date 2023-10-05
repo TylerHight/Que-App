@@ -8,18 +8,82 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final int numberOfItems = 10; // Change this to the number of desired items
-  final List<String> deviceTitles = List.generate(10, (index) => 'Item $index');
+  final List<String> deviceNames = []; // Create a list to store device names
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the list with some default device names
+    deviceNames.addAll(List.generate(10, (index) => 'Item $index'));
+  }
 
   void addDevice() {
-    setState(() {
-      deviceTitles.add('New Device');
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String newDeviceName = ""; // Store the entered device name
+
+        return AlertDialog(
+          title: Text('Add New Device'),
+          content: TextField(
+            onChanged: (value) {
+              newDeviceName = value; // Update the entered device name
+            },
+            decoration: InputDecoration(labelText: 'Device Name'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (newDeviceName.isNotEmpty) {
+                  // Add the new device name to the list
+                  setState(() {
+                    deviceNames.add(newDeviceName);
+                  });
+                  Navigator.of(context).pop(); // Close the dialog
+                }
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void deleteDevice(String deviceName) {
-    // Implement your logic to delete the device
-    // You can use the deviceName to identify the device to delete
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete Device'),
+          content: Text('Delete device $deviceName?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Remove the deviceName from the deviceNames list
+                setState(() {
+                  deviceNames.remove(deviceName);
+                });
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -45,22 +109,22 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: ListView.builder(
-        itemCount: deviceTitles.length,
+        itemCount: deviceNames.length,
         itemBuilder: (context, index) {
           return Padding(
             padding: EdgeInsets.all(2.0), // Add spacing between cards
             child: DeviceRemote(
-              title: deviceTitles[index], // Pass the title from the list
+              title: deviceNames[index], // Pass the title from the list
               onDelete: () {
                 // Show the DeviceSettingsScreen and provide the deviceName
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => DeviceSettingsScreen(
-                      deviceName: deviceTitles[index], // Provide the deviceName
+                      deviceName: deviceNames[index], // Provide the deviceName
                       onDelete: () {
                         // Implement your logic to delete the device here
-                        deleteDevice(deviceTitles[index]);
+                        deleteDevice(deviceNames[index]);
                         // Now you can delete the device using the provided deviceName
                       },
                     ),
