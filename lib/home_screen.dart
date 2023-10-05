@@ -14,7 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     // Initialize the list with some default device names
-    deviceNames.addAll(List.generate(10, (index) => 'Item $index'));
+    deviceNames.addAll(List.generate(3, (index) => 'Item $index'));
   }
 
   void addDevice() {
