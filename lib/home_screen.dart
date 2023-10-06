@@ -1,6 +1,9 @@
+// home_screen.dart
+
 import 'package:flutter/material.dart';
 import 'device_remote.dart';
 import 'device_settings.dart';
+import 'device_name_dialog.dart'; // Import the new dialog file
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -8,12 +11,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<String> deviceTitles = List.generate(10, (index) => 'Item $index');
+  final List<String> deviceTitles = List.generate(3, (index) => 'Item $index');
 
-  void addDevice() {
-    setState(() {
-      deviceTitles.add('New Device');
-    });
+  void addDevice(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => DeviceNameDialog(
+        onDeviceNameEntered: (deviceName) {
+          setState(() {
+            deviceTitles.add(deviceName);
+          });
+        },
+      ),
+    );
   }
 
   void deleteDevice(int index) {
@@ -54,7 +64,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.add,
               color: Colors.white,
             ),
-            onPressed: addDevice,
+            onPressed: () {
+              addDevice(context);
+            },
           ),
         ],
       ),

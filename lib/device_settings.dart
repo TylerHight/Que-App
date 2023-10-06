@@ -1,3 +1,5 @@
+// device_settings.dart
+
 import 'package:flutter/material.dart';
 
 class DeviceSettingsScreen extends StatelessWidget {
