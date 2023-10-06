@@ -1,10 +1,10 @@
 // main.dart
 
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
-import 'settings_screen.dart';
-import 'data_screen.dart';
-import 'account_screen.dart';
+import 'main_screens/home_screen/home_screen.dart';
+import 'main_screens/settings_screen.dart';
+import 'main_screens/data_screen.dart';
+import 'main_screens/account_screen.dart';
 
 void main() {
   runApp(QueApp());
