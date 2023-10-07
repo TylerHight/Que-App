@@ -73,6 +73,7 @@ class _DataScreenState extends State<DataScreen> {
                 zoomPanBehavior: ZoomPanBehavior(
                   enablePanning: true, // Enable panning
                   enablePinching: true, // Enable pinching to zoom
+                  enableMouseWheelZooming: true,
                   zoomMode: ZoomMode.x, // Zoom only in the x-axis direction
                 ),
               ),
