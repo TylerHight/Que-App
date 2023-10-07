@@ -11,7 +11,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<String> deviceTitles = List.generate(3, (index) => 'Item $index');
+  final List<String> deviceTitles = List.generate(3, (index) => 'Device $index');
 
   void addDevice(BuildContext context) {
     showDialog(
