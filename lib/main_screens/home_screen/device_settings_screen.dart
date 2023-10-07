@@ -1,4 +1,4 @@
-// device_settings.dart
+// device_settings_screen.dart
 
 import 'package:flutter/material.dart';
 
