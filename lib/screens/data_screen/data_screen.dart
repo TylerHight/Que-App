@@ -51,8 +51,8 @@ class _DataScreenState extends State<DataScreen> {
                   minimum: selectedStartDate,
                   maximum: selectedEndDate,
                   isVisible: true, // Enable x-axis visibility
-                  zoomFactor: 0.6, // Set zoom factor
-                  zoomPosition: 0.4, // Set zoom position
+                  zoomFactor: 1.0, // Set zoom factor
+                  zoomPosition: 1.0, // Set zoom position
                   enableAutoIntervalOnZooming: true, // Auto-calculate interval on zooming
                   intervalType: DateTimeIntervalType.hours, // Set interval type
                 ),
@@ -83,46 +83,70 @@ class _DataScreenState extends State<DataScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Start Date: ', style: textStyle),
-                TextButton(
-                  onPressed: () {
-                    showDatePicker(
+                Text('Start: ', style: textStyle),
+                ElevatedButton(
+                  onPressed: () async {
+                    final selectedDate = await showDatePicker(
                       context: context,
                       initialDate: selectedStartDate,
                       firstDate: DateTime(2000),
                       lastDate: DateTime(2101),
-                    ).then((date) {
-                      if (date != null) {
+                    );
+                    if (selectedDate != null) {
+                      final selectedTime = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.fromDateTime(selectedStartDate),
+                      );
+                      if (selectedTime != null) {
                         setState(() {
-                          selectedStartDate = date;
+                          selectedStartDate = DateTime(
+                            selectedDate.year,
+                            selectedDate.month,
+                            selectedDate.day,
+                            selectedTime.hour,
+                            selectedTime.minute,
+                          );
                         });
                       }
-                    });
+                    }
                   },
                   child: Text(
-                    "${selectedStartDate.toLocal()}".split(' ')[0],
+                    "${selectedStartDate.toLocal()}".split(' ')[0] +
+                        " ${TimeOfDay.fromDateTime(selectedStartDate).format(context)}",
                     style: textStyle,
                   ),
                 ),
                 SizedBox(width: 10),
-                Text('End Date: ', style: textStyle),
-                TextButton(
-                  onPressed: () {
-                    showDatePicker(
+                Text('End: ', style: textStyle),
+                ElevatedButton(
+                  onPressed: () async {
+                    final selectedDate = await showDatePicker(
                       context: context,
                       initialDate: selectedEndDate,
                       firstDate: DateTime(2000),
                       lastDate: DateTime(2101),
-                    ).then((date) {
-                      if (date != null) {
+                    );
+                    if (selectedDate != null) {
+                      final selectedTime = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.fromDateTime(selectedEndDate),
+                      );
+                      if (selectedTime != null) {
                         setState(() {
-                          selectedEndDate = date;
+                          selectedEndDate = DateTime(
+                            selectedDate.year,
+                            selectedDate.month,
+                            selectedDate.day,
+                            selectedTime.hour,
+                            selectedTime.minute,
+                          );
                         });
                       }
-                    });
+                    }
                   },
                   child: Text(
-                    "${selectedEndDate.toLocal()}".split(' ')[0],
+                    "${selectedEndDate.toLocal()}".split(' ')[0] +
+                        " ${TimeOfDay.fromDateTime(selectedEndDate).format(context)}",
                     style: textStyle,
                   ),
                 ),
