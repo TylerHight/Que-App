@@ -27,7 +27,7 @@ class _DataScreenState extends State<DataScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Heartrate and Device Data'),
+        title: const Text('Heart Rate and Device Data'),
         centerTitle: true,
       ),
       body: Column(
@@ -51,20 +51,23 @@ class _DataScreenState extends State<DataScreen> {
                   ),
                   // Chart
                   Expanded(
-                    child: SfCartesianChart(
-                      primaryXAxis: DateTimeAxis(),
-                      primaryYAxis: NumericAxis(
-                        minimum: minY, // Set the minimum value of the y-axis
-                        maximum: maxY, // Set the maximum value of the y-axis
-                        interval: 5, // Set the interval to 5 to show labels in multiples of 5
-                      ),
-                      series: <ChartSeries>[
-                        LineSeries<MapEntry<DateTime, double>, DateTime>(
-                          dataSource: heartRateData.entries.toList(),
-                          xValueMapper: (MapEntry<DateTime, double> entry, _) => entry.key,
-                          yValueMapper: (MapEntry<DateTime, double> entry, _) => entry.value,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 0, right: 20, top: 20, bottom: 20), // Adjust padding as needed
+                      child: SfCartesianChart(
+                        primaryXAxis: DateTimeAxis(),
+                        primaryYAxis: NumericAxis(
+                          minimum: minY, // Set the minimum value of the y-axis
+                          maximum: maxY, // Set the maximum value of the y-axis
+                          interval: 5, // Set the interval to 5 to show labels in multiples of 5
                         ),
-                      ],
+                        series: <ChartSeries>[
+                          LineSeries<MapEntry<DateTime, double>, DateTime>(
+                            dataSource: heartRateData.entries.toList(),
+                            xValueMapper: (MapEntry<DateTime, double> entry, _) => entry.key,
+                            yValueMapper: (MapEntry<DateTime, double> entry, _) => entry.value,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -76,7 +79,7 @@ class _DataScreenState extends State<DataScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end, // Align to the right
               children: [
-                const Text('hours: '),
+                const Text('Hours: '),
                 SizedBox(
                   width: 60,
                   height: 50,
