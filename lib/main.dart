@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'main_screens/home_screen/home_screen.dart';
-import 'main_screens/settings_screen.dart';
-import 'main_screens/data_screen/data_screen.dart';
-import 'main_screens/account_screen.dart';
-import 'main_screens/home_screen/device_data.dart'; // Import the DeviceData class
+import 'screens/home_screen/home_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/data_screen/data_screen.dart';
+import 'screens/account_screen.dart';
+import 'screens/home_screen/device_data.dart'; // Import the DeviceData class
 
 void main() {
-  runApp(QueApp());
+  runApp(const QueApp());
 }
 
 class QueApp extends StatelessWidget {
+  const QueApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -20,13 +22,15 @@ class QueApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: MyHomePage(),
+        home: const MyHomePage(),
       ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -54,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
         unselectedItemColor: Colors.grey[700],
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
