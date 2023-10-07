@@ -17,9 +17,17 @@ class _DataScreenState extends State<DataScreen> {
   DateTime selectedStartDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0, 0);
   DateTime selectedEndDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 17, 30, 0);
 
-  // Store the original x-axis values for resetting
   DateTime originalStartDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0, 0);
   DateTime originalEndDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 17, 30, 0);
+
+  final TextStyle textStyle = TextStyle(fontSize: 15);
+
+  void resetXAxis() {
+    setState(() {
+      selectedStartDate = originalStartDate;
+      selectedEndDate = originalEndDate;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +36,6 @@ class _DataScreenState extends State<DataScreen> {
 
     minY = (minY / 5).floor() * 5;
     maxY = ((maxY + 4) / 5).ceil() * 5;
-
-    void resetXAxis() {
-      setState(() {
-        selectedStartDate = originalStartDate;
-        selectedEndDate = originalEndDate;
-      });
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -61,7 +62,7 @@ class _DataScreenState extends State<DataScreen> {
                   ),
                   Expanded(
                     child: Container(
-                      padding: EdgeInsets.only(left: 0, right: 20, top: 20, bottom: 20),
+                      padding: EdgeInsets.only(left: 0, right: 20, top: 20, bottom: 0),
                       child: SfCartesianChart(
                         primaryXAxis: DateTimeAxis(
                           minimum: selectedStartDate,
@@ -91,7 +92,7 @@ class _DataScreenState extends State<DataScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Start Date: '),
+                Text('Start Date: ', style: textStyle),
                 TextButton(
                   onPressed: () {
                     showDatePicker(
@@ -109,11 +110,11 @@ class _DataScreenState extends State<DataScreen> {
                   },
                   child: Text(
                     "${selectedStartDate.toLocal()}".split(' ')[0],
-                    style: TextStyle(fontSize: 20),
+                    style: textStyle,
                   ),
                 ),
                 SizedBox(width: 10),
-                Text('End Date: '),
+                Text('End Date: ', style: textStyle),
                 TextButton(
                   onPressed: () {
                     showDatePicker(
@@ -131,16 +132,19 @@ class _DataScreenState extends State<DataScreen> {
                   },
                   child: Text(
                     "${selectedEndDate.toLocal()}".split(' ')[0],
-                    style: TextStyle(fontSize: 20),
+                    style: textStyle,
                   ),
                 ),
               ],
             ),
           ),
-          // Add a Reset button
-          ElevatedButton(
-            onPressed: resetXAxis,
-            child: Text('Reset X-Axis'),
+          // Add padding below the Reset button
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: ElevatedButton(
+              onPressed: resetXAxis,
+              child: Text('Reset', style: textStyle),
+            ),
           ),
         ],
       ),
