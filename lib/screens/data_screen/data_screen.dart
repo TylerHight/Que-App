@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'generated_hr_data.dart';
+import 'data/generated_hr_data.dart';
 
 class DataScreen extends StatefulWidget {
   @override
@@ -46,44 +46,35 @@ class _DataScreenState extends State<DataScreen> {
         children: [
           Expanded(
             child: Center(
-              child: Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(left: 10, right: 0),
-                    child: RotatedBox(
-                      quarterTurns: -1,
-                      child: Text(
-                        'Heart Rate (BPM)',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.only(left: 0, right: 20, top: 20, bottom: 0),
-                      child: SfCartesianChart(
-                        primaryXAxis: DateTimeAxis(
-                          minimum: selectedStartDate,
-                          maximum: selectedEndDate,
-                        ),
-                        primaryYAxis: NumericAxis(
-                          minimum: minY,
-                          maximum: maxY,
-                          interval: 5,
-                        ),
-                        series: <ChartSeries>[
-                          LineSeries<MapEntry<DateTime, double>, DateTime>(
-                            dataSource: heartRateData.entries.toList(),
-                            xValueMapper: (MapEntry<DateTime, double> entry, _) => entry.key,
-                            yValueMapper: (MapEntry<DateTime, double> entry, _) => entry.value,
-                          ),
-                        ],
-                      ),
-                    ),
+              child: SfCartesianChart(
+                primaryXAxis: DateTimeAxis(
+                  minimum: selectedStartDate,
+                  maximum: selectedEndDate,
+                  isVisible: true, // Enable x-axis visibility
+                  zoomFactor: 0.6, // Set zoom factor
+                  zoomPosition: 0.4, // Set zoom position
+                  enableAutoIntervalOnZooming: true, // Auto-calculate interval on zooming
+                  intervalType: DateTimeIntervalType.hours, // Set interval type
+                ),
+                primaryYAxis: NumericAxis(
+                  minimum: minY,
+                  maximum: maxY,
+                  isVisible: true, // Enable y-axis visibility
+                  interval: 5,
+                ),
+                series: <ChartSeries>[
+                  LineSeries<MapEntry<DateTime, double>, DateTime>(
+                    dataSource: heartRateData.entries.toList(),
+                    xValueMapper: (MapEntry<DateTime, double> entry, _) => entry.key,
+                    yValueMapper: (MapEntry<DateTime, double> entry, _) => entry.value,
                   ),
                 ],
+                // Enable zooming and panning
+                zoomPanBehavior: ZoomPanBehavior(
+                  enablePanning: true, // Enable panning
+                  enablePinching: true, // Enable pinching to zoom
+                  zoomMode: ZoomMode.x, // Zoom only in the x-axis direction
+                ),
               ),
             ),
           ),
