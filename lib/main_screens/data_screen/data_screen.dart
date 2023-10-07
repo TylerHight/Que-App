@@ -9,21 +9,32 @@ class DataScreen extends StatefulWidget {
 
 class _DataScreenState extends State<DataScreen> {
   Map<DateTime, double> heartRateData = generateHeartRateData(
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0, 0), // Start at 8:00 AM
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 17, 30, 0), // End at 5:00 PM
-    Duration(hours: 1), // 1-hour intervals
+    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0, 0),
+    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 17, 30, 0),
+    Duration(hours: 1),
   );
 
-  int recentHoursToShow = 8; // Default value
+  DateTime selectedStartDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0, 0);
+  DateTime selectedEndDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 17, 30, 0);
+
+  // Store the original x-axis values for resetting
+  DateTime originalStartDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0, 0);
+  DateTime originalEndDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 17, 30, 0);
 
   @override
   Widget build(BuildContext context) {
     double minY = heartRateData.values.reduce((min, val) => val < min ? val : min).toDouble();
     double maxY = heartRateData.values.reduce((max, val) => val > max ? val : max).toDouble();
 
-    // Calculate minY and maxY rounding to the nearest multiple of 5
     minY = (minY / 5).floor() * 5;
     maxY = ((maxY + 4) / 5).ceil() * 5;
+
+    void resetXAxis() {
+      setState(() {
+        selectedStartDate = originalStartDate;
+        selectedEndDate = originalEndDate;
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -36,11 +47,10 @@ class _DataScreenState extends State<DataScreen> {
             child: Center(
               child: Row(
                 children: [
-                  // Y-axis title
                   Container(
                     margin: EdgeInsets.only(left: 10, right: 0),
                     child: RotatedBox(
-                      quarterTurns: -1, // Rotate counterclockwise
+                      quarterTurns: -1,
                       child: Text(
                         'Heart Rate (BPM)',
                         style: TextStyle(
@@ -49,16 +59,18 @@ class _DataScreenState extends State<DataScreen> {
                       ),
                     ),
                   ),
-                  // Chart
                   Expanded(
                     child: Container(
-                      padding: EdgeInsets.only(left: 0, right: 20, top: 20, bottom: 20), // Adjust padding as needed
+                      padding: EdgeInsets.only(left: 0, right: 20, top: 20, bottom: 20),
                       child: SfCartesianChart(
-                        primaryXAxis: DateTimeAxis(),
+                        primaryXAxis: DateTimeAxis(
+                          minimum: selectedStartDate,
+                          maximum: selectedEndDate,
+                        ),
                         primaryYAxis: NumericAxis(
-                          minimum: minY, // Set the minimum value of the y-axis
-                          maximum: maxY, // Set the maximum value of the y-axis
-                          interval: 5, // Set the interval to 5 to show labels in multiples of 5
+                          minimum: minY,
+                          maximum: maxY,
+                          interval: 5,
                         ),
                         series: <ChartSeries>[
                           LineSeries<MapEntry<DateTime, double>, DateTime>(
@@ -77,26 +89,58 @@ class _DataScreenState extends State<DataScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end, // Align to the right
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Hours: '),
-                SizedBox(
-                  width: 60,
-                  height: 50,
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) {
-                      setState(() {
-                        recentHoursToShow = int.tryParse(value) ?? 8;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                    ),
+                Text('Start Date: '),
+                TextButton(
+                  onPressed: () {
+                    showDatePicker(
+                      context: context,
+                      initialDate: selectedStartDate,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    ).then((date) {
+                      if (date != null) {
+                        setState(() {
+                          selectedStartDate = date;
+                        });
+                      }
+                    });
+                  },
+                  child: Text(
+                    "${selectedStartDate.toLocal()}".split(' ')[0],
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Text('End Date: '),
+                TextButton(
+                  onPressed: () {
+                    showDatePicker(
+                      context: context,
+                      initialDate: selectedEndDate,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    ).then((date) {
+                      if (date != null) {
+                        setState(() {
+                          selectedEndDate = date;
+                        });
+                      }
+                    });
+                  },
+                  child: Text(
+                    "${selectedEndDate.toLocal()}".split(' ')[0],
+                    style: TextStyle(fontSize: 20),
                   ),
                 ),
               ],
             ),
+          ),
+          // Add a Reset button
+          ElevatedButton(
+            onPressed: resetXAxis,
+            child: Text('Reset X-Axis'),
           ),
         ],
       ),
