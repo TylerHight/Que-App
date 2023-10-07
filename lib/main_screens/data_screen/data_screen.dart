@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'generated_hr_data.dart';
 
 class DataScreen extends StatefulWidget {
@@ -15,23 +15,6 @@ class _DataScreenState extends State<DataScreen> {
   );
 
   int recentHoursToShow = 8; // Default value
-
-  double leftPadding = 8.0;
-  double rightPadding = 16;
-  double topPadding = 8.0;
-  double bottomPadding = 32;
-
-  // Custom function to format time
-  String formatTime(int hour, int minute) {
-    String period = 'AM';
-    if (hour >= 12) {
-      period = 'PM';
-      if (hour > 12) {
-        hour -= 12;
-      }
-    }
-    return '$hour:${minute.toString().padLeft(2, '0')} $period';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,87 +51,18 @@ class _DataScreenState extends State<DataScreen> {
           ),
           Expanded(
             child: Center(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(leftPadding, topPadding, rightPadding, bottomPadding),
-                child: Row(
-                  children: [
-                    // Y-axis title
-                    RotatedBox(
-                      quarterTurns: -1, // Rotate counterclockwise
-                      child: Text(
-                        'Heart Rate (BPM)',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 20), // Adjust the spacing between title and chart
-                    Expanded( // Ensure the chart takes up available space
-                      child: LineChart(
-                        LineChartData(
-                          gridData: FlGridData(
-                            show: true,
-                            drawHorizontalLine: true,
-                            drawVerticalLine: true,
-                          ),
-                          titlesData: FlTitlesData(
-                            leftTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: 30,
-                              margin: 10,
-                            ),
-                            bottomTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: 30,
-                              margin: 10,
-                              rotateAngle: 90, // Rotate labels to be vertical
-                              getTitles: (value) {
-                                final DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(value.toInt());
-                                final int hour = dateTime.hour;
-                                final int minute = dateTime.minute;
-
-                                // Check if it's outside the desired range (8 AM - 5 PM)
-                                if (hour < 8 || (hour == 17 && minute > 0) || hour > 17) {
-                                  return '';
-                                }
-
-                                return formatTime(hour, minute);
-                              },
-                            ),
-                            topTitles: SideTitles(
-                              showTitles: false,
-                            ),
-                            rightTitles: SideTitles(
-                              showTitles: false,
-                            ),
-                          ),
-                          borderData: FlBorderData(
-                            show: true,
-                            border: Border.all(color: const Color(0xff37434d), width: 1),
-                          ),
-                          minX: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0, 0).millisecondsSinceEpoch.toDouble(),
-                          maxX: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 17, 30, 0).millisecondsSinceEpoch.toDouble(),
-                          minY: heartRateData.values.reduce((min, val) => val < min ? val : min).toDouble(),
-                          maxY: heartRateData.values.reduce((max, val) => val > max ? val : max).toDouble(),
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: heartRateData.entries
-                                  .map((entry) => FlSpot(
-                                entry.key.millisecondsSinceEpoch.toDouble(),
-                                entry.value,
-                              ))
-                                  .toList(),
-                              isCurved: false,
-                              colors: [Colors.blue],
-                              dotData: FlDotData(show: false),
-                              belowBarData: BarAreaData(show: false),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+              child: SfCartesianChart(
+                primaryXAxis: DateTimeAxis(),
+                primaryYAxis: NumericAxis(
+                  interval: 5, // Set the interval to 5 to show labels in multiples of 5
                 ),
+                series: <ChartSeries>[
+                  LineSeries<MapEntry<DateTime, double>, DateTime>(
+                    dataSource: heartRateData.entries.toList(),
+                    xValueMapper: (MapEntry<DateTime, double> entry, _) => entry.key,
+                    yValueMapper: (MapEntry<DateTime, double> entry, _) => entry.value,
+                  ),
+                ],
               ),
             ),
           ),
