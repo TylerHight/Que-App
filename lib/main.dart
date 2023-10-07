@@ -1,10 +1,10 @@
-// main.dart
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'main_screens/home_screen/home_screen.dart';
 import 'main_screens/settings_screen.dart';
 import 'main_screens/data_screen/data_screen.dart';
 import 'main_screens/account_screen.dart';
+import 'main_screens/home_screen/device_data.dart'; // Import the DeviceData class
 
 void main() {
   runApp(QueApp());
@@ -13,12 +13,15 @@ void main() {
 class QueApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Que App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return ChangeNotifierProvider(
+      create: (context) => DeviceData(), // Initialize the DeviceData provider
+      child: MaterialApp(
+        title: 'Que App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: MyHomePage(),
       ),
-      home: MyHomePage(),
     );
   }
 }

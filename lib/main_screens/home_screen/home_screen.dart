@@ -1,53 +1,47 @@
 // home_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Add this import statement
+import 'device_data.dart'; // Import the DeviceData class
 import 'device_remote.dart';
-import 'device_settings.dart';
-import 'device_name_dialog.dart'; // Import the new dialog file
+import 'device_settings_screen.dart';
+import 'device_name_dialog.dart';
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final List<String> deviceTitles = List.generate(3, (index) => 'Device $index');
-
-  void addDevice(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => DeviceNameDialog(
-        onDeviceNameEntered: (deviceName) {
-          setState(() {
-            deviceTitles.add(deviceName);
-          });
-        },
-      ),
-    );
-  }
-
-  void deleteDevice(int index) {
-    setState(() {
-      deviceTitles.removeAt(index);
-    });
-  }
-
-  void navigateToDeviceSettings(int index) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DeviceSettingsScreen(
-          onDelete: () {
-            deleteDevice(index);
-            Navigator.pop(context); // Close the settings screen
-          },
-        ),
-      ),
-    );
-  }
-
+class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final deviceData = Provider.of<DeviceData>(context);
+    final deviceTitles = deviceData.deviceTitles;
+
+    void addDevice(BuildContext context) {
+      showDialog(
+        context: context,
+        builder: (context) => DeviceNameDialog(
+          onDeviceNameEntered: (deviceName) {
+            deviceData.addDeviceTitle(deviceName);
+          },
+        ),
+      );
+    }
+
+    void deleteDevice(int index) {
+      deviceData.deleteDeviceTitle(index);
+    }
+
+    void navigateToDeviceSettings(BuildContext context, int index) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DeviceSettingsScreen(
+            onDelete: () {
+              deleteDevice(index);
+              Navigator.pop(context); // Close the settings screen
+            },
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -78,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: DeviceRemote(
               title: deviceTitles[index],
               onTap: () {
-                navigateToDeviceSettings(index);
+                navigateToDeviceSettings(context, index);
               },
             ),
           );
