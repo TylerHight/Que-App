@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'main_screens/home_screen/home_screen.dart';
 import 'main_screens/settings_screen.dart';
-import 'main_screens/data_screen.dart';
+import 'main_screens/data_screen/data_screen.dart';
 import 'main_screens/account_screen.dart';
 
 void main() {
