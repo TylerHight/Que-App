@@ -8,10 +8,18 @@ import 'package:flutter/material.dart';
 class BinaryButton extends StatefulWidget {
   final Color buttonColor;
   final IconData iconData;
+  final double buttonSize;
+  final double iconSize;
+  final Function()? onPressedGreyToColor; // Nullable function for grey to color
+  final Function()? onPressedColorToGrey; // Nullable function for color to grey
 
   BinaryButton({
     required this.buttonColor,
     required this.iconData,
+    this.buttonSize = 48.0,
+    this.iconSize = 24.0,
+    this.onPressedGreyToColor, // Nullable function for grey to color
+    this.onPressedColorToGrey, // Nullable function for color to grey
   });
 
   @override
@@ -43,6 +51,11 @@ class _BinaryButtonState extends State<BinaryButton>
     _animationController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         _animationController.reverse();
+        if (isLightOn) {
+          widget.onPressedColorToGrey?.call(); // Execute callback for color to grey if it's provided
+        } else {
+          widget.onPressedGreyToColor?.call(); // Execute callback for grey to color if it's provided
+        }
       }
     });
   }
@@ -72,8 +85,8 @@ class _BinaryButtonState extends State<BinaryButton>
           child: child,
         ),
         child: Container(
-          width: 48,
-          height: 48,
+          width: widget.buttonSize,
+          height: widget.buttonSize,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: isLightOn ? widget.buttonColor : Colors.grey[300],
@@ -82,7 +95,7 @@ class _BinaryButtonState extends State<BinaryButton>
             child: Icon(
               widget.iconData,
               color: Colors.white,
-              size: 24,
+              size: widget.iconSize,
             ),
           ),
         ),
@@ -90,3 +103,6 @@ class _BinaryButtonState extends State<BinaryButton>
     );
   }
 }
+
+
+

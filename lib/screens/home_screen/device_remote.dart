@@ -35,27 +35,27 @@ class DeviceRemote extends StatelessWidget {
                     fontWeight: FontWeight.bold, // Added bold style
                   ),
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 4),
                 Row(
                   children: [
                     BinaryButton(
                       buttonColor: Colors.green,
                       iconData: Icons.power_settings_new,
+                        buttonSize: 30.0,
+                        iconSize: 20.0
                     ),
                     SizedBox(width: 8),
-                    ElevatedButton.icon(
-                      onPressed: onTap,
-                      icon: Icon(
-                        Icons.settings,
-                        color: Colors.white,
-                      ),
-                      label: Text(
-                        'Settings',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue, // Custom button color
-                      ),
+                    BinaryButton( // settings button
+                        buttonColor: Colors.grey.shade300,
+                        iconData: Icons.settings,
+                        buttonSize: 30.0,
+                        iconSize: 20.0,
+                        onPressedGreyToColor: () {
+                          onTap();
+                        },
+                        onPressedColorToGrey: () {
+                          onTap();
+                        },
                     ),
                   ],
                 ),
@@ -68,11 +68,15 @@ class DeviceRemote extends StatelessWidget {
                 BinaryButton(
                   buttonColor: Colors.red,
                   iconData: Icons.air,
+                  buttonSize: 50.0,
+                  iconSize: 32.0
                 ),
                 SizedBox(width: 8),
                 BinaryButton(
                   buttonColor: Colors.cyan,
                   iconData: Icons.air,
+                    buttonSize: 50.0,
+                    iconSize: 32.0
                 ),
               ],
             ),
