@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Add this import statement
 import 'device_data.dart'; // Import the DeviceData class
 import 'device_remote.dart';
-import 'device_settings_screen.dart';
+import 'device_settings_screen/device_settings_screen.dart';
 import 'device_name_dialog.dart';
 
 class HomeScreen extends StatelessWidget {
