@@ -1,3 +1,5 @@
+// device_remote.dart
+
 import 'package:flutter/material.dart';
 import 'binary_button.dart';
 
@@ -41,32 +43,38 @@ class DeviceRemote extends StatelessWidget {
                       iconData: Icons.power_settings_new,
                     ),
                     SizedBox(width: 8),
-                    BinaryButton(
-                      buttonColor: Colors.red,
-                      iconData: Icons.air,
-                    ),
-                    SizedBox(width: 8),
-                    BinaryButton(
-                      buttonColor: Colors.cyan,
-                      iconData: Icons.air,
+                    ElevatedButton.icon(
+                      onPressed: onTap,
+                      icon: Icon(
+                        Icons.settings,
+                        color: Colors.white,
+                      ),
+                      label: Text(
+                        'Settings',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue, // Custom button color
+                      ),
                     ),
                   ],
                 ),
+
               ],
             ),
-            ElevatedButton.icon(
-              onPressed: onTap,
-              icon: Icon(
-                Icons.settings,
-                color: Colors.white,
-              ),
-              label: Text(
-                'Settings',
-                style: TextStyle(color: Colors.white),
-              ),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.blue, // Custom button color
-              ),
+            Row(
+              children: [
+                SizedBox(width: 8),
+                BinaryButton(
+                  buttonColor: Colors.red,
+                  iconData: Icons.air,
+                ),
+                SizedBox(width: 8),
+                BinaryButton(
+                  buttonColor: Colors.cyan,
+                  iconData: Icons.air,
+                ),
+              ],
             ),
           ],
         ),

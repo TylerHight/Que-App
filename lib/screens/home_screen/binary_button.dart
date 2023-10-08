@@ -1,3 +1,5 @@
+// binary_button.dart
+
 import 'package:flutter/material.dart';
 
 // Button used to alternate between two states. Changes between two
