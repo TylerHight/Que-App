@@ -81,17 +81,17 @@ class _DataScreenState extends State<DataScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.blue,
         title: Text(
           'Heart Rate and Device Data',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontSize: 18.0, // Adjust the font size as per your preference
           ),
         ),
         centerTitle: false,
       ),
-        body: Column(
+      body: Column(
         children: [
           Expanded(
             child: Center(
@@ -138,7 +138,14 @@ class _DataScreenState extends State<DataScreen> {
                     style: textStyle,
                   ),
                 ),
-                SizedBox(width: 10),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 Text('End: ', style: textStyle),
                 ElevatedButton(
                   onPressed: () async {

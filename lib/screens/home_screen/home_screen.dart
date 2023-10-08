@@ -47,18 +47,18 @@ class HomeScreen extends StatelessWidget {
         title: Text(
           'Devices',
           style: TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontSize: 18.0,),
         ),
         centerTitle: false,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.blue,
         iconTheme: IconThemeData(color: Colors.black),
         elevation: 4.0,
         actions: <Widget>[
           IconButton(
             icon: Icon(
               Icons.add,
-              color: Colors.black,
+              color: Colors.white,
             ),
             onPressed: () {
               addDevice(context);
