@@ -47,11 +47,12 @@ class DeviceRemote extends StatelessWidget {
                     ),
                     SizedBox(width: 8),
                     BinaryButton( // settings button
-                        activeColor: Colors.grey.shade300,
-                        inactiveColor: Colors.grey.shade300,
+                        activeColor: Colors.white,
+                        inactiveColor: Colors.white,
                         iconData: Icons.settings,
+                        iconColor: Colors.grey.shade300,
                         buttonSize: 30.0,
-                        iconSize: 20.0,
+                        iconSize: 30.0,
                         onPressedGreyToColor: () {
                           onTap();
                         },
@@ -67,20 +68,20 @@ class DeviceRemote extends StatelessWidget {
             Row(
               children: [
                 SizedBox(width: 8),
-                BinaryButton(
+                BinaryButton( // negative emission
                   activeColor: Colors.red,
                   inactiveColor: Colors.grey.shade300,
-                  iconData: Icons.air,
+                  iconData: Icons.sentiment_very_dissatisfied,
                   buttonSize: 50.0,
-                  iconSize: 32.0
+                  iconSize: 38.0
                 ),
                 SizedBox(width: 8),
-                BinaryButton(
+                BinaryButton( // positive emission
                   activeColor: Colors.cyan,
                   inactiveColor: Colors.grey.shade300,
-                  iconData: Icons.air,
+                  iconData: Icons.mood,
                     buttonSize: 50.0,
-                    iconSize: 32.0
+                    iconSize: 38.0
                 ),
               ],
             ),
