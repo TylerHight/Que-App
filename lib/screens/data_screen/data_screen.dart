@@ -22,6 +22,46 @@ class _DataScreenState extends State<DataScreen> {
 
   final TextStyle textStyle = TextStyle(fontSize: 15);
 
+  SfCartesianChart _buildChart() {
+    double minY = heartRateData.values.reduce((min, val) => val < min ? val : min).toDouble();
+    double maxY = heartRateData.values.reduce((max, val) => val > max ? val : max).toDouble();
+
+    minY = (minY / 5).floor() * 5;
+    maxY = ((maxY + 4) / 5).ceil() * 5;
+
+    return SfCartesianChart(
+      primaryXAxis: DateTimeAxis(
+        minimum: selectedStartDate,
+        maximum: selectedEndDate,
+        isVisible: true,
+        intervalType: DateTimeIntervalType.hours,
+        // Set the visible minimum and maximum based on selected dates
+        visibleMinimum: selectedStartDate,
+        visibleMaximum: selectedEndDate,
+      ),
+      primaryYAxis: NumericAxis(
+        minimum: minY,
+        maximum: maxY,
+        isVisible: true,
+        interval: 5,
+      ),
+      series: <ChartSeries>[
+        LineSeries<MapEntry<DateTime, double>, DateTime>(
+          dataSource: heartRateData.entries.toList(),
+          xValueMapper: (MapEntry<DateTime, double> entry, _) => entry.key,
+          yValueMapper: (MapEntry<DateTime, double> entry, _) => entry.value,
+        ),
+      ],
+      // Enable zooming and panning
+      zoomPanBehavior: ZoomPanBehavior(
+        enablePanning: true,
+        enablePinching: true,
+        enableMouseWheelZooming: true,
+        zoomMode: ZoomMode.x,
+      ),
+    );
+  }
+
   void resetXAxis() {
     setState(() {
       selectedStartDate = originalStartDate;
@@ -29,14 +69,16 @@ class _DataScreenState extends State<DataScreen> {
     });
   }
 
+  void updateXAxis() {
+    setState(() {
+      // Update the visible minimum and maximum based on selected dates
+      selectedStartDate = selectedStartDate;
+      selectedEndDate = selectedEndDate;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    double minY = heartRateData.values.reduce((min, val) => val < min ? val : min).toDouble();
-    double maxY = heartRateData.values.reduce((max, val) => val > max ? val : max).toDouble();
-
-    minY = (minY / 5).floor() * 5;
-    maxY = ((maxY + 4) / 5).ceil() * 5;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Heart Rate and Device Data'),
@@ -46,37 +88,7 @@ class _DataScreenState extends State<DataScreen> {
         children: [
           Expanded(
             child: Center(
-              child: SfCartesianChart(
-                primaryXAxis: DateTimeAxis(
-                  minimum: selectedStartDate,
-                  maximum: selectedEndDate,
-                  isVisible: true, // Enable x-axis visibility
-                  zoomFactor: 1.0, // Set zoom factor
-                  zoomPosition: 1.0, // Set zoom position
-                  enableAutoIntervalOnZooming: true, // Auto-calculate interval on zooming
-                  intervalType: DateTimeIntervalType.hours, // Set interval type
-                ),
-                primaryYAxis: NumericAxis(
-                  minimum: minY,
-                  maximum: maxY,
-                  isVisible: true, // Enable y-axis visibility
-                  interval: 5,
-                ),
-                series: <ChartSeries>[
-                  LineSeries<MapEntry<DateTime, double>, DateTime>(
-                    dataSource: heartRateData.entries.toList(),
-                    xValueMapper: (MapEntry<DateTime, double> entry, _) => entry.key,
-                    yValueMapper: (MapEntry<DateTime, double> entry, _) => entry.value,
-                  ),
-                ],
-                // Enable zooming and panning
-                zoomPanBehavior: ZoomPanBehavior(
-                  enablePanning: true, // Enable panning
-                  enablePinching: true, // Enable pinching to zoom
-                  enableMouseWheelZooming: true,
-                  zoomMode: ZoomMode.x, // Zoom only in the x-axis direction
-                ),
-              ),
+              child: _buildChart(),
             ),
           ),
           Padding(
@@ -107,6 +119,8 @@ class _DataScreenState extends State<DataScreen> {
                             selectedTime.hour,
                             selectedTime.minute,
                           );
+                          // Update the x-axis when changing the date and time
+                          updateXAxis();
                         });
                       }
                     }
@@ -141,6 +155,8 @@ class _DataScreenState extends State<DataScreen> {
                             selectedTime.hour,
                             selectedTime.minute,
                           );
+                          // Update the x-axis when changing the date and time
+                          updateXAxis();
                         });
                       }
                     }
@@ -154,7 +170,6 @@ class _DataScreenState extends State<DataScreen> {
               ],
             ),
           ),
-          // Add padding below the Reset button
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: ElevatedButton(
