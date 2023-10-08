@@ -190,7 +190,6 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
             onTap: () {
               _selectDuration(context, 'Positive emission duration');
             },
-            margin: EdgeInsets.only(bottom: 4.0), // Add spacing between the input fields
           ),
           _buildSettingCard(
             title: 'Negative emission duration',
@@ -200,7 +199,6 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
             onTap: () {
               _selectDuration(context, 'Negative emission duration');
             },
-            margin: EdgeInsets.only(bottom: 4.0), // Add spacing between the input fields
           ),
           _buildSettingCard(
             title: 'Time between periodic emissions',
@@ -210,16 +208,19 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
             onTap: () {
               _selectDuration(context, 'Time between periodic emissions');
             },
-            margin: EdgeInsets.only(bottom: 4.0), // Add spacing between the input fields
-          ),
-          ElevatedButton(
-            onPressed: widget.onDelete,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red, // Set the button's background color to red
-            ),
-            child: const Text('Delete Device'),
           ),
         ],
+      ),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.all(8.0),
+        child: ElevatedButton(
+          onPressed: widget.onDelete,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            minimumSize: Size.fromHeight(40),
+          ),
+          child: const Text('Delete Device'),
+        ),
       ),
     );
   }
@@ -228,13 +229,22 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     required String title,
     required String value,
     required VoidCallback onTap,
-    EdgeInsetsGeometry? margin, // Add margin property
   }) {
     return Card(
       elevation: 4.0,
-      margin: margin, // Set the margin property here
+      margin: EdgeInsets.only(bottom: 4.0),
       child: ListTile(
-        title: Text(title),
+        title: Align(
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(title),
+              ),
+              Icon(Icons.arrow_forward_ios), // Add the arrow icon here
+            ],
+          ),
+        ),
         subtitle: Text(value),
         onTap: onTap,
       ),
