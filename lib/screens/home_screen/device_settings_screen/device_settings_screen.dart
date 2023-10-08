@@ -241,7 +241,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
               Expanded(
                 child: Text(title),
               ),
-              Icon(Icons.arrow_forward_ios), // Add the arrow icon here
+              //Icon(Icons.arrow_forward_ios), // Add the arrow icon here
             ],
           ),
         ),
