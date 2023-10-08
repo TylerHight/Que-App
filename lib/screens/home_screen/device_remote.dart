@@ -32,18 +32,18 @@ class DeviceRemote extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 18.0, // Adjusted font size
-                    fontWeight: FontWeight.bold, // Added bold style
+                    fontWeight: FontWeight.w500, // Added bold style
                   ),
                 ),
                 SizedBox(height: 4),
                 Row(
                   children: [
-                    BinaryButton(
-                      activeColor: Colors.green,
+                    BinaryButton( // power button
+                      activeColor: Colors.green.shade400,
                       inactiveColor: Colors.grey.shade300,
                       iconData: Icons.power_settings_new,
-                      buttonSize: 30.0,
-                      iconSize: 20.0
+                      buttonSize: 26.0,
+                      iconSize: 18.0
                     ),
                     SizedBox(width: 8),
                     BinaryButton( // settings button
@@ -69,7 +69,7 @@ class DeviceRemote extends StatelessWidget {
               children: [
                 SizedBox(width: 8),
                 BinaryButton( // negative emission
-                  activeColor: Colors.red,
+                  activeColor: Colors.red.shade400,
                   inactiveColor: Colors.grey.shade300,
                   iconData: Icons.sentiment_very_dissatisfied,
                   buttonSize: 50.0,
@@ -77,7 +77,7 @@ class DeviceRemote extends StatelessWidget {
                 ),
                 SizedBox(width: 8),
                 BinaryButton( // positive emission
-                  activeColor: Colors.cyan,
+                  activeColor: Colors.green.shade500,
                   inactiveColor: Colors.grey.shade300,
                   iconData: Icons.mood,
                     buttonSize: 50.0,

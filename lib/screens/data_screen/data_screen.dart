@@ -8,6 +8,7 @@ class DataScreen extends StatefulWidget {
 }
 
 class _DataScreenState extends State<DataScreen> {
+  // Your existing code for chart and data
   Map<DateTime, double> heartRateData = generateHeartRateData(
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0, 0),
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 17, 30, 0),
@@ -22,6 +23,58 @@ class _DataScreenState extends State<DataScreen> {
 
   final TextStyle textStyle = TextStyle(fontSize: 15);
 
+  Future<void> _selectStartDate() async {
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedStartDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (selectedDate != null) {
+      final selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(selectedStartDate),
+      );
+      if (selectedTime != null) {
+        setState(() {
+          selectedStartDate = DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            selectedTime.hour,
+            selectedTime.minute,
+          );
+        });
+      }
+    }
+  }
+
+  Future<void> _selectEndDate() async {
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedEndDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (selectedDate != null) {
+      final selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(selectedEndDate),
+      );
+      if (selectedTime != null) {
+        setState(() {
+          selectedEndDate = DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            selectedTime.hour,
+            selectedTime.minute,
+          );
+        });
+      }
+    }
+  }
+
   SfCartesianChart _buildChart() {
     double minY = heartRateData.values.reduce((min, val) => val < min ? val : min).toDouble();
     double maxY = heartRateData.values.reduce((max, val) => val > max ? val : max).toDouble();
@@ -35,7 +88,6 @@ class _DataScreenState extends State<DataScreen> {
         maximum: selectedEndDate,
         isVisible: true,
         intervalType: DateTimeIntervalType.hours,
-        // Set the visible minimum and maximum based on selected dates
         visibleMinimum: selectedStartDate,
         visibleMaximum: selectedEndDate,
       ),
@@ -52,7 +104,6 @@ class _DataScreenState extends State<DataScreen> {
           yValueMapper: (MapEntry<DateTime, double> entry, _) => entry.value,
         ),
       ],
-      // Enable zooming and panning
       zoomPanBehavior: ZoomPanBehavior(
         enablePanning: true,
         enablePinching: true,
@@ -62,18 +113,11 @@ class _DataScreenState extends State<DataScreen> {
     );
   }
 
+  // Function to reset the date range
   void resetXAxis() {
     setState(() {
       selectedStartDate = originalStartDate;
       selectedEndDate = originalEndDate;
-    });
-  }
-
-  void updateXAxis() {
-    setState(() {
-      // Update the visible minimum and maximum based on selected dates
-      selectedStartDate = selectedStartDate;
-      selectedEndDate = selectedEndDate;
     });
   }
 
@@ -86,7 +130,7 @@ class _DataScreenState extends State<DataScreen> {
           'Heart Rate and Device Data',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 18.0, // Adjust the font size as per your preference
+            fontSize: 18.0,
           ),
         ),
         centerTitle: false,
@@ -98,97 +142,49 @@ class _DataScreenState extends State<DataScreen> {
               child: _buildChart(),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          SizedBox(height: 16), // Add spacing
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.date_range), // Date Range icon
+              SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: _selectStartDate,
+                child: Text(
+                  'Select Start Date/Time',
+                  style: TextStyle(fontSize: 15),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 8), // Add spacing
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.date_range), // Date Range icon
+              SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: _selectEndDate,
+                child: Text(
+                  'Select End Date/Time',
+                  style: TextStyle(fontSize: 15),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16), // Add spacing
+          ElevatedButton(
+            onPressed: resetXAxis,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Start: ', style: textStyle),
-                ElevatedButton(
-                  onPressed: () async {
-                    final selectedDate = await showDatePicker(
-                      context: context,
-                      initialDate: selectedStartDate,
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2101),
-                    );
-                    if (selectedDate != null) {
-                      final selectedTime = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(selectedStartDate),
-                      );
-                      if (selectedTime != null) {
-                        setState(() {
-                          selectedStartDate = DateTime(
-                            selectedDate.year,
-                            selectedDate.month,
-                            selectedDate.day,
-                            selectedTime.hour,
-                            selectedTime.minute,
-                          );
-                          // Update the x-axis when changing the date and time
-                          updateXAxis();
-                        });
-                      }
-                    }
-                  },
-                  child: Text(
-                    "${selectedStartDate.toLocal()}".split(' ')[0] +
-                        " ${TimeOfDay.fromDateTime(selectedStartDate).format(context)}",
-                    style: textStyle,
-                  ),
+                Icon(Icons.refresh), // Reset icon
+                SizedBox(width: 8),
+                Text(
+                  'Reset',
+                  style: TextStyle(fontSize: 15),
                 ),
               ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('End: ', style: textStyle),
-                ElevatedButton(
-                  onPressed: () async {
-                    final selectedDate = await showDatePicker(
-                      context: context,
-                      initialDate: selectedEndDate,
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2101),
-                    );
-                    if (selectedDate != null) {
-                      final selectedTime = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(selectedEndDate),
-                      );
-                      if (selectedTime != null) {
-                        setState(() {
-                          selectedEndDate = DateTime(
-                            selectedDate.year,
-                            selectedDate.month,
-                            selectedDate.day,
-                            selectedTime.hour,
-                            selectedTime.minute,
-                          );
-                          // Update the x-axis when changing the date and time
-                          updateXAxis();
-                        });
-                      }
-                    }
-                  },
-                  child: Text(
-                    "${selectedEndDate.toLocal()}".split(' ')[0] +
-                        " ${TimeOfDay.fromDateTime(selectedEndDate).format(context)}",
-                    style: textStyle,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: ElevatedButton(
-              onPressed: resetXAxis,
-              child: Text('Reset', style: textStyle),
             ),
           ),
         ],
