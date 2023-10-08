@@ -81,10 +81,17 @@ class _DataScreenState extends State<DataScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Heart Rate and Device Data'),
-        centerTitle: true,
+        backgroundColor: Colors.white,
+        title: Text(
+          'Heart Rate and Device Data',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18.0, // Adjust the font size as per your preference
+          ),
+        ),
+        centerTitle: false,
       ),
-      body: Column(
+        body: Column(
         children: [
           Expanded(
             child: Center(

@@ -46,10 +46,12 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Devices',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+              color: Colors.black,
+              fontSize: 18.0,),
         ),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
+        centerTitle: false,
+        backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.black),
         elevation: 4.0,
         actions: <Widget>[
