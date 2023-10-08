@@ -24,12 +24,14 @@ class SettingsScreen extends StatelessWidget {
               // Add your functionality here
             },
           ),
-          _buildSettingCard(
-            title: 'Setting 3',
-            value: 'Value 3',
-            onTap: () {
-              // Add your functionality here
-            },
+          Card(
+            elevation: 4.0,
+            margin: EdgeInsets.only(bottom: 16.0),
+            child: ListTile(
+              title: Text('Info'),
+              onTap: (){},
+              trailing: Icon(Icons.arrow_forward_ios),
+            ),
           ),
         ],
       ),

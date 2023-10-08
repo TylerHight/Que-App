@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen/home_screen.dart';
-import 'screens/settings_screen.dart';
+import 'screens/settings_screen/settings_screen.dart';
 import 'screens/data_screen/data_screen.dart';
 import 'screens/account_screen.dart';
 import 'screens/home_screen/device_data.dart'; // Import the DeviceData class
