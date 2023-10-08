@@ -18,6 +18,7 @@ class QueApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => DeviceData(), // Initialize the DeviceData provider
       child: MaterialApp(
+        debugShowCheckedModeBanner: false, // Set this property to false
         title: 'Que App',
         theme: ThemeData(
           primarySwatch: Colors.blue,

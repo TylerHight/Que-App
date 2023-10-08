@@ -58,7 +58,7 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: Icon(
               Icons.add,
-              color: Colors.white,
+              color: Colors.black,
             ),
             onPressed: () {
               addDevice(context);
