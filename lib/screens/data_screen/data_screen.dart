@@ -137,12 +137,13 @@ class _DataScreenState extends State<DataScreen> {
       ),
       body: Column(
         children: [
+          SizedBox(height: 12), // Add spacing
           Expanded(
             child: Center(
               child: _buildChart(),
             ),
           ),
-          SizedBox(height: 16), // Add spacing
+          SizedBox(height: 10), // Add spacing
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -172,7 +173,7 @@ class _DataScreenState extends State<DataScreen> {
               ),
             ],
           ),
-          SizedBox(height: 16), // Add spacing
+          SizedBox(height: 8), // Add spacing
           ElevatedButton(
             onPressed: resetXAxis,
             child: Row(
@@ -187,6 +188,7 @@ class _DataScreenState extends State<DataScreen> {
               ],
             ),
           ),
+          SizedBox(height: 8),
         ],
       ),
     );
