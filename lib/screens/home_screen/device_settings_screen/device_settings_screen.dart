@@ -37,18 +37,18 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
                 title: 'Hours:',
                 value: title == 'Time between periodic emissions'
                     ? _selectedHours
-                    : title == 'Positive emission duration'
+                    : title == 'Positive scent duration'
                     ? _selectedPositiveHours
-                    : title == 'Negative emission duration'
+                    : title == 'Negative scent duration'
                     ? _selectedNegativeHours
                     : 0,
                 onChanged: (value) {
                   setState(() {
                     if (title == 'Time between periodic emissions') {
                       _selectedHours = value!;
-                    } else if (title == 'Positive emission duration') {
+                    } else if (title == 'Positive scent duration') {
                       _selectedPositiveHours = value!;
-                    } else if (title == 'Negative emission duration') {
+                    } else if (title == 'Negative scent duration') {
                       _selectedNegativeHours = value!;
                     }
                   });
@@ -59,18 +59,18 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
                 title: 'Minutes:',
                 value: title == 'Time between periodic emissions'
                     ? _selectedMinutes
-                    : title == 'Positive emission duration'
+                    : title == 'Positive scent duration'
                     ? _selectedPositiveMinutes
-                    : title == 'Negative emission duration'
+                    : title == 'Negative scent duration'
                     ? _selectedNegativeMinutes
                     : 0,
                 onChanged: (value) {
                   setState(() {
                     if (title == 'Time between periodic emissions') {
                       _selectedMinutes = value!;
-                    } else if (title == 'Positive emission duration') {
+                    } else if (title == 'Positive scent duration') {
                       _selectedPositiveMinutes = value!;
-                    } else if (title == 'Negative emission duration') {
+                    } else if (title == 'Negative scent duration') {
                       _selectedNegativeMinutes = value!;
                     }
                   });
@@ -81,18 +81,18 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
                 title: 'Seconds:',
                 value: title == 'Time between periodic emissions'
                     ? _selectedSeconds
-                    : title == 'Positive emission duration'
+                    : title == 'Positive scent duration'
                     ? _selectedPositiveSeconds
-                    : title == 'Negative emission duration'
+                    : title == 'Negative scent duration'
                     ? _selectedNegativeSeconds
                     : 0,
                 onChanged: (value) {
                   setState(() {
                     if (title == 'Time between periodic emissions') {
                       _selectedSeconds = value!;
-                    } else if (title == 'Positive emission duration') {
+                    } else if (title == 'Positive scent duration') {
                       _selectedPositiveSeconds = value!;
-                    } else if (title == 'Negative emission duration') {
+                    } else if (title == 'Negative scent duration') {
                       _selectedNegativeSeconds = value!;
                     }
                   });
@@ -117,13 +117,13 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
                       minutes: _selectedMinutes,
                       seconds: _selectedSeconds,
                     );
-                  } else if (title == 'Positive emission duration') {
+                  } else if (title == 'Positive scent duration') {
                     _selectedPositiveEmissionDuration = Duration(
                       hours: _selectedPositiveHours,
                       minutes: _selectedPositiveMinutes,
                       seconds: _selectedPositiveSeconds,
                     );
-                  } else if (title == 'Negative emission duration') {
+                  } else if (title == 'Negative scent duration') {
                     _selectedNegativeEmissionDuration = Duration(
                       hours: _selectedNegativeHours,
                       minutes: _selectedNegativeMinutes,
@@ -155,21 +155,21 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         padding: EdgeInsets.all(16.0), // Increased padding for better spacing
         children: [
           _buildSettingCard(
-            title: 'Positive emission duration',
+            title: 'Positive scent duration',
             value: _selectedPositiveEmissionDuration != null
                 ? _formatDuration(_selectedPositiveEmissionDuration!)
                 : 'Select Duration',
             onTap: () {
-              _selectDuration(context, 'Positive emission duration');
+              _selectDuration(context, 'Positive scent duration');
             },
           ),
           _buildSettingCard(
-            title: 'Negative emission duration',
+            title: 'Negative scent duration',
             value: _selectedNegativeEmissionDuration != null
                 ? _formatDuration(_selectedNegativeEmissionDuration!)
                 : 'Select Duration',
             onTap: () {
-              _selectDuration(context, 'Negative emission duration');
+              _selectDuration(context, 'Negative scent duration');
             },
           ),
           _buildSettingCard(
@@ -188,7 +188,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         child: ElevatedButton(
           onPressed: widget.onDelete,
           style: ElevatedButton.styleFrom(
-            primary: Colors.red, // Set button color to red
+            backgroundColor: Colors.red, // Set button color to red
             minimumSize: Size.fromHeight(48), // Increased button height
           ),
           child: const Text(

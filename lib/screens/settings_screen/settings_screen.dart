@@ -1,4 +1,7 @@
+// settings_screen.dart
+
 import 'package:flutter/material.dart';
+import 'info_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   @override
@@ -14,14 +17,14 @@ class SettingsScreen extends StatelessWidget {
             title: 'Setting 1',
             value: 'Value 1',
             onTap: () {
-              // Add your functionality here
+              // Add your functionality here for Setting 1
             },
           ),
           _buildSettingCard(
             title: 'Setting 2',
             value: 'Value 2',
             onTap: () {
-              // Add your functionality here
+              // Add your functionality here for Setting 2
             },
           ),
           Card(
@@ -29,7 +32,14 @@ class SettingsScreen extends StatelessWidget {
             margin: EdgeInsets.only(bottom: 16.0),
             child: ListTile(
               title: Text('Info'),
-              onTap: (){},
+              onTap: () {
+                // Navigate to the InfoScreen
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => InfoScreen(),
+                  ),
+                );
+              },
               trailing: Icon(Icons.arrow_forward_ios),
             ),
           ),
@@ -55,3 +65,5 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
+
+
