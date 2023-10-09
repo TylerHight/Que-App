@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'data/generated_hr_data.dart';
+import '../home_screen/device_data.dart'; // Import your DeviceData class
+import 'package:provider/provider.dart'; // Import the provider package
 
 class DataScreen extends StatefulWidget {
   @override
@@ -8,6 +10,8 @@ class DataScreen extends StatefulWidget {
 }
 
 class _DataScreenState extends State<DataScreen> {
+  String selectedDevice = 'Device 0'; // Initialize with the first device title
+
   // Your existing code for chart and data
   Map<DateTime, double> heartRateData = generateHeartRateData(
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0, 0),
@@ -137,6 +141,21 @@ class _DataScreenState extends State<DataScreen> {
       ),
       body: Column(
         children: [
+          SizedBox(height: 12), // Add spacing
+          DropdownButton<String>(
+            value: selectedDevice,
+            items: Provider.of<DeviceData>(context).deviceTitles.map((String title) {
+              return DropdownMenuItem<String>(
+                value: title,
+                child: Text(title),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedDevice = newValue!;
+              });
+            },
+          ),
           SizedBox(height: 12), // Add spacing
           Expanded(
             child: Center(
