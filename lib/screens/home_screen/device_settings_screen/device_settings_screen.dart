@@ -58,7 +58,11 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
           onPressed: widget.onDelete,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.red,
-            minimumSize: Size.fromHeight(48),
+            minimumSize: const Size(50, 32),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0), // Adjust the value to control corner roundness
+            ),
+            elevation: 4, // Adjust the elevation (shadow) of the button
           ),
           child: const Text(
             'Delete Device',
