@@ -1,5 +1,3 @@
-// device_settings_screen.dart
-
 import 'package:flutter/material.dart';
 
 class DeviceSettingsScreen extends StatefulWidget {
@@ -12,138 +10,9 @@ class DeviceSettingsScreen extends StatefulWidget {
 }
 
 class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
-  int _selectedPositiveHours = 0;
-  int _selectedPositiveMinutes = 0;
-  int _selectedPositiveSeconds = 0;
-
-  int _selectedNegativeHours = 0;
-  int _selectedNegativeMinutes = 0;
-  int _selectedNegativeSeconds = 0;
-
-  int _selectedHours = 0;
-  int _selectedMinutes = 0;
-  int _selectedSeconds = 0;
-
-  void _selectDuration(BuildContext context, String title) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Select $title'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildDurationDropdown(
-                title: 'Hours:',
-                value: title == 'Time between periodic emissions'
-                    ? _selectedHours
-                    : title == 'Positive scent duration'
-                    ? _selectedPositiveHours
-                    : title == 'Negative scent duration'
-                    ? _selectedNegativeHours
-                    : 0,
-                onChanged: (value) {
-                  setState(() {
-                    if (title == 'Time between periodic emissions') {
-                      _selectedHours = value!;
-                    } else if (title == 'Positive scent duration') {
-                      _selectedPositiveHours = value!;
-                    } else if (title == 'Negative scent duration') {
-                      _selectedNegativeHours = value!;
-                    }
-                  });
-                },
-                itemCount: 24,
-              ),
-              _buildDurationDropdown(
-                title: 'Minutes:',
-                value: title == 'Time between periodic emissions'
-                    ? _selectedMinutes
-                    : title == 'Positive scent duration'
-                    ? _selectedPositiveMinutes
-                    : title == 'Negative scent duration'
-                    ? _selectedNegativeMinutes
-                    : 0,
-                onChanged: (value) {
-                  setState(() {
-                    if (title == 'Time between periodic emissions') {
-                      _selectedMinutes = value!;
-                    } else if (title == 'Positive scent duration') {
-                      _selectedPositiveMinutes = value!;
-                    } else if (title == 'Negative scent duration') {
-                      _selectedNegativeMinutes = value!;
-                    }
-                  });
-                },
-                itemCount: 60,
-              ),
-              _buildDurationDropdown(
-                title: 'Seconds:',
-                value: title == 'Time between periodic emissions'
-                    ? _selectedSeconds
-                    : title == 'Positive scent duration'
-                    ? _selectedPositiveSeconds
-                    : title == 'Negative scent duration'
-                    ? _selectedNegativeSeconds
-                    : 0,
-                onChanged: (value) {
-                  setState(() {
-                    if (title == 'Time between periodic emissions') {
-                      _selectedSeconds = value!;
-                    } else if (title == 'Positive scent duration') {
-                      _selectedPositiveSeconds = value!;
-                    } else if (title == 'Negative scent duration') {
-                      _selectedNegativeSeconds = value!;
-                    }
-                  });
-                },
-                itemCount: 60,
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  if (title == 'Time between periodic emissions') {
-                    _selectedDuration = Duration(
-                      hours: _selectedHours,
-                      minutes: _selectedMinutes,
-                      seconds: _selectedSeconds,
-                    );
-                  } else if (title == 'Positive scent duration') {
-                    _selectedPositiveEmissionDuration = Duration(
-                      hours: _selectedPositiveHours,
-                      minutes: _selectedPositiveMinutes,
-                      seconds: _selectedPositiveSeconds,
-                    );
-                  } else if (title == 'Negative scent duration') {
-                    _selectedNegativeEmissionDuration = Duration(
-                      hours: _selectedNegativeHours,
-                      minutes: _selectedNegativeMinutes,
-                      seconds: _selectedNegativeSeconds,
-                    );
-                  }
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Duration? _selectedDuration;
   Duration? _selectedPositiveEmissionDuration;
   Duration? _selectedNegativeEmissionDuration;
+  Duration? _selectedDuration;
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +21,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         title: const Text('Device Settings'),
       ),
       body: ListView(
-        padding: EdgeInsets.all(16.0), // Increased padding for better spacing
+        padding: EdgeInsets.all(16.0),
         children: [
           _buildSettingCard(
             title: 'Positive scent duration',
@@ -160,7 +29,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
                 ? _formatDuration(_selectedPositiveEmissionDuration!)
                 : 'Select Duration',
             onTap: () {
-              _selectDuration(context, 'positive scent duration');
+              _selectDuration(context, 'Positive scent duration');
             },
           ),
           _buildSettingCard(
@@ -169,7 +38,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
                 ? _formatDuration(_selectedNegativeEmissionDuration!)
                 : 'Select Duration',
             onTap: () {
-              _selectDuration(context, 'negative scent duration');
+              _selectDuration(context, 'Negative scent duration');
             },
           ),
           _buildSettingCard(
@@ -178,7 +47,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
                 ? _formatDuration(_selectedDuration!)
                 : 'Select Duration',
             onTap: () {
-              _selectDuration(context, 'time between periodic emissions');
+              _selectDuration(context, 'Time between periodic emissions');
             },
           ),
         ],
@@ -188,12 +57,12 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         child: ElevatedButton(
           onPressed: widget.onDelete,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red, // Set button color to red
-            minimumSize: Size.fromHeight(48), // Increased button height
+            backgroundColor: Colors.red,
+            minimumSize: Size.fromHeight(48),
           ),
           child: const Text(
             'Delete Device',
-            style: TextStyle(fontSize: 16.0), // Adjusted font size
+            style: TextStyle(fontSize: 16.0),
           ),
         ),
       ),
@@ -207,18 +76,111 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
   }) {
     return Card(
       elevation: 4.0,
-      margin: EdgeInsets.only(bottom: 16.0), // Increased margin for better separation
+      margin: EdgeInsets.only(bottom: 16.0),
       child: ListTile(
         title: Text(title),
         subtitle: Text(value),
         onTap: onTap,
-        trailing: Icon(Icons.arrow_forward_ios), // Added the arrow icon
+        trailing: Icon(Icons.arrow_forward_ios),
       ),
     );
   }
 
   String _formatDuration(Duration duration) {
     return '${duration.inHours} hours ${duration.inMinutes % 60} minutes ${duration.inSeconds % 60} seconds';
+  }
+
+  Future<void> _selectDuration(BuildContext context, String title) async {
+    final Duration? selectedDuration = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return DurationPickerDialog(); // Custom duration picker dialog
+      },
+    );
+
+    if (selectedDuration != null) {
+      setState(() {
+        if (title == 'Time between periodic emissions') {
+          _selectedDuration = selectedDuration;
+        } else if (title == 'Positive scent duration') {
+          _selectedPositiveEmissionDuration = selectedDuration;
+        } else if (title == 'Negative scent duration') {
+          _selectedNegativeEmissionDuration = selectedDuration;
+        }
+      });
+    }
+  }
+}
+
+class DurationPickerDialog extends StatefulWidget {
+  @override
+  _DurationPickerDialogState createState() => _DurationPickerDialogState();
+}
+
+class _DurationPickerDialogState extends State<DurationPickerDialog> {
+  int _selectedHours = 0;
+  int _selectedMinutes = 0;
+  int _selectedSeconds = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Select Duration'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildDurationDropdown(
+            title: 'Hours:',
+            value: _selectedHours,
+            onChanged: (value) {
+              setState(() {
+                _selectedHours = value!;
+              });
+            },
+            itemCount: 24,
+          ),
+          _buildDurationDropdown(
+            title: 'Minutes:',
+            value: _selectedMinutes,
+            onChanged: (value) {
+              setState(() {
+                _selectedMinutes = value!;
+              });
+            },
+            itemCount: 60,
+          ),
+          _buildDurationDropdown(
+            title: 'Seconds:',
+            value: _selectedSeconds,
+            onChanged: (value) {
+              setState(() {
+                _selectedSeconds = value!;
+              });
+            },
+            itemCount: 60,
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final selectedDuration = Duration(
+              hours: _selectedHours,
+              minutes: _selectedMinutes,
+              seconds: _selectedSeconds,
+            );
+            Navigator.of(context).pop(selectedDuration);
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    );
   }
 
   Widget _buildDurationDropdown({
