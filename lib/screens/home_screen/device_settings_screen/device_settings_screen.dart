@@ -29,7 +29,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Select $title Duration'),
+          title: Text('Select $title'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -160,7 +160,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
                 ? _formatDuration(_selectedPositiveEmissionDuration!)
                 : 'Select Duration',
             onTap: () {
-              _selectDuration(context, 'Positive scent duration');
+              _selectDuration(context, 'positive scent duration');
             },
           ),
           _buildSettingCard(
@@ -169,7 +169,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
                 ? _formatDuration(_selectedNegativeEmissionDuration!)
                 : 'Select Duration',
             onTap: () {
-              _selectDuration(context, 'Negative scent duration');
+              _selectDuration(context, 'negative scent duration');
             },
           ),
           _buildSettingCard(
@@ -178,7 +178,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
                 ? _formatDuration(_selectedDuration!)
                 : 'Select Duration',
             onTap: () {
-              _selectDuration(context, 'Time between periodic emissions');
+              _selectDuration(context, 'time between periodic emissions');
             },
           ),
         ],
