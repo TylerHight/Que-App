@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'data/generated_hr_data.dart';
-import '../home_screen/device_data.dart'; // Import your DeviceData class
+import '../../device_data.dart'; // Import your DeviceData class
 import 'package:provider/provider.dart'; // Import the provider package
 
 class DataScreen extends StatefulWidget {

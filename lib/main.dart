@@ -4,7 +4,7 @@ import 'screens/home_screen/home_screen.dart';
 import 'screens/settings_screen/settings_screen.dart';
 import 'screens/data_screen/data_screen.dart';
 import 'screens/account_screen.dart';
-import 'screens/home_screen/device_data.dart'; // Import the DeviceData class
+import 'device_data.dart'; // Import the DeviceData class
 
 void main() {
   runApp(const QueApp());
