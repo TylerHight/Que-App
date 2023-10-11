@@ -3,36 +3,55 @@ import 'package:flutter/foundation.dart';
 
 class DeviceTimeSeriesData {
   final DateTime timestamp;
-  // stores heart rate values
   final int heartRate;
-  // tracks when the device was on or off
-  final bool deviceOn;
-  // tracks when emissions are being released
-  final bool positiveEmission;
-  final bool negativeEmission;
-  // stores the user setting for how long an emission lasts without being cancelled
-  final int positiveEmissionTime;
-  final int negativeEmissionTime;
-  // stores the user setting for the amount of time between periodic emissions
-  final int periodicEmissionTimerLength;
-  // stores the datetimes when a periodic emission was triggered
-  final List<DateTime> periodicEmissionTriggers;
+  final bool deviceOn; // if device is on or off
+  final bool positiveEmission;  // if being released
+  final bool negativeEmission;  // if being released
+  final int positiveEmissionDuration;  // release duration setting
+  final int negativeEmissionDuration; // release duration settings
+  final int periodicEmissionTimerLength; // time between periodic emissions setting
+  final bool periodicEmission; // if being released
 
   DeviceTimeSeriesData({
     required this.timestamp,
-    required this.heartRate,
-    required this.deviceOn,
-    required this.positiveEmission,
-    required this.negativeEmission,
-    required this.positiveEmissionTime,
-    required this.negativeEmissionTime,
-    required this.periodicEmissionTimerLength,
-    required this.periodicEmissionTriggers,
+    this.heartRate = 0,
+    this.deviceOn = true,
+    this.positiveEmission = false,
+    this.negativeEmission = false,
+    this.positiveEmissionDuration = 0,
+    this.negativeEmissionDuration = 0,
+    this.periodicEmissionTimerLength = 0,
+    this.periodicEmission = false,
   });
+
+  factory DeviceTimeSeriesData.fromPrevious(DeviceTimeSeriesData previous, {
+    DateTime? timestamp,
+    int? heartRate,
+    bool? deviceOn,
+    bool? positiveEmission,
+    bool? negativeEmission,
+    int? positiveEmissionTime,
+    int? negativeEmissionTime,
+    int? periodicEmissionTimerLength,
+    bool? periodicEmissionTriggers,
+  }) {
+    return DeviceTimeSeriesData(
+      timestamp: timestamp ?? previous.timestamp,
+      heartRate: heartRate ?? previous.heartRate,
+      deviceOn: deviceOn ?? previous.deviceOn,
+      positiveEmission: positiveEmission ?? previous.positiveEmission,
+      negativeEmission: negativeEmission ?? previous.negativeEmission,
+      positiveEmissionDuration: positiveEmissionTime ?? previous.positiveEmissionDuration,
+      negativeEmissionDuration: negativeEmissionTime ?? previous.negativeEmissionDuration,
+      periodicEmissionTimerLength: periodicEmissionTimerLength ?? previous.periodicEmissionTimerLength,
+      periodicEmission: periodicEmissionTriggers ?? previous.periodicEmission,
+    );
+  }
 }
 
 class DeviceData extends ChangeNotifier {
-  final List<String> _deviceTitles = List.generate(2, (index) => 'Device $index');
+  final List<String> _deviceTitles = List.generate(
+      2, (index) => 'Device $index');
   final Map<String, List<DeviceTimeSeriesData>> _deviceDataMap = {};
 
   List<String> get deviceTitles => _deviceTitles;
@@ -52,5 +71,13 @@ class DeviceData extends ChangeNotifier {
     _deviceTitles.removeAt(index);
     _deviceDataMap.remove(title);
     notifyListeners();
+  }
+
+  // Add a data point to a specific device
+  void addDataPoint(String deviceTitle, DeviceTimeSeriesData dataPoint) {
+    if (_deviceDataMap.containsKey(deviceTitle)) {
+      _deviceDataMap[deviceTitle]?.add(dataPoint);
+      notifyListeners(); // Notify the UI of the data change
+    }
   }
 }
