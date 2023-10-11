@@ -47,8 +47,7 @@ class HomeScreen extends StatelessWidget {
         title: Text(
           'Devices',
           style: TextStyle(
-              color: Colors.white,
-              fontSize: 18.0,),
+              color: Colors.white),
         ),
         centerTitle: false,
         backgroundColor: Colors.blue,

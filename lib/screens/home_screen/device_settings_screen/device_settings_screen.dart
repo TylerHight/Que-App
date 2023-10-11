@@ -60,9 +60,9 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
             backgroundColor: Colors.red,
             minimumSize: const Size(50, 32),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0), // Adjust the value to control corner roundness
+              borderRadius: BorderRadius.circular(16.0),
             ),
-            elevation: 4, // Adjust the elevation (shadow) of the button
+            elevation: 4,
           ),
           child: const Text(
             'Delete Device',

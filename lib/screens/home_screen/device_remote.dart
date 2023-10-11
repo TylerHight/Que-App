@@ -1,7 +1,6 @@
-// device_remote.dart
-
 import 'package:flutter/material.dart';
 import 'binary_button.dart';
+import 'timed_binary_button.dart';
 
 class DeviceRemote extends StatelessWidget {
   final String title;
@@ -20,9 +19,9 @@ class DeviceRemote extends StatelessWidget {
       ),
       elevation: 4.0,
       child: Padding(
-        padding: EdgeInsets.all(12.0), // Improved spacing
+        padding: EdgeInsets.all(12.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Center-align elements
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,57 +30,58 @@ class DeviceRemote extends StatelessWidget {
                   title,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 18.0, // Adjusted font size
-                    fontWeight: FontWeight.w500, // Added bold style
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 SizedBox(height: 4),
                 Row(
                   children: [
                     BinaryButton( // power button
-                      activeColor: Colors.green.shade400,
-                      inactiveColor: Colors.grey.shade300,
-                      iconData: Icons.power_settings_new,
-                      buttonSize: 26.0,
-                      iconSize: 18.0
+                        activeColor: Colors.green.shade400,
+                        inactiveColor: Colors.grey.shade300,
+                        iconData: Icons.power_settings_new,
+                        buttonSize: 26.0,
+                        iconSize: 18.0
                     ),
                     SizedBox(width: 8),
                     BinaryButton( // settings button
-                        activeColor: Colors.white,
-                        inactiveColor: Colors.white,
-                        iconData: Icons.settings,
-                        iconColor: Colors.grey.shade300,
-                        buttonSize: 30.0,
-                        iconSize: 30.0,
-                        onPressedGreyToColor: () {
-                          onTap();
-                        },
-                        onPressedColorToGrey: () {
-                          onTap();
-                        },
+                      activeColor: Colors.white,
+                      inactiveColor: Colors.white,
+                      iconData: Icons.settings,
+                      iconColor: Colors.grey.shade300,
+                      buttonSize: 30.0,
+                      iconSize: 30.0,
+                      onPressedGreyToColor: () {
+                        onTap();
+                      },
+                      onPressedColorToGrey: () {
+                        onTap();
+                      },
                     ),
                   ],
                 ),
-
               ],
             ),
             Row(
               children: [
                 SizedBox(width: 8),
-                BinaryButton( // negative emission
+                AutoOffBinaryButton( // negative emission
                   activeColor: Colors.red.shade400,
                   inactiveColor: Colors.grey.shade300,
                   iconData: Icons.sentiment_very_dissatisfied,
                   buttonSize: 50.0,
-                  iconSize: 38.0
+                  iconSize: 38.0,
+                  autoTurnOffDuration: Duration(seconds: 3),
                 ),
                 SizedBox(width: 8),
-                BinaryButton( // positive emission
+                AutoOffBinaryButton( // positive emission
                   activeColor: Colors.green.shade500,
                   inactiveColor: Colors.grey.shade300,
                   iconData: Icons.mood,
-                    buttonSize: 50.0,
-                    iconSize: 38.0
+                  buttonSize: 50.0,
+                  iconSize: 38.0,
+                  autoTurnOffDuration: Duration(seconds: 3),
                 ),
               ],
             ),
