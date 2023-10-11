@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+// button that switches between two colors and
+// optionally automatically turns off after a
+// set duration
+
 class AutoOffBinaryButton extends StatefulWidget {
   final Color? activeColor;
   final Color? inactiveColor;
@@ -11,6 +15,7 @@ class AutoOffBinaryButton extends StatefulWidget {
   final Function()? onPressedGreyToColor;
   final Function()? onPressedColorToGrey;
   final Duration autoTurnOffDuration;
+  final bool autoTurnOffEnabled; // Add a parameter to control auto turn-off
 
   AutoOffBinaryButton({
     this.activeColor,
@@ -22,6 +27,7 @@ class AutoOffBinaryButton extends StatefulWidget {
     this.onPressedGreyToColor,
     this.onPressedColorToGrey,
     required this.autoTurnOffDuration,
+    this.autoTurnOffEnabled = true, // Default to auto turn-off enabled
   });
 
   @override
@@ -61,6 +67,15 @@ class _AutoOffBinaryButtonState extends State<AutoOffBinaryButton>
         }
       }
     });
+
+    if (widget.autoTurnOffEnabled) {
+      _autoTurnOffTimer = Timer(widget.autoTurnOffDuration, () {
+        if (isLightOn) {
+          toggleLight();
+          widget.onPressedGreyToColor?.call();
+        }
+      });
+    }
   }
 
   void toggleLight() {
@@ -70,16 +85,17 @@ class _AutoOffBinaryButtonState extends State<AutoOffBinaryButton>
 
     _animationController.forward();
 
-    // Start or restart the auto turn-off timer when the button is turned on
-    if (_autoTurnOffTimer.isActive) {
-      _autoTurnOffTimer.cancel();
-    }
-    _autoTurnOffTimer = Timer(widget.autoTurnOffDuration, () {
-      if (isLightOn) {
-        toggleLight(); // Turn the button off
-        widget.onPressedGreyToColor?.call();
+    if (widget.autoTurnOffEnabled) {
+      if (_autoTurnOffTimer != null && _autoTurnOffTimer.isActive) {
+        _autoTurnOffTimer.cancel();
       }
-    });
+      _autoTurnOffTimer = Timer(widget.autoTurnOffDuration, () {
+        if (isLightOn) {
+          toggleLight();
+          widget.onPressedGreyToColor?.call();
+        }
+      });
+    }
   }
 
   @override
