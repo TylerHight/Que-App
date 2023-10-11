@@ -1,3 +1,5 @@
+// timed_binary_button.dart
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -5,7 +7,7 @@ import 'dart:async';
 // optionally automatically turns off after a
 // set duration
 
-class AutoOffBinaryButton extends StatefulWidget {
+class TimedBinaryButton extends StatefulWidget {
   final Color? activeColor;
   final Color? inactiveColor;
   final IconData iconData;
@@ -17,7 +19,7 @@ class AutoOffBinaryButton extends StatefulWidget {
   final Duration autoTurnOffDuration;
   final bool autoTurnOffEnabled; // Add a parameter to control auto turn-off
 
-  AutoOffBinaryButton({
+  TimedBinaryButton({
     this.activeColor,
     this.inactiveColor = Colors.grey,
     required this.iconData,
@@ -31,15 +33,16 @@ class AutoOffBinaryButton extends StatefulWidget {
   });
 
   @override
-  _AutoOffBinaryButtonState createState() => _AutoOffBinaryButtonState();
+  _TimedBinaryButtonState createState() => _TimedBinaryButtonState();
 }
 
-class _AutoOffBinaryButtonState extends State<AutoOffBinaryButton>
+class _TimedBinaryButtonState extends State<TimedBinaryButton>
     with SingleTickerProviderStateMixin {
   bool isLightOn = false;
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   late Timer _autoTurnOffTimer;
+  int _secondsLeft = 0; // Track the remaining seconds
 
   @override
   void initState() {
@@ -69,32 +72,44 @@ class _AutoOffBinaryButtonState extends State<AutoOffBinaryButton>
     });
 
     if (widget.autoTurnOffEnabled) {
-      _autoTurnOffTimer = Timer(widget.autoTurnOffDuration, () {
+      _secondsLeft = widget.autoTurnOffDuration.inSeconds;
+      _startAutoTurnOffTimer();
+    }
+  }
+
+  void _startAutoTurnOffTimer() {
+    _autoTurnOffTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_secondsLeft > 0) {
+        setState(() {
+          _secondsLeft--;
+        });
+      } else {
         if (isLightOn) {
           toggleLight();
           widget.onPressedGreyToColor?.call();
         }
-      });
-    }
+        timer.cancel();
+      }
+    });
   }
 
   void toggleLight() {
     setState(() {
       isLightOn = !isLightOn;
+      if (!isLightOn) {
+        // Reset the timer when the button is turned off
+        _secondsLeft = 0;
+        if (_autoTurnOffTimer != null && _autoTurnOffTimer.isActive) {
+          _autoTurnOffTimer.cancel();
+        }
+      }
     });
 
     _animationController.forward();
 
-    if (widget.autoTurnOffEnabled) {
-      if (_autoTurnOffTimer != null && _autoTurnOffTimer.isActive) {
-        _autoTurnOffTimer.cancel();
-      }
-      _autoTurnOffTimer = Timer(widget.autoTurnOffDuration, () {
-        if (isLightOn) {
-          toggleLight();
-          widget.onPressedGreyToColor?.call();
-        }
-      });
+    if (widget.autoTurnOffEnabled && isLightOn) {
+      _secondsLeft = widget.autoTurnOffDuration.inSeconds;
+      _startAutoTurnOffTimer();
     }
   }
 
@@ -111,27 +126,50 @@ class _AutoOffBinaryButtonState extends State<AutoOffBinaryButton>
 
     return GestureDetector(
       onTap: toggleLight,
-      child: AnimatedBuilder(
-        animation: _scaleAnimation,
-        builder: (context, child) => Transform.scale(
-          scale: _scaleAnimation.value,
-          child: child,
-        ),
-        child: Container(
-          width: widget.buttonSize,
-          height: widget.buttonSize,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: isLightOn ? buttonColor : widget.inactiveColor,
-          ),
-          child: Center(
-            child: Icon(
-              widget.iconData,
-              color: widget.iconColor,
-              size: widget.iconSize,
+      child: Stack(
+        children: [
+          AnimatedBuilder(
+            animation: _scaleAnimation,
+            builder: (context, child) => Transform.scale(
+              scale: _scaleAnimation.value,
+              child: child,
+            ),
+            child: Container(
+              width: widget.buttonSize,
+              height: widget.buttonSize,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isLightOn ? buttonColor : widget.inactiveColor,
+              ),
+              child: Center(
+                child: Icon(
+                  widget.iconData,
+                  color: widget.iconColor,
+                  size: widget.iconSize,
+                ),
+              ),
             ),
           ),
-        ),
+          if (widget.autoTurnOffEnabled && isLightOn)
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  shape: BoxShape.circle,
+                ),
+                padding: EdgeInsets.all(4),
+                child: Text(
+                  '$_secondsLeft s',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

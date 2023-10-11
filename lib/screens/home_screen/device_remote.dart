@@ -1,3 +1,5 @@
+// device_remote.dart
+
 import 'package:flutter/material.dart';
 import 'timed_binary_button.dart';
 
@@ -36,7 +38,7 @@ class DeviceRemote extends StatelessWidget {
                 SizedBox(height: 4),
                 Row(
                   children: [
-                    AutoOffBinaryButton( // power button
+                    TimedBinaryButton( // power button
                         activeColor: Colors.green.shade400,
                         inactiveColor: Colors.grey.shade300,
                         iconData: Icons.power_settings_new,
@@ -46,7 +48,7 @@ class DeviceRemote extends StatelessWidget {
                         autoTurnOffEnabled: false,
                     ),
                     SizedBox(width: 8),
-                    AutoOffBinaryButton( // settings button
+                    TimedBinaryButton( // settings button
                       activeColor: Colors.white,
                       inactiveColor: Colors.white,
                       iconData: Icons.settings,
@@ -69,7 +71,7 @@ class DeviceRemote extends StatelessWidget {
             Row(
               children: [
                 SizedBox(width: 8),
-                AutoOffBinaryButton( // negative emission
+                TimedBinaryButton( // negative emission
                   activeColor: Colors.red.shade400,
                   inactiveColor: Colors.grey.shade300,
                   iconData: Icons.sentiment_very_dissatisfied,
@@ -78,7 +80,7 @@ class DeviceRemote extends StatelessWidget {
                   autoTurnOffDuration: Duration(seconds: 3),
                 ),
                 SizedBox(width: 8),
-                AutoOffBinaryButton( // positive emission
+                TimedBinaryButton( // positive emission
                   activeColor: Colors.green.shade500,
                   inactiveColor: Colors.grey.shade300,
                   iconData: Icons.mood,
