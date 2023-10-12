@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'timed_binary_button.dart';
+import 'binary_button.dart';
 
 class DeviceRemote extends StatelessWidget {
   final String title;
@@ -38,14 +39,18 @@ class DeviceRemote extends StatelessWidget {
                 SizedBox(height: 4),
                 Row(
                   children: [
-                    TimedBinaryButton( // power button
+                    BinaryButton( // power button
                         activeColor: Colors.green.shade400,
                         inactiveColor: Colors.grey.shade300,
                         iconData: Icons.power_settings_new,
                         buttonSize: 26.0,
                         iconSize: 18.0,
-                        autoTurnOffDuration: Duration(seconds: 3),
-                        autoTurnOffEnabled: false,
+                        onPressedGreyToColor: () {
+                          //onTap();
+                        },
+                        onPressedColorToGrey: () {
+                          //onTap();
+                        },
                     ),
                     SizedBox(width: 8),
                     TimedBinaryButton( // settings button
@@ -78,6 +83,7 @@ class DeviceRemote extends StatelessWidget {
                   buttonSize: 50.0,
                   iconSize: 38.0,
                   autoTurnOffDuration: Duration(seconds: 3),
+                  autoTurnOffEnabled: true,
                 ),
                 SizedBox(width: 8),
                 TimedBinaryButton( // positive emission
@@ -87,6 +93,7 @@ class DeviceRemote extends StatelessWidget {
                   buttonSize: 50.0,
                   iconSize: 38.0,
                   autoTurnOffDuration: Duration(seconds: 3),
+                  autoTurnOffEnabled: true,
                 ),
               ],
             ),

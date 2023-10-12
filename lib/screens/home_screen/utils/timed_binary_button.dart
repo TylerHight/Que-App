@@ -29,7 +29,7 @@ class TimedBinaryButton extends StatefulWidget {
     this.onPressedGreyToColor,
     this.onPressedColorToGrey,
     required this.autoTurnOffDuration,
-    this.autoTurnOffEnabled = true, // Default to auto turn-off enabled
+    this.autoTurnOffEnabled = false,
   });
 
   @override
@@ -96,22 +96,24 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
   void toggleLight() {
     setState(() {
       isLightOn = !isLightOn;
+
       if (!isLightOn) {
         // Reset the timer when the button is turned off
         _secondsLeft = 0;
-        if (_autoTurnOffTimer != null && _autoTurnOffTimer.isActive) {
+        if (_autoTurnOffTimer.isActive) {
           _autoTurnOffTimer.cancel();
+        }
+      } else {
+        if (widget.autoTurnOffEnabled) {
+          _secondsLeft = widget.autoTurnOffDuration.inSeconds;
+          _startAutoTurnOffTimer();
         }
       }
     });
 
     _animationController.forward();
-
-    if (widget.autoTurnOffEnabled && isLightOn) {
-      _secondsLeft = widget.autoTurnOffDuration.inSeconds;
-      _startAutoTurnOffTimer();
-    }
   }
+
 
   @override
   void dispose() {
