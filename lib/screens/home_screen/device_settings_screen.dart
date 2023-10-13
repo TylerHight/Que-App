@@ -1,9 +1,12 @@
+// device_settings_screen.dart
+
 import 'package:flutter/material.dart';
 
 class DeviceSettingsScreen extends StatefulWidget {
   final VoidCallback onDelete;
+  final String deviceTitle;
 
-  const DeviceSettingsScreen({Key? key, required this.onDelete}) : super(key: key);
+  const DeviceSettingsScreen({Key? key, required this.onDelete, required this.deviceTitle}) : super(key: key);
 
   @override
   _DeviceSettingsScreenState createState() => _DeviceSettingsScreenState();
@@ -18,7 +21,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Device Settings'),
+        title: Text('${widget.deviceTitle} Settings'),
       ),
       body: ListView(
         padding: EdgeInsets.all(16.0),

@@ -29,10 +29,12 @@ class HomeScreen extends StatelessWidget {
     }
 
     void navigateToDeviceSettings(BuildContext context, int index) {
+      final deviceTitle = deviceTitles[index];
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => DeviceSettingsScreen(
+            deviceTitle: deviceTitle,
             onDelete: () {
               deleteDevice(index);
               Navigator.pop(context); // Close the settings screen
