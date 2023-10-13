@@ -1,4 +1,5 @@
 // device_data.dart
+
 import 'package:flutter/foundation.dart';
 
 class DeviceTimeSeriesData {
@@ -15,12 +16,12 @@ class DeviceTimeSeriesData {
   DeviceTimeSeriesData({
     required this.timestamp,
     this.heartRate = 0,
-    this.deviceOn = true,
+    this.deviceOn = false,
     this.positiveEmission = false,
     this.negativeEmission = false,
-    this.positiveEmissionDuration = 0,
-    this.negativeEmissionDuration = 0,
-    this.periodicEmissionTimerLength = 0,
+    this.positiveEmissionDuration = 10,
+    this.negativeEmissionDuration = 10,
+    this.periodicEmissionTimerLength = 30*60, // 30 minutes * (60 seconds/min)
     this.periodicEmission = false,
   });
 
@@ -51,7 +52,7 @@ class DeviceTimeSeriesData {
 
 class DeviceData extends ChangeNotifier {
   final List<String> _deviceTitles = List.generate(
-      2, (index) => 'Device $index');
+      2, (index) => 'Device $index'); // auto generate two devices on startup
   final Map<String, List<DeviceTimeSeriesData>> _deviceDataMap = {};
 
   List<String> get deviceTitles => _deviceTitles;
