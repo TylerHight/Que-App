@@ -1,5 +1,3 @@
-// device_settings_screen.dart
-
 import 'package:flutter/material.dart';
 
 class DeviceSettingsScreen extends StatefulWidget {
@@ -13,9 +11,11 @@ class DeviceSettingsScreen extends StatefulWidget {
 }
 
 class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
-  Duration? _selectedPositiveEmissionDuration;
-  Duration? _selectedNegativeEmissionDuration;
-  Duration? _selectedDuration;
+  Map<String, Duration?> _selectedDurations = {
+    'positive scent duration': null,
+    'negative scent duration': null,
+    'time between periodic emissions': null,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -28,29 +28,29 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         children: [
           _buildSettingCard(
             title: 'Positive scent duration',
-            value: _selectedPositiveEmissionDuration != null
-                ? _formatDuration(_selectedPositiveEmissionDuration!)
-                : 'Select Duration',
+            value: _selectedDurations['positive scent duration'] != null
+                ? _formatDuration(_selectedDurations['positive scent duration']!)
+                : 'Select duration',
             onTap: () {
-              _selectDuration(context, 'Positive scent duration');
+              _selectDuration(context, 'positive scent duration');
             },
           ),
           _buildSettingCard(
             title: 'Negative scent duration',
-            value: _selectedNegativeEmissionDuration != null
-                ? _formatDuration(_selectedNegativeEmissionDuration!)
-                : 'Select Duration',
+            value: _selectedDurations['negative scent duration'] != null
+                ? _formatDuration(_selectedDurations['negative scent duration']!)
+                : 'Select duration',
             onTap: () {
-              _selectDuration(context, 'Negative scent duration');
+              _selectDuration(context, 'negative scent duration');
             },
           ),
           _buildSettingCard(
             title: 'Time between periodic emissions',
-            value: _selectedDuration != null
-                ? _formatDuration(_selectedDuration!)
-                : 'Select Duration',
+            value: _selectedDurations['time between periodic emissions'] != null
+                ? _formatDuration(_selectedDurations['time between periodic emissions']!)
+                : 'Select duration',
             onTap: () {
-              _selectDuration(context, 'Time between periodic emissions');
+              _selectDuration(context, 'time between periodic emissions');
             },
           ),
         ],
@@ -101,25 +101,23 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     final Duration? selectedDuration = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return DurationPickerDialog(); // Custom duration picker dialog
+        return DurationPickerDialog(title: title); // Pass the title to the dialog
       },
     );
 
     if (selectedDuration != null) {
       setState(() {
-        if (title == 'Time between periodic emissions') {
-          _selectedDuration = selectedDuration;
-        } else if (title == 'Positive scent duration') {
-          _selectedPositiveEmissionDuration = selectedDuration;
-        } else if (title == 'Negative scent duration') {
-          _selectedNegativeEmissionDuration = selectedDuration;
-        }
+        _selectedDurations[title] = selectedDuration;
       });
     }
   }
 }
 
 class DurationPickerDialog extends StatefulWidget {
+  final String title;
+
+  DurationPickerDialog({required this.title});
+
   @override
   _DurationPickerDialogState createState() => _DurationPickerDialogState();
 }
@@ -132,7 +130,7 @@ class _DurationPickerDialogState extends State<DurationPickerDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Select Duration'),
+      title: Text('Select ${widget.title}'), // Display the title
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -182,6 +180,10 @@ class _DurationPickerDialogState extends State<DurationPickerDialog> {
               minutes: _selectedMinutes,
               seconds: _selectedSeconds,
             );
+            final totalSeconds = selectedDuration.inSeconds;
+
+            // create new timeseries datapoint and add it to the respective device
+
             Navigator.of(context).pop(selectedDuration);
           },
           child: const Text('OK'),
