@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:que_app/device_data.dart';
-import 'package:provider/provider.dart'; // Import the provider package
+import 'package:provider/provider.dart';
 
 class DeviceSettingsScreen extends StatefulWidget {
   final VoidCallback onDelete;
@@ -103,7 +103,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     final Duration? selectedDuration = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return DurationPickerDialog(title: title); // Pass the title to the dialog
+        return DurationPickerDialog(title: title);
       },
     );
 
@@ -111,7 +111,39 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       setState(() {
         _selectedDurations[title] = selectedDuration;
       });
+
+      // Move the logic to update time series data here
+      _updateTimeSeriesData(title, selectedDuration);
     }
+  }
+
+  void _updateTimeSeriesData(String title, Duration selectedDuration) {
+    final totalSeconds = selectedDuration.inSeconds;
+    final deviceData = Provider.of<DeviceData>(context, listen: false);
+
+    DeviceTimeSeriesData newDataPoint = DeviceTimeSeriesData(
+      timestamp: DateTime.now(),
+    );
+
+    if (title == "Positive scent duration") {
+      newDataPoint = DeviceTimeSeriesData(
+        timestamp: DateTime.now(),
+        positiveEmissionDuration: totalSeconds,
+      );
+    } else if (title == "Negative scent duration") {
+      newDataPoint = DeviceTimeSeriesData(
+        timestamp: DateTime.now(),
+        negativeEmissionDuration: totalSeconds,
+      );
+    } else if (title == "Time between periodic emissions") {
+      newDataPoint = DeviceTimeSeriesData(
+        timestamp: DateTime.now(),
+        periodicEmissionTimerLength: totalSeconds,
+      );
+    }
+
+    // Record the updated setting
+    deviceData.addDataPoint(title, newDataPoint);
   }
 }
 
@@ -132,7 +164,7 @@ class _DurationPickerDialogState extends State<DurationPickerDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Select ${widget.title}'), // Display the title
+      title: Text('Select ${widget.title}'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -182,33 +214,6 @@ class _DurationPickerDialogState extends State<DurationPickerDialog> {
               minutes: _selectedMinutes,
               seconds: _selectedSeconds,
             );
-            final totalSeconds = selectedDuration.inSeconds;
-            final deviceData = Provider.of<DeviceData>(context);
-            DeviceTimeSeriesData newDataPoint = DeviceTimeSeriesData(
-                timestamp: DateTime.now()
-            );
-            if (widget.title == "Positive scent duration") {
-              newDataPoint = DeviceTimeSeriesData(
-                timestamp: DateTime.now(),
-                positiveEmissionDuration: totalSeconds
-              );
-            } else if (widget.title == "Negative scent duration") {
-              newDataPoint = DeviceTimeSeriesData(
-                timestamp: DateTime.now(),
-                negativeEmissionDuration: totalSeconds
-              );
-            } else if (widget.title == "Time between periodic emissions"){
-              newDataPoint = DeviceTimeSeriesData(
-                timestamp: DateTime.now(),
-                periodicEmissionTimerLength: totalSeconds
-              );
-            } else {
-              newDataPoint = DeviceTimeSeriesData(
-                timestamp: DateTime.now()
-              );
-            }
-            // record the updated setting
-            deviceData.addDataPoint(widget.title, newDataPoint);
 
             Navigator.of(context).pop(selectedDuration);
           },
