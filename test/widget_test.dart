@@ -7,24 +7,40 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:que_app/device_data.dart';
 import 'package:que_app/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const QueApp());
+  // Add your custom tests here
+  group('DeviceData', () {
+    test('Adding a device title', () {
+      final deviceData = DeviceData();
+      deviceData.addDeviceTitle('New Device');
+      expect(deviceData.deviceTitles, contains('New Device'));
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    test('Adding a data point', () {
+      final deviceData = DeviceData();
+      final dataPoint = DeviceTimeSeriesData(timestamp: DateTime.now());
+      deviceData.addDeviceTitle('Device A');
+      deviceData.addDataPoint('Device A', dataPoint);
+      final deviceDataList = deviceData.getDeviceData('Device A');
+      expect(deviceDataList, contains(dataPoint));
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('Check default values for DeviceTimeSeriesData', () {
+      final defaultDataPoint = DeviceTimeSeriesData(timestamp: DateTime.now());
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      // Check the default values of the data point
+      expect(defaultDataPoint.heartRate, 0);
+      expect(defaultDataPoint.deviceOn, false);
+      expect(defaultDataPoint.positiveEmission, false);
+      expect(defaultDataPoint.negativeEmission, false);
+      expect(defaultDataPoint.positiveEmissionDuration, 10);
+      expect(defaultDataPoint.negativeEmissionDuration, 10);
+      expect(defaultDataPoint.periodicEmissionTimerLength, 30 * 60);
+      expect(defaultDataPoint.periodicEmission, false);
+    });
+
   });
 }

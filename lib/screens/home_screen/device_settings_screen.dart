@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:que_app/device_data.dart';
+import 'package:provider/provider.dart'; // Import the provider package
 
 class DeviceSettingsScreen extends StatefulWidget {
   final VoidCallback onDelete;
@@ -181,8 +183,32 @@ class _DurationPickerDialogState extends State<DurationPickerDialog> {
               seconds: _selectedSeconds,
             );
             final totalSeconds = selectedDuration.inSeconds;
-
-            // create new timeseries datapoint and add it to the respective device
+            final deviceData = Provider.of<DeviceData>(context);
+            DeviceTimeSeriesData newDataPoint = DeviceTimeSeriesData(
+                timestamp: DateTime.now()
+            );
+            if (widget.title == "Positive scent duration") {
+              newDataPoint = DeviceTimeSeriesData(
+                timestamp: DateTime.now(),
+                positiveEmissionDuration: totalSeconds
+              );
+            } else if (widget.title == "Negative scent duration") {
+              newDataPoint = DeviceTimeSeriesData(
+                timestamp: DateTime.now(),
+                negativeEmissionDuration: totalSeconds
+              );
+            } else if (widget.title == "Time between periodic emissions"){
+              newDataPoint = DeviceTimeSeriesData(
+                timestamp: DateTime.now(),
+                periodicEmissionTimerLength: totalSeconds
+              );
+            } else {
+              newDataPoint = DeviceTimeSeriesData(
+                timestamp: DateTime.now()
+              );
+            }
+            // record the updated setting
+            deviceData.addDataPoint(widget.title, newDataPoint);
 
             Navigator.of(context).pop(selectedDuration);
           },

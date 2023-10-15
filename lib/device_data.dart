@@ -1,5 +1,3 @@
-// device_data.dart
-
 import 'package:flutter/foundation.dart';
 
 class DeviceTimeSeriesData {
@@ -21,7 +19,7 @@ class DeviceTimeSeriesData {
     this.negativeEmission = false,
     this.positiveEmissionDuration = 10,
     this.negativeEmissionDuration = 10,
-    this.periodicEmissionTimerLength = 30*60, // 30 minutes * (60 seconds/min)
+    this.periodicEmissionTimerLength = 30 * 60, // 30 minutes * (60 seconds/min)
     this.periodicEmission = false,
   });
 
@@ -63,7 +61,10 @@ class DeviceData extends ChangeNotifier {
 
   void addDeviceTitle(String title) {
     _deviceTitles.add(title);
-    _deviceDataMap[title] = []; // Initialize data for the new device
+    _deviceDataMap[title] = [
+      // Create a default time series data point for the new title
+      DeviceTimeSeriesData(timestamp: DateTime.now())
+    ];
     notifyListeners();
   }
 
