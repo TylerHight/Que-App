@@ -1,3 +1,5 @@
+// device_data.dart
+
 import 'package:flutter/foundation.dart';
 
 class DeviceTimeSeriesData {
@@ -80,6 +82,16 @@ class DeviceData extends ChangeNotifier {
     if (_deviceDataMap.containsKey(deviceTitle)) {
       _deviceDataMap[deviceTitle]?.add(dataPoint);
       notifyListeners(); // Notify the UI of the data change
+    }
+  }
+
+  DeviceTimeSeriesData getDeviceSettings(String deviceTitle) {
+    final List<DeviceTimeSeriesData>? deviceData = _deviceDataMap[deviceTitle];
+    if (deviceData != null && deviceData.isNotEmpty) {
+      return deviceData.first; // Return the settings from the first data point
+    } else {
+      // Return default settings with the current timestamp
+      return DeviceTimeSeriesData(timestamp: DateTime.now());
     }
   }
 }

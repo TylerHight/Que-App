@@ -1,3 +1,5 @@
+// device_settings_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:que_app/device_data.dart';
 import 'package:provider/provider.dart';

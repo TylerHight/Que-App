@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'timed_binary_button.dart';
 import 'binary_button.dart';
+import 'package:que_app/device_data.dart';
+import 'package:provider/provider.dart';
 
 class DeviceRemote extends StatelessWidget {
   final String title;
@@ -15,6 +17,9 @@ class DeviceRemote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final deviceData = Provider.of<DeviceData>(context);
+    final deviceSettings = deviceData.getDeviceSettings(title);
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
@@ -82,7 +87,7 @@ class DeviceRemote extends StatelessWidget {
                   iconData: Icons.sentiment_very_dissatisfied,
                   buttonSize: 50.0,
                   iconSize: 38.0,
-                  autoTurnOffDuration: Duration(seconds: 3),
+                  autoTurnOffDuration: Duration(seconds: deviceSettings.negativeEmissionDuration),
                   autoTurnOffEnabled: true,
                 ),
                 SizedBox(width: 8),
@@ -92,7 +97,7 @@ class DeviceRemote extends StatelessWidget {
                   iconData: Icons.mood,
                   buttonSize: 50.0,
                   iconSize: 38.0,
-                  autoTurnOffDuration: Duration(seconds: 3),
+                  autoTurnOffDuration: Duration(seconds: deviceSettings.positiveEmissionDuration),
                   autoTurnOffEnabled: true,
                 ),
               ],
