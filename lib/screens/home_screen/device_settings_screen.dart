@@ -139,9 +139,11 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
 
     // Record the updated setting
     deviceData.addDataPoint(widget.deviceTitle, newDataPoint);
-
-    // Call the print method to print all the data
+    print('Number of devices: ${deviceData.deviceTitles.length}');
+    print('Before calling printDeviceData');
     deviceData.printDeviceData();
+    print('After calling printDeviceData');
+
   }
 }
 

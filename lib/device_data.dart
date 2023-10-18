@@ -53,8 +53,7 @@ class DeviceTimeSeriesData {
 
 
 class DeviceData extends ChangeNotifier {
-  final List<String> _deviceTitles = List.generate(
-      2, (index) => 'Device $index'); // auto generate two devices on startup
+  final List<String> _deviceTitles = [];
   final Map<String, List<DeviceTimeSeriesData>> _deviceDataMap = {};
 
   List<String> get deviceTitles => _deviceTitles;
@@ -102,8 +101,14 @@ class DeviceData extends ChangeNotifier {
   }
 
   void printDeviceData() {
+    print('');
+    print('Printing device data: ');
+    print('\n');
     _deviceDataMap.forEach((deviceTitle, dataPoints) {
       print('Device Title: $deviceTitle');
+      print('Number of Data Points: ${dataPoints.length}');
+      print('\n');
+
       dataPoints.forEach((dataPoint) {
         print('Timestamp: ${dataPoint.timestamp}');
         print('Heart Rate: ${dataPoint.heartRate}');

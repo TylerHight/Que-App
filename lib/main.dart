@@ -11,7 +11,7 @@ void main() {
 }
 
 class QueApp extends StatelessWidget {
-  const QueApp({super.key});
+  const QueApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
