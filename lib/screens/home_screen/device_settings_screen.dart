@@ -110,42 +110,38 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     );
 
     if (selectedDuration != null) {
+      print("Selected duration: $selectedDuration");
       setState(() {
         _selectedDurations[title] = selectedDuration;
       });
 
-      // Move the logic to update time series data here
+      // Call the function to update the settings in the DeviceData
       _updateTimeSeriesData(title, selectedDuration);
     }
   }
 
+
   void _updateTimeSeriesData(String title, Duration selectedDuration) {
+    print("Updating $title with $selectedDuration");
     final totalSeconds = selectedDuration.inSeconds;
     final deviceData = Provider.of<DeviceData>(context, listen: false);
+    print("DeviceData: $deviceData");
 
-    DeviceTimeSeriesData newDataPoint = DeviceTimeSeriesData(
-      timestamp: DateTime.now(),
-    );
+    DeviceTimeSeriesData newDataPoint = deviceData.getDeviceSettings(widget.deviceTitle);
 
-    if (title == "Positive scent duration") {
-      newDataPoint = DeviceTimeSeriesData(
-        timestamp: DateTime.now(),
-        positiveEmissionDuration: totalSeconds,
-      );
-    } else if (title == "Negative scent duration") {
-      newDataPoint = DeviceTimeSeriesData(
-        timestamp: DateTime.now(),
-        negativeEmissionDuration: totalSeconds,
-      );
-    } else if (title == "Time between periodic emissions") {
-      newDataPoint = DeviceTimeSeriesData(
-        timestamp: DateTime.now(),
-        periodicEmissionTimerLength: totalSeconds,
-      );
+    if (title == "positive scent duration") {
+      newDataPoint.positiveEmissionDuration = totalSeconds;
+    } else if (title == "negative scent duration") {
+      newDataPoint.positiveEmissionDuration = totalSeconds;
+    } else if (title == "time between periodic emissions") {
+      newDataPoint.periodicEmissionTimerLength = totalSeconds;
     }
 
     // Record the updated setting
-    deviceData.addDataPoint(title, newDataPoint);
+    deviceData.addDataPoint(widget.deviceTitle, newDataPoint);
+
+    // Call the print method to print all the data
+    deviceData.printDeviceData();
   }
 }
 

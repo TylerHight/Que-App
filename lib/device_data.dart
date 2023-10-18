@@ -5,13 +5,13 @@ import 'package:flutter/foundation.dart';
 class DeviceTimeSeriesData {
   final DateTime timestamp;
   final int heartRate;
-  final bool deviceOn; // if device is on or off
-  final bool positiveEmission;  // if being released
-  final bool negativeEmission;  // if being released
-  final int positiveEmissionDuration;  // release duration setting
-  final int negativeEmissionDuration; // release duration settings
-  final int periodicEmissionTimerLength; // time between periodic emissions setting
-  final bool periodicEmission; // if being released
+  final bool deviceOn;
+  final bool positiveEmission;
+  final bool negativeEmission;
+  int positiveEmissionDuration;
+  int negativeEmissionDuration;
+  int periodicEmissionTimerLength;
+  final bool periodicEmission;
 
   DeviceTimeSeriesData({
     required this.timestamp,
@@ -21,7 +21,7 @@ class DeviceTimeSeriesData {
     this.negativeEmission = false,
     this.positiveEmissionDuration = 10,
     this.negativeEmissionDuration = 10,
-    this.periodicEmissionTimerLength = 30 * 60, // 30 minutes * (60 seconds/min)
+    this.periodicEmissionTimerLength = 30 * 60,
     this.periodicEmission = false,
   });
 
@@ -49,6 +49,8 @@ class DeviceTimeSeriesData {
     );
   }
 }
+
+
 
 class DeviceData extends ChangeNotifier {
   final List<String> _deviceTitles = List.generate(
@@ -83,6 +85,10 @@ class DeviceData extends ChangeNotifier {
       _deviceDataMap[deviceTitle]?.add(dataPoint);
       notifyListeners(); // Notify the UI of the data change
     }
+
+    // Print a message to confirm that the method is called
+    print("addDataPoint called for device: $deviceTitle");
+    print("New Data Point: $dataPoint");
   }
 
   DeviceTimeSeriesData getDeviceSettings(String deviceTitle) {
@@ -93,5 +99,23 @@ class DeviceData extends ChangeNotifier {
       // Return default settings with the current timestamp
       return DeviceTimeSeriesData(timestamp: DateTime.now());
     }
+  }
+
+  void printDeviceData() {
+    _deviceDataMap.forEach((deviceTitle, dataPoints) {
+      print('Device Title: $deviceTitle');
+      dataPoints.forEach((dataPoint) {
+        print('Timestamp: ${dataPoint.timestamp}');
+        print('Heart Rate: ${dataPoint.heartRate}');
+        print('Device On: ${dataPoint.deviceOn}');
+        print('Positive Emission: ${dataPoint.positiveEmission}');
+        print('Negative Emission: ${dataPoint.negativeEmission}');
+        print('Positive Emission Duration: ${dataPoint.positiveEmissionDuration}');
+        print('Negative Emission Duration: ${dataPoint.negativeEmissionDuration}');
+        print('Periodic Emission Timer Length: ${dataPoint.periodicEmissionTimerLength}');
+        print('Periodic Emission: ${dataPoint.periodicEmission}');
+        print('\n');
+      });
+    });
   }
 }

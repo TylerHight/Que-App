@@ -50,7 +50,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Check if a new time series data point was created
-    expect(deviceData.getDeviceData('Test Device').length, 1);
+    expect(deviceData.getDeviceData('Test Device').length, 2);
 
     // Get the created time series data point
     final newDataPoint = deviceData.getDeviceData('Test Device').first;
