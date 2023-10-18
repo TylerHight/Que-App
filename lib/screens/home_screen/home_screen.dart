@@ -1,8 +1,6 @@
-// home_screen.dart
-
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Add this import statement
-import '../../device_data.dart'; // Import the DeviceData class
+import 'package:provider/provider.dart';
+import '../../device_data.dart';
 import 'utils/device_remote.dart';
 import 'device_settings_screen.dart';
 import 'utils/device_name_dialog.dart';
@@ -37,7 +35,7 @@ class HomeScreen extends StatelessWidget {
             deviceTitle: deviceTitle,
             onDelete: () {
               deleteDevice(index);
-              Navigator.pop(context); // Close the settings screen
+              Navigator.pop(context);
             },
           ),
         ),
@@ -48,8 +46,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Devices',
-          style: TextStyle(
-              color: Colors.white),
+          style: TextStyle(color: Colors.white),
         ),
         centerTitle: false,
         backgroundColor: Colors.blue,
@@ -67,7 +64,14 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView.builder(
+      body: deviceTitles.isEmpty
+          ? Center(
+        child: Text(
+          'You have no devices. Add new devices with the plus button at the top right.',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      )
+          : ListView.builder(
         itemCount: deviceTitles.length,
         itemBuilder: (context, index) {
           return Padding(
