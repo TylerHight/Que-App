@@ -65,13 +65,17 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: deviceTitles.isEmpty
-          ? Center(
-        child: Text(
-          'You have no devices. Add new devices with the plus button at the top right.',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      )
-          : ListView.builder(
+        ? const Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0), // Add horizontal padding
+            child: Text(
+              'Add new devices with the plus button at the top right.',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center, // Center the text
+            ),
+          ),
+        )
+      : ListView.builder(
         itemCount: deviceTitles.length,
         itemBuilder: (context, index) {
           return Padding(
