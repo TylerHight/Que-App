@@ -132,7 +132,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     if (title == "positive scent duration") {
       newDataPoint.positiveEmissionDuration = totalSeconds;
     } else if (title == "negative scent duration") {
-      newDataPoint.positiveEmissionDuration = totalSeconds;
+      newDataPoint.negativeEmissionDuration = totalSeconds;
     } else if (title == "time between periodic emissions") {
       newDataPoint.periodicEmissionTimerLength = totalSeconds;
     }
