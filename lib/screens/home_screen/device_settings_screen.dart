@@ -22,6 +22,27 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
   };
 
   @override
+  void initState() {
+    super.initState();
+    _loadSettings(); // Load the settings when the screen is first created
+  }
+
+  void _loadSettings() {
+    final deviceData = Provider.of<DeviceData>(context, listen: false);
+    final deviceSettings = deviceData.getDeviceSettings(widget.deviceTitle);
+
+    setState(() {
+      // Update the _selectedDurations map with the current values from deviceSettings
+      _selectedDurations['positive scent duration'] =
+          Duration(seconds: deviceSettings.positiveEmissionDuration);
+      _selectedDurations['negative scent duration'] =
+          Duration(seconds: deviceSettings.negativeEmissionDuration);
+      _selectedDurations['time between periodic emissions'] =
+          Duration(seconds: deviceSettings.periodicEmissionTimerLength);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -97,6 +118,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     );
   }
 
+
   String _formatDuration(Duration duration) {
     return '${duration.inHours} hours ${duration.inMinutes % 60} minutes ${duration.inSeconds % 60} seconds';
   }
@@ -105,7 +127,10 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     final Duration? selectedDuration = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return DurationPickerDialog(title: title);
+        return DurationPickerDialog(
+          title: title,
+          initialDuration: _selectedDurations[title], // Pass the initial value
+        );
       },
     );
 
@@ -119,7 +144,6 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       _updateTimeSeriesData(title, selectedDuration);
     }
   }
-
 
   void _updateTimeSeriesData(String title, Duration selectedDuration) {
     print("Updating $title with $selectedDuration");
@@ -143,14 +167,14 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     print('Before calling printDeviceData');
     deviceData.printDeviceData();
     print('After calling printDeviceData');
-
   }
 }
 
 class DurationPickerDialog extends StatefulWidget {
   final String title;
+  final Duration? initialDuration; // Add initialDuration parameter
 
-  DurationPickerDialog({required this.title});
+  DurationPickerDialog({required this.title, this.initialDuration}); // Update the constructor
 
   @override
   _DurationPickerDialogState createState() => _DurationPickerDialogState();
@@ -160,6 +184,17 @@ class _DurationPickerDialogState extends State<DurationPickerDialog> {
   int _selectedHours = 0;
   int _selectedMinutes = 0;
   int _selectedSeconds = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the selected values based on the initialDuration
+    if (widget.initialDuration != null) {
+      _selectedHours = widget.initialDuration!.inHours;
+      _selectedMinutes = (widget.initialDuration!.inMinutes % 60);
+      _selectedSeconds = (widget.initialDuration!.inSeconds % 60);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
