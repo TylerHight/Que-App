@@ -27,6 +27,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     _loadSettings(); // Load the settings when the screen is first created
   }
 
+  /// Load device settings from the data provider
   void _loadSettings() {
     final deviceData = Provider.of<DeviceData>(context, listen: false);
     final deviceSettings = deviceData.getDeviceSettings(widget.deviceTitle);
@@ -118,7 +119,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     );
   }
 
-
+  /// Format a duration into a human-readable string
   String _formatDuration(Duration duration) {
     return '${duration.inHours} hours ${duration.inMinutes % 60} minutes ${duration.inSeconds % 60} seconds';
   }
@@ -145,11 +146,10 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     }
   }
 
+  /// Update the device settings with the selected duration
   void _updateTimeSeriesData(String title, Duration selectedDuration) {
-    print("Updating $title with $selectedDuration");
     final totalSeconds = selectedDuration.inSeconds;
     final deviceData = Provider.of<DeviceData>(context, listen: false);
-    print("DeviceData: $deviceData");
 
     DeviceTimeSeriesData newDataPoint = deviceData.getDeviceSettings(widget.deviceTitle);
 
@@ -163,10 +163,6 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
 
     // Record the updated setting
     deviceData.addDataPoint(widget.deviceTitle, newDataPoint);
-    print('Number of devices: ${deviceData.deviceTitles.length}');
-    print('Before calling printDeviceData');
-    deviceData.printDeviceData();
-    print('After calling printDeviceData');
   }
 }
 
