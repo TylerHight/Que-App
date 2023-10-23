@@ -19,7 +19,7 @@ class TimedBinaryButton extends StatefulWidget {
   final Duration autoTurnOffDuration;
   final bool autoTurnOffEnabled; // Add a parameter to control auto turn-off
 
-  TimedBinaryButton({
+  const TimedBinaryButton({super.key,
     this.activeColor,
     this.inactiveColor = Colors.grey,
     required this.iconData,
@@ -50,7 +50,7 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
 
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 150),
     );
 
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
@@ -78,7 +78,7 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
   }
 
   void _startAutoTurnOffTimer() {
-    _autoTurnOffTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _autoTurnOffTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_secondsLeft > 0) {
         setState(() {
           _secondsLeft--;
@@ -161,10 +161,10 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
                   color: Colors.black.withOpacity(0.5),
                   shape: BoxShape.circle,
                 ),
-                padding: EdgeInsets.all(4),
+                padding: const EdgeInsets.all(4),
                 child: Text(
                   '$_secondsLeft s',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: Colors.white,
                   ),
