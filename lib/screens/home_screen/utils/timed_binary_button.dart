@@ -17,7 +17,9 @@ class TimedBinaryButton extends StatefulWidget {
   final Function()? onPressedGreyToColor;
   final Function()? onPressedColorToGrey;
   final Duration autoTurnOffDuration;
-  final bool autoTurnOffEnabled; // Add a parameter to control auto turn-off
+  final bool autoTurnOffEnabled;
+  final Duration periodicEmissionTimerDuration;
+  final bool periodicEmissionEnabled;
 
   TimedBinaryButton({
     this.activeColor,
@@ -30,6 +32,8 @@ class TimedBinaryButton extends StatefulWidget {
     this.onPressedColorToGrey,
     required this.autoTurnOffDuration,
     this.autoTurnOffEnabled = false,
+    required this.periodicEmissionTimerDuration,
+    this.periodicEmissionEnabled = false,
   });
 
   @override
@@ -42,6 +46,7 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   late Timer _autoTurnOffTimer;
+  Timer? _periodicEmissionTimer; // Declare _periodicEmissionTimer as nullable
   int _secondsLeft = 0; // Track the remaining seconds
 
   @override
@@ -98,7 +103,7 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
       isLightOn = !isLightOn;
 
       if (!isLightOn) {
-        // Reset the timer when the button is turned off
+        // Reset the auto turn-off timer when the button is turned off
         _secondsLeft = 0;
         if (_autoTurnOffTimer.isActive) {
           _autoTurnOffTimer.cancel();
@@ -108,17 +113,36 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
           _secondsLeft = widget.autoTurnOffDuration.inSeconds;
           _startAutoTurnOffTimer();
         }
+
+        if (widget.periodicEmissionEnabled) {
+          // Start or restart the periodic emission timer when the button is turned on
+          if (_periodicEmissionTimer != null) {
+            _periodicEmissionTimer?.cancel();
+          }
+          _startPeriodicEmissionTimer();
+        }
       }
     });
 
     _animationController.forward();
   }
 
+  void _startPeriodicEmissionTimer() {
+    _periodicEmissionTimer = Timer(widget.periodicEmissionTimerDuration, () {
+      // When the periodic emission timer reaches zero, light up the button
+      // and activate it for the specified autoTurnOffDuration
+      if (isLightOn) {
+        toggleLight();
+        widget.onPressedGreyToColor?.call();
+      }
+    });
+  }
 
   @override
   void dispose() {
     _animationController.dispose();
     _autoTurnOffTimer.cancel();
+    _periodicEmissionTimer?.cancel();
     super.dispose();
   }
 

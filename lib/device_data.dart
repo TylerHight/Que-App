@@ -21,7 +21,7 @@ class DeviceTimeSeriesData {
     this.negativeEmission = false,
     this.positiveEmissionDuration = 10,
     this.negativeEmissionDuration = 10,
-    this.periodicEmissionTimerLength = 30 * 60,
+    this.periodicEmissionTimerLength = 2,
     this.periodicEmission = false,
   });
 

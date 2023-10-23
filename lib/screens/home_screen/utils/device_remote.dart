@@ -59,6 +59,7 @@ class DeviceRemote extends StatelessWidget {
                     ),
                     SizedBox(width: 8),
                     TimedBinaryButton( // settings button
+                      periodicEmissionTimerDuration: Duration(seconds: 0),
                       activeColor: Colors.white,
                       inactiveColor: Colors.white,
                       iconData: Icons.settings,
@@ -82,6 +83,7 @@ class DeviceRemote extends StatelessWidget {
               children: [
                 SizedBox(width: 8),
                 TimedBinaryButton( // negative emission
+                  periodicEmissionTimerDuration: Duration(seconds: 0),
                   activeColor: Colors.red.shade400,
                   inactiveColor: Colors.grey.shade300,
                   iconData: Icons.sentiment_very_dissatisfied,
@@ -92,6 +94,8 @@ class DeviceRemote extends StatelessWidget {
                 ),
                 SizedBox(width: 8),
                 TimedBinaryButton( // positive emission
+                  periodicEmissionEnabled: true,
+                  periodicEmissionTimerDuration: Duration(seconds: deviceSettings.periodicEmissionTimerLength),
                   activeColor: Colors.green.shade500,
                   inactiveColor: Colors.grey.shade300,
                   iconData: Icons.mood,
