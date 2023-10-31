@@ -1,4 +1,4 @@
-// timed_binary_button.dart
+/// timed_binary_button.dart
 
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -87,6 +87,7 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
       if (_secondsLeft > 0) {
         setState(() {
           _secondsLeft--;
+          print('Time remaining: $_secondsLeft seconds');
         });
       } else {
         if (isLightOn) {
@@ -96,6 +97,7 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
         timer.cancel();
       }
     });
+    print('Auto Turn-Off Timer started');
   }
 
   void toggleLight() {
@@ -115,28 +117,35 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
         }
 
         if (widget.periodicEmissionEnabled) {
-          // Start or restart the periodic emission timer when the button is turned on
-          if (_periodicEmissionTimer != null) {
-            _periodicEmissionTimer?.cancel();
-          }
-          _startPeriodicEmissionTimer();
+          // Cancel the existing periodic emission timer if it's active
+          _periodicEmissionTimer?.cancel();
         }
       }
     });
 
-    _animationController.forward();
+    if (!isLightOn && widget.periodicEmissionEnabled) {
+      // Start the periodic emission timer when the button turns off
+      _startPeriodicEmissionTimer();
+    }
+
+    if (isLightOn) {
+      print('Button turned on');
+    }
   }
 
   void _startPeriodicEmissionTimer() {
-    _periodicEmissionTimer = Timer(widget.periodicEmissionTimerDuration, () {
+    _periodicEmissionTimer = Timer.periodic(widget.periodicEmissionTimerDuration, (timer) {
       // When the periodic emission timer reaches zero, light up the button
       // and activate it for the specified autoTurnOffDuration
-      if (isLightOn) {
+      if (!isLightOn) {
         toggleLight();
         widget.onPressedGreyToColor?.call();
+        print('Periodic Emission Triggered');
       }
     });
+    print('Periodic Emission Timer started');
   }
+
 
   @override
   void dispose() {

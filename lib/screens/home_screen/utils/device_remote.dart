@@ -1,9 +1,10 @@
+/// device_remote.dart
+
 import 'package:flutter/material.dart';
 import 'timed_binary_button.dart';
 import 'binary_button.dart';
 import 'package:que_app/device_data.dart';
 import 'package:provider/provider.dart';
-import 'dart:async';
 
 class DeviceRemote extends StatelessWidget {
   final String title;
@@ -18,25 +19,6 @@ class DeviceRemote extends StatelessWidget {
   Widget build(BuildContext context) {
     final deviceData = Provider.of<DeviceData>(context);
     final deviceSettings = deviceData.getDeviceSettings(title);
-
-    // Function to turn on the positive emission after the timer duration.
-    void turnOnPositiveEmission() {
-      // Implement the logic to turn on the positive emission here.
-      // You can use setState or other state management techniques to update the UI.
-      // Replace this comment with your actual logic for turning on positive emission.
-    }
-
-    // Check if the periodic emission is enabled and the timer is not running.
-    if (deviceSettings.periodicEmission) {
-      Timer.periodic(
-        Duration(seconds: deviceSettings.periodicEmissionTimerLength),
-            (timer) {
-          // After the timer duration, call the function to turn on positive emission.
-          turnOnPositiveEmission();
-          timer.cancel(); // Cancel the timer after one execution.
-        },
-      );
-    }
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -112,7 +94,7 @@ class DeviceRemote extends StatelessWidget {
                 ),
                 SizedBox(width: 8),
                 TimedBinaryButton( // positive emission
-                  periodicEmissionEnabled: true,
+                  periodicEmissionEnabled: deviceSettings.periodicEmission,
                   periodicEmissionTimerDuration: Duration(seconds: deviceSettings.periodicEmissionTimerLength),
                   activeColor: Colors.green.shade500,
                   inactiveColor: Colors.grey.shade300,
