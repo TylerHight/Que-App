@@ -50,28 +50,25 @@ class DeviceRemote extends StatelessWidget {
                       iconData: Icons.power_settings_new,
                       buttonSize: 26.0,
                       iconSize: 18.0,
-                      onPressedGreyToColor: () {
+                      onPressedTurnOn: () {
                         //onTap();
                       },
-                      onPressedColorToGrey: () {
+                      onPressedTurnOff: () {
                         //onTap();
                       },
                     ),
                     SizedBox(width: 8),
-                    TimedBinaryButton( // settings button
-                      periodicEmissionTimerDuration: Duration(seconds: 0),
+                    BinaryButton( // settings button
                       activeColor: Colors.white,
                       inactiveColor: Colors.white,
                       iconData: Icons.settings,
                       iconColor: Colors.grey.shade300,
                       buttonSize: 30.0,
                       iconSize: 30.0,
-                      autoTurnOffDuration: Duration(seconds: 3),
-                      autoTurnOffEnabled: false,
-                      onPressedGreyToColor: () {
+                      onPressedTurnOn: () {
                         onTap();
                       },
-                      onPressedColorToGrey: () {
+                      onPressedTurnOff: () {
                         onTap();
                       },
                     ),

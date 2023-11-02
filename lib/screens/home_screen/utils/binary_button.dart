@@ -7,8 +7,8 @@ class BinaryButton extends StatefulWidget {
   final double iconSize;
   final IconData iconData;
   final Color? iconColor;
-  final VoidCallback? onPressedGreyToColor; // Restored onPressed parameters
-  final VoidCallback? onPressedColorToGrey; // as optional parameters
+  final VoidCallback? onPressedTurnOn; // Restored onPressed parameters
+  final VoidCallback? onPressedTurnOff; // as optional parameters
 
   BinaryButton({
     this.activeColor,
@@ -17,8 +17,8 @@ class BinaryButton extends StatefulWidget {
     this.iconSize = 24.0,
     required this.iconData,
     this.iconColor,
-    this.onPressedGreyToColor, // Restored onPressed parameters
-    this.onPressedColorToGrey, // as optional parameters
+    this.onPressedTurnOn, // Restored onPressed parameters
+    this.onPressedTurnOff, // as optional parameters
   });
 
   @override
@@ -51,9 +51,9 @@ class _BinaryButtonState extends State<BinaryButton>
       if (status == AnimationStatus.completed) {
         _animationController.reverse();
         if (isLightOn) {
-          widget.onPressedColorToGrey?.call();
+          widget.onPressedTurnOff?.call();
         } else {
-          widget.onPressedGreyToColor?.call();
+          widget.onPressedTurnOn?.call();
         }
       }
     });
