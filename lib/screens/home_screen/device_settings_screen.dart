@@ -21,6 +21,8 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     'time between periodic emissions': null,
   };
 
+  bool isPeriodicEmissionEnabled = false; // Initially, it's disabled
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +42,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
           Duration(seconds: deviceSettings.negativeEmissionDuration);
       _selectedDurations['time between periodic emissions'] =
           Duration(seconds: deviceSettings.periodicEmissionTimerLength);
+      isPeriodicEmissionEnabled = deviceSettings.periodicEmission;
     });
   }
 
@@ -52,6 +55,15 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       body: ListView(
         padding: EdgeInsets.all(16.0),
         children: [
+          _buildSettingCard(
+            title: 'Enable Periodic Emissions',
+            value: isPeriodicEmissionEnabled.toString(), // Convert boolean to string
+            onTap: () {
+              setState(() {
+                isPeriodicEmissionEnabled = !isPeriodicEmissionEnabled;
+              });
+            },
+          ),
           _buildSettingCard(
             title: 'Positive scent duration',
             value: _selectedDurations['positive scent duration'] != null
@@ -72,7 +84,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
           ),
           _buildSettingCard(
             title: 'Time between periodic emissions',
-            value: _selectedDurations['time between periodic emissions'] != null
+            value: isPeriodicEmissionEnabled
                 ? _formatDuration(_selectedDurations['time between periodic emissions']!)
                 : 'Select duration',
             onTap: () {
@@ -104,7 +116,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
 
   Widget _buildSettingCard({
     required String title,
-    required String value,
+    required String value, // Change the type to String
     required VoidCallback onTap,
   }) {
     return Card(
@@ -112,7 +124,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       margin: EdgeInsets.only(bottom: 16.0),
       child: ListTile(
         title: Text(title),
-        subtitle: Text(value),
+        subtitle: Text(value), // Use the provided String value directly
         onTap: onTap,
         trailing: Icon(Icons.arrow_forward_ios),
       ),
