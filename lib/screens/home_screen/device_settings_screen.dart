@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:que_app/device_data.dart';
 import 'package:provider/provider.dart';
+import 'utils/duration_picker_dialog.dart';
 
 class DeviceSettingsScreen extends StatefulWidget {
   final VoidCallback onDelete;
@@ -56,15 +57,6 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         padding: EdgeInsets.all(16.0),
         children: [
           _buildSettingCard(
-            title: 'Enable Periodic Emissions',
-            value: isPeriodicEmissionEnabled.toString(), // Convert boolean to string
-            onTap: () {
-              setState(() {
-                isPeriodicEmissionEnabled = !isPeriodicEmissionEnabled;
-              });
-            },
-          ),
-          _buildSettingCard(
             title: 'Positive scent duration',
             value: _selectedDurations['positive scent duration'] != null
                 ? _formatDuration(_selectedDurations['positive scent duration']!)
@@ -86,7 +78,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
             title: 'Time between periodic emissions',
             value: isPeriodicEmissionEnabled
                 ? _formatDuration(_selectedDurations['time between periodic emissions']!)
-                : 'Select duration',
+                : 'Off',
             onTap: () {
               _selectDuration(context, 'time between periodic emissions');
             },
@@ -116,7 +108,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
 
   Widget _buildSettingCard({
     required String title,
-    required String value, // Change the type to String
+    required String value,
     required VoidCallback onTap,
   }) {
     return Card(
@@ -124,14 +116,28 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       margin: EdgeInsets.only(bottom: 16.0),
       child: ListTile(
         title: Text(title),
-        subtitle: Text(value), // Use the provided String value directly
+        subtitle: title == 'Time between periodic emissions'
+            ? Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Switch(
+              value: isPeriodicEmissionEnabled,
+              onChanged: (newValue) {
+                setState(() {
+                  isPeriodicEmissionEnabled = newValue;
+                });
+              },
+            ),
+            Text(value),
+          ],
+        )
+            : Text(value),
         onTap: onTap,
         trailing: Icon(Icons.arrow_forward_ios),
       ),
     );
   }
 
-  /// Format a duration into a human-readable string
   String _formatDuration(Duration duration) {
     return '${duration.inHours} hours ${duration.inMinutes % 60} minutes ${duration.inSeconds % 60} seconds';
   }
@@ -142,7 +148,8 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       builder: (BuildContext context) {
         return DurationPickerDialog(
           title: title,
-          initialDuration: _selectedDurations[title], // Pass the initial value
+          initialDuration: _selectedDurations[title],
+          isPeriodicEmissionEnabled: isPeriodicEmissionEnabled,
         );
       },
     );
@@ -153,12 +160,10 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         _selectedDurations[title] = selectedDuration;
       });
 
-      // Call the function to update the settings in the DeviceData
       _updateTimeSeriesData(title, selectedDuration);
     }
   }
 
-  /// Update the device settings with the selected duration
   void _updateTimeSeriesData(String title, Duration selectedDuration) {
     final totalSeconds = selectedDuration.inSeconds;
     final deviceData = Provider.of<DeviceData>(context, listen: false);
@@ -173,120 +178,6 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       newDataPoint.periodicEmissionTimerLength = totalSeconds;
     }
 
-    // Record the updated setting
     deviceData.addDataPoint(widget.deviceTitle, newDataPoint);
-  }
-}
-
-class DurationPickerDialog extends StatefulWidget {
-  final String title;
-  final Duration? initialDuration; // Add initialDuration parameter
-
-  DurationPickerDialog({required this.title, this.initialDuration}); // Update the constructor
-
-  @override
-  _DurationPickerDialogState createState() => _DurationPickerDialogState();
-}
-
-class _DurationPickerDialogState extends State<DurationPickerDialog> {
-  int _selectedHours = 0;
-  int _selectedMinutes = 0;
-  int _selectedSeconds = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize the selected values based on the initialDuration
-    if (widget.initialDuration != null) {
-      _selectedHours = widget.initialDuration!.inHours;
-      _selectedMinutes = (widget.initialDuration!.inMinutes % 60);
-      _selectedSeconds = (widget.initialDuration!.inSeconds % 60);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Select ${widget.title}'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildDurationDropdown(
-            title: 'Hours:',
-            value: _selectedHours,
-            onChanged: (value) {
-              setState(() {
-                _selectedHours = value!;
-              });
-            },
-            itemCount: 24,
-          ),
-          _buildDurationDropdown(
-            title: 'Minutes:',
-            value: _selectedMinutes,
-            onChanged: (value) {
-              setState(() {
-                _selectedMinutes = value!;
-              });
-            },
-            itemCount: 60,
-          ),
-          _buildDurationDropdown(
-            title: 'Seconds:',
-            value: _selectedSeconds,
-            onChanged: (value) {
-              setState(() {
-                _selectedSeconds = value!;
-              });
-            },
-            itemCount: 60,
-          ),
-        ],
-      ),
-      actions: <Widget>[
-        ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            final selectedDuration = Duration(
-              hours: _selectedHours,
-              minutes: _selectedMinutes,
-              seconds: _selectedSeconds,
-            );
-
-            Navigator.of(context).pop(selectedDuration);
-          },
-          child: const Text('OK'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDurationDropdown({
-    required String title,
-    required int value,
-    required ValueChanged<int?> onChanged,
-    required int itemCount,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(title),
-        DropdownButton<int>(
-          value: value,
-          onChanged: onChanged,
-          items: List.generate(itemCount, (index) {
-            return DropdownMenuItem<int>(
-              value: index,
-              child: Text('$index'),
-            );
-          }),
-        ),
-      ],
-    );
   }
 }
