@@ -168,7 +168,11 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     final totalSeconds = selectedDuration.inSeconds;
     final deviceData = Provider.of<DeviceData>(context, listen: false);
 
-    DeviceTimeSeriesData newDataPoint = deviceData.getDeviceSettings(widget.deviceTitle);
+    DeviceTimeSeriesData previousData = deviceData.getDeviceSettings(widget.deviceTitle);
+
+    DeviceTimeSeriesData newDataPoint = DeviceTimeSeriesData.fromPrevious(previousData,
+      periodicEmissionTriggers: isPeriodicEmissionEnabled,
+    );
 
     if (title == "positive scent duration") {
       newDataPoint.positiveEmissionDuration = totalSeconds;
@@ -178,6 +182,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       newDataPoint.periodicEmissionTimerLength = totalSeconds;
     }
 
+    // Record the updated setting
     deviceData.addDataPoint(widget.deviceTitle, newDataPoint);
   }
 }

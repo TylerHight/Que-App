@@ -22,7 +22,7 @@ class DeviceTimeSeriesData {
     this.positiveEmissionDuration = 10,
     this.negativeEmissionDuration = 10,
     this.periodicEmissionTimerLength = 2,
-    this.periodicEmission = true, // whether to enable periodic emissions or not
+    this.periodicEmission = false, // whether to enable periodic emissions or not
   });
 
   factory DeviceTimeSeriesData.fromPrevious(DeviceTimeSeriesData previous, {
@@ -49,8 +49,6 @@ class DeviceTimeSeriesData {
     );
   }
 }
-
-
 
 class DeviceData extends ChangeNotifier {
   final List<String> _deviceTitles = [];
