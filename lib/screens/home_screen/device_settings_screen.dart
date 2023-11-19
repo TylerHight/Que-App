@@ -20,30 +20,36 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     'positive scent duration': null,
     'negative scent duration': null,
     'time between periodic emissions': null,
+    'heart rate emission duration': null,
   };
 
-  bool isPeriodicEmissionEnabled = false; // Initially, it's disabled
+  int _heartRateThreshold = 0;
+
+  bool isPeriodicEmissionEnabled = false;
+  bool isHeartRateEmissionEnabled = false;
 
   @override
   void initState() {
     super.initState();
-    _loadSettings(); // Load the settings when the screen is first created
+    _loadSettings();
   }
 
-  /// Load device settings from the data provider
   void _loadSettings() {
     final deviceData = Provider.of<DeviceData>(context, listen: false);
     final deviceSettings = deviceData.getDeviceSettings(widget.deviceTitle);
 
     setState(() {
-      // Update the _selectedDurations map with the current values from deviceSettings
       _selectedDurations['positive scent duration'] =
           Duration(seconds: deviceSettings.positiveEmissionDuration);
       _selectedDurations['negative scent duration'] =
           Duration(seconds: deviceSettings.negativeEmissionDuration);
       _selectedDurations['time between periodic emissions'] =
           Duration(seconds: deviceSettings.periodicEmissionTimerLength);
+      _selectedDurations['heart rate emission duration'] =
+          Duration(seconds: deviceSettings.heartRateEmissionDuration);
+      _heartRateThreshold = deviceSettings.heartRateThreshold;
       isPeriodicEmissionEnabled = deviceSettings.periodicEmission;
+      isHeartRateEmissionEnabled = deviceSettings.heartRateEmissions;
     });
   }
 
@@ -75,12 +81,42 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
             },
           ),
           _buildSettingCard(
-            title: 'Time between periodic emissions',
+            title: 'Periodic emission timer',
             value: isPeriodicEmissionEnabled
                 ? _formatDuration(_selectedDurations['time between periodic emissions']!)
                 : 'Off',
             onTap: () {
               _selectDuration(context, 'time between periodic emissions');
+            },
+            isSwitch: true,
+            switchValue: isPeriodicEmissionEnabled,
+            onSwitchChanged: (newValue) {
+              setState(() {
+                isPeriodicEmissionEnabled = newValue;
+              });
+            },
+          ),
+          _buildSettingCard(
+            title: 'Heart rate emission duration',
+            value: isHeartRateEmissionEnabled
+                ? _formatDuration(_selectedDurations['heart rate emission duration']!)
+                : 'Off',
+            onTap: () {
+              _selectDuration(context, 'heart rate emission duration');
+            },
+            isSwitch: true,
+            switchValue: isHeartRateEmissionEnabled,
+            onSwitchChanged: (newValue) {
+              setState(() {
+                isHeartRateEmissionEnabled = newValue;
+              });
+            },
+          ),
+          _buildSettingCard(
+            title: 'Heart rate threshold',
+            value: _heartRateThreshold.toString(),
+            onTap: () {
+              _selectHeartRateThreshold(context);
             },
           ),
         ],
@@ -110,23 +146,22 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     required String title,
     required String value,
     required VoidCallback onTap,
+    bool isSwitch = false,
+    bool switchValue = false,
+    ValueChanged<bool>? onSwitchChanged,
   }) {
     return Card(
       elevation: 4.0,
       margin: EdgeInsets.only(bottom: 16.0),
       child: ListTile(
         title: Text(title),
-        subtitle: title == 'Time between periodic emissions'
+        subtitle: isSwitch
             ? Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Switch(
-              value: isPeriodicEmissionEnabled,
-              onChanged: (newValue) {
-                setState(() {
-                  isPeriodicEmissionEnabled = newValue;
-                });
-              },
+              value: switchValue,
+              onChanged: onSwitchChanged,
             ),
             Text(value),
           ],
@@ -164,25 +199,90 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     }
   }
 
+  Future<void> _selectHeartRateThreshold(BuildContext context) async {
+    int? selectedHeartRateThreshold = await showDialog<int>(
+      context: context,
+      builder: (BuildContext context) {
+        int? enteredHeartRateThreshold;
+        return AlertDialog(
+          title: Text('Select Heart Rate Threshold'),
+          content: Container(
+            width: double.minPositive,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Choose a heart rate threshold:'),
+                DropdownButton<int>(
+                  value: _heartRateThreshold,
+                  items: List.generate(200, (index) => index + 1)
+                      .map((value) => DropdownMenuItem<int>(
+                    value: value,
+                    child: Text(value.toString()),
+                  ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      enteredHeartRateThreshold = value;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(enteredHeartRateThreshold);
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (selectedHeartRateThreshold != null) {
+      setState(() {
+        _heartRateThreshold = selectedHeartRateThreshold;
+      });
+
+      _updateTimeSeriesData('heart rate threshold', Duration.zero);
+    }
+  }
+
   void _updateTimeSeriesData(String title, Duration selectedDuration) {
     final totalSeconds = selectedDuration.inSeconds;
     final deviceData = Provider.of<DeviceData>(context, listen: false);
 
     DeviceTimeSeriesData previousData = deviceData.getDeviceSettings(widget.deviceTitle);
 
-    DeviceTimeSeriesData newDataPoint = DeviceTimeSeriesData.fromPrevious(previousData,
+    DeviceTimeSeriesData newDataPoint = DeviceTimeSeriesData.fromPrevious(
+      previousData,
       periodicEmissionTriggers: isPeriodicEmissionEnabled,
     );
 
-    if (title == "positive scent duration") {
-      newDataPoint.positiveEmissionDuration = totalSeconds;
-    } else if (title == "negative scent duration") {
-      newDataPoint.negativeEmissionDuration = totalSeconds;
-    } else if (title == "time between periodic emissions") {
-      newDataPoint.periodicEmissionTimerLength = totalSeconds;
+    switch (title) {
+      case "positive scent duration":
+        newDataPoint.positiveEmissionDuration = totalSeconds;
+        break;
+      case "negative scent duration":
+        newDataPoint.negativeEmissionDuration = totalSeconds;
+        break;
+      case "Periodic emission timer":
+        newDataPoint.periodicEmissionTimerLength = totalSeconds;
+        break;
+      case "heart rate emission duration":
+        newDataPoint.heartRateEmissionDuration = totalSeconds;
+        newDataPoint.heartRateEmissions = isHeartRateEmissionEnabled;
+        break;
     }
 
-    // Record the updated setting
     deviceData.addDataPoint(widget.deviceTitle, newDataPoint);
   }
 }

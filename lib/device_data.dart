@@ -12,6 +12,9 @@ class DeviceTimeSeriesData {
   int negativeEmissionDuration;
   int periodicEmissionTimerLength;
   final bool periodicEmission;
+  int heartRateEmissionDuration;
+  int heartRateThreshold;
+  bool heartRateEmissions; // Add this line
 
   DeviceTimeSeriesData({
     required this.timestamp,
@@ -22,7 +25,10 @@ class DeviceTimeSeriesData {
     this.positiveEmissionDuration = 10,
     this.negativeEmissionDuration = 10,
     this.periodicEmissionTimerLength = 2,
-    this.periodicEmission = false, // whether to enable periodic emissions or not
+    this.periodicEmission = false,
+    this.heartRateEmissionDuration = 10,
+    this.heartRateThreshold = 80,
+    this.heartRateEmissions = false, // Initialize the new field
   });
 
   factory DeviceTimeSeriesData.fromPrevious(DeviceTimeSeriesData previous, {
@@ -35,6 +41,9 @@ class DeviceTimeSeriesData {
     int? negativeEmissionTime,
     int? periodicEmissionTimerLength,
     bool? periodicEmissionTriggers,
+    int? heartRateEmissionDuration,
+    int? heartRateThreshold,
+    bool? heartRateEmissions,
   }) {
     return DeviceTimeSeriesData(
       timestamp: timestamp ?? previous.timestamp,
@@ -45,7 +54,9 @@ class DeviceTimeSeriesData {
       positiveEmissionDuration: positiveEmissionTime ?? previous.positiveEmissionDuration,
       negativeEmissionDuration: negativeEmissionTime ?? previous.negativeEmissionDuration,
       periodicEmissionTimerLength: periodicEmissionTimerLength ?? previous.periodicEmissionTimerLength,
-      periodicEmission: periodicEmissionTriggers ?? previous.periodicEmission,
+      heartRateEmissionDuration: heartRateEmissionDuration ?? previous.heartRateEmissionDuration,
+      heartRateThreshold: heartRateThreshold ?? previous.heartRateThreshold,
+      heartRateEmissions: heartRateEmissions ?? previous.heartRateEmissions, // Set the new field
     );
   }
 }
@@ -63,7 +74,6 @@ class DeviceData extends ChangeNotifier {
   void addDeviceTitle(String title) {
     _deviceTitles.add(title);
     _deviceDataMap[title] = [
-      // Create a default time series data point for the new title
       DeviceTimeSeriesData(timestamp: DateTime.now())
     ];
     notifyListeners();
@@ -76,14 +86,12 @@ class DeviceData extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Add a data point to a specific device
   void addDataPoint(String deviceTitle, DeviceTimeSeriesData dataPoint) {
     if (_deviceDataMap.containsKey(deviceTitle)) {
       _deviceDataMap[deviceTitle]?.add(dataPoint);
-      notifyListeners(); // Notify the UI of the data change
+      notifyListeners();
     }
 
-    // Print a message to confirm that the method is called
     print("addDataPoint called for device: $deviceTitle");
     print("New Data Point: $dataPoint");
   }
@@ -91,9 +99,8 @@ class DeviceData extends ChangeNotifier {
   DeviceTimeSeriesData getDeviceSettings(String deviceTitle) {
     final List<DeviceTimeSeriesData>? deviceData = _deviceDataMap[deviceTitle];
     if (deviceData != null && deviceData.isNotEmpty) {
-      return deviceData.first; // Return the settings from the first data point
+      return deviceData.first;
     } else {
-      // Return default settings with the current timestamp
       return DeviceTimeSeriesData(timestamp: DateTime.now());
     }
   }
