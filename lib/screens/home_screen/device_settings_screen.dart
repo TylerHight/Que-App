@@ -93,6 +93,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
             onSwitchChanged: (newValue) {
               setState(() {
                 isPeriodicEmissionEnabled = newValue;
+                _updateTimeSeriesData('periodic emission toggle', Duration.zero, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled);
               });
             },
           ),
@@ -110,6 +111,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
               setState(() {
                 isHeartRateEmissionEnabled = newValue;
               });
+              _updateTimeSeriesData('heart rate emission toggle', Duration.zero, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled);
             },
           ),
           _buildSettingCard(
@@ -194,8 +196,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       setState(() {
         _selectedDurations[title] = selectedDuration;
       });
-
-      _updateTimeSeriesData(title, selectedDuration, null);
+      _updateTimeSeriesData(title, selectedDuration, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled);
     }
   }
 
@@ -252,12 +253,13 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         _heartRateThreshold = selectedHeartRateThreshold;
       });
 
-      _updateTimeSeriesData('heart rate threshold', Duration.zero, selectedHeartRateThreshold);
+      _updateTimeSeriesData('heart rate threshold', Duration.zero, selectedHeartRateThreshold, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled);
     }
   }
 
 
-  void _updateTimeSeriesData(String title, Duration selectedDuration, int? heartRateThreshold) {
+
+  void _updateTimeSeriesData(String title, Duration selectedDuration, int? heartRateThreshold, bool isPeriodicEmissionEnabled, bool isHeartRateEmissionEnabled) {
     final totalSeconds = selectedDuration.inSeconds;
     final deviceData = Provider.of<DeviceData>(context, listen: false);
 
@@ -273,6 +275,10 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       newDataPoint.heartRateEmissionDuration = totalSeconds;
     } else if (title == "heart rate threshold") {
       newDataPoint.heartRateThreshold = heartRateThreshold ?? 0;
+    } else if (title == "periodic emission toggle") {
+      newDataPoint.periodicEmissionOn = isPeriodicEmissionEnabled;
+    } else if (title == "heart rate emission toggle") {
+      newDataPoint.heartRateEmissionsOn = isHeartRateEmissionEnabled;
     }
 
     deviceData.addDataPoint(widget.deviceTitle, newDataPoint);

@@ -11,7 +11,7 @@ class DeviceTimeSeriesData {
   int positiveEmissionDuration;
   int negativeEmissionDuration;
   int periodicEmissionTimerLength;
-  final bool periodicEmissionOn; // if enabled or disabled
+  bool periodicEmissionOn; // if enabled or disabled
   int heartRateEmissionDuration;
   int heartRateThreshold;
   bool heartRateEmissionsOn; // if enabled or disabled
