@@ -88,7 +88,7 @@ void main() {
       expect(defaultDataPoint.positiveEmissionDuration, 10);
       expect(defaultDataPoint.negativeEmissionDuration, 10);
       expect(defaultDataPoint.periodicEmissionTimerLength, 30 * 60);
-      expect(defaultDataPoint.periodicEmission, false);
+      expect(defaultDataPoint.periodicEmissionOn, false);
     });
 
     test('Creating a new data point from previous data', () {
@@ -114,7 +114,7 @@ void main() {
       expect(newDataPoint.positiveEmissionDuration, previousDataPoint.positiveEmissionDuration);
       expect(newDataPoint.negativeEmissionDuration, previousDataPoint.negativeEmissionDuration);
       expect(newDataPoint.periodicEmissionTimerLength, previousDataPoint.periodicEmissionTimerLength);
-      expect(newDataPoint.periodicEmission, previousDataPoint.periodicEmission);
+      expect(newDataPoint.periodicEmissionOn, previousDataPoint.periodicEmissionOn);
     });
 
 

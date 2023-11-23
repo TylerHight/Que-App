@@ -48,8 +48,8 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       _selectedDurations['heart rate emission duration'] =
           Duration(seconds: deviceSettings.heartRateEmissionDuration);
       _heartRateThreshold = deviceSettings.heartRateThreshold;
-      isPeriodicEmissionEnabled = deviceSettings.periodicEmission;
-      isHeartRateEmissionEnabled = deviceSettings.heartRateEmissions;
+      isPeriodicEmissionEnabled = deviceSettings.periodicEmissionOn;
+      isHeartRateEmissionEnabled = deviceSettings.heartRateEmissionsOn;
     });
   }
 
@@ -195,7 +195,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         _selectedDurations[title] = selectedDuration;
       });
 
-      _updateTimeSeriesData(title, selectedDuration);
+      _updateTimeSeriesData(title, selectedDuration, null);
     }
   }
 
@@ -252,11 +252,12 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         _heartRateThreshold = selectedHeartRateThreshold;
       });
 
-      _updateTimeSeriesData('heart rate threshold', Duration.zero);
+      _updateTimeSeriesData('heart rate threshold', Duration.zero, selectedHeartRateThreshold);
     }
   }
 
-  void _updateTimeSeriesData(String title, Duration selectedDuration) {
+
+  void _updateTimeSeriesData(String title, Duration selectedDuration, int? heartRateThreshold) {
     final totalSeconds = selectedDuration.inSeconds;
     final deviceData = Provider.of<DeviceData>(context, listen: false);
 
@@ -270,7 +271,8 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       newDataPoint.periodicEmissionTimerLength = totalSeconds;
     } else if (title == "heart rate emission duration") {
       newDataPoint.heartRateEmissionDuration = totalSeconds;
-      newDataPoint.heartRateEmissions = isHeartRateEmissionEnabled;
+    } else if (title == "heart rate threshold") {
+      newDataPoint.heartRateThreshold = heartRateThreshold ?? 0;
     }
 
     deviceData.addDataPoint(widget.deviceTitle, newDataPoint);

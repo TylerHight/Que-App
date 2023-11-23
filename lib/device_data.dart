@@ -11,10 +11,10 @@ class DeviceTimeSeriesData {
   int positiveEmissionDuration;
   int negativeEmissionDuration;
   int periodicEmissionTimerLength;
-  final bool periodicEmission;
+  final bool periodicEmissionOn; // if enabled or disabled
   int heartRateEmissionDuration;
   int heartRateThreshold;
-  bool heartRateEmissions; // Add this line
+  bool heartRateEmissionsOn; // if enabled or disabled
 
   DeviceTimeSeriesData({
     required this.timestamp,
@@ -25,10 +25,10 @@ class DeviceTimeSeriesData {
     this.positiveEmissionDuration = 10,
     this.negativeEmissionDuration = 10,
     this.periodicEmissionTimerLength = 2,
-    this.periodicEmission = false,
+    this.periodicEmissionOn = false,
     this.heartRateEmissionDuration = 10,
     this.heartRateThreshold = 80,
-    this.heartRateEmissions = false, // Initialize the new field
+    this.heartRateEmissionsOn = false, // Initialize the new field
   });
 
   factory DeviceTimeSeriesData.fromPrevious(DeviceTimeSeriesData previous, {
@@ -56,7 +56,7 @@ class DeviceTimeSeriesData {
       periodicEmissionTimerLength: periodicEmissionTimerLength ?? previous.periodicEmissionTimerLength,
       heartRateEmissionDuration: heartRateEmissionDuration ?? previous.heartRateEmissionDuration,
       heartRateThreshold: heartRateThreshold ?? previous.heartRateThreshold,
-      heartRateEmissions: heartRateEmissions ?? previous.heartRateEmissions, // Set the new field
+      heartRateEmissionsOn: heartRateEmissions ?? previous.heartRateEmissionsOn, // Set the new field
     );
   }
 }
@@ -123,7 +123,7 @@ class DeviceData extends ChangeNotifier {
         print('Positive Emission Duration: ${dataPoint.positiveEmissionDuration}');
         print('Negative Emission Duration: ${dataPoint.negativeEmissionDuration}');
         print('Periodic Emission Timer Length: ${dataPoint.periodicEmissionTimerLength}');
-        print('Periodic Emission: ${dataPoint.periodicEmission}');
+        print('Periodic Emission: ${dataPoint.periodicEmissionOn}');
         print('\n');
       });
     });
