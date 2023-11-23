@@ -213,19 +213,22 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('Choose a heart rate threshold:'),
-                DropdownButton<int>(
-                  value: _heartRateThreshold,
-                  items: List.generate(200, (index) => index + 1)
-                      .map((value) => DropdownMenuItem<int>(
-                    value: value,
-                    child: Text(value.toString()),
-                  ))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      enteredHeartRateThreshold = value;
-                    });
-                  },
+                Container(
+                  width: 80, // Set the desired width
+                  child: DropdownButtonFormField<int>(
+                    value: _heartRateThreshold,
+                    items: List.generate(200, (index) => index + 1)
+                        .map((value) => DropdownMenuItem<int>(
+                      value: value,
+                      child: Text(value.toString()),
+                    ))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        enteredHeartRateThreshold = value;
+                      });
+                    },
+                  ),
                 ),
               ],
             ),
@@ -253,7 +256,13 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         _heartRateThreshold = selectedHeartRateThreshold;
       });
 
-      _updateTimeSeriesData('heart rate threshold', Duration.zero, selectedHeartRateThreshold, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled);
+      _updateTimeSeriesData(
+        'heart rate threshold',
+        Duration.zero,
+        selectedHeartRateThreshold,
+        isPeriodicEmissionEnabled,
+        isHeartRateEmissionEnabled,
+      );
     }
   }
 
