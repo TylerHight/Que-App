@@ -81,7 +81,19 @@ class _DataScreenState extends State<DataScreen> {
     }
   }
 
-  SfCartesianChart _buildChart() {
+  Widget _buildChart() {
+    // Check if there are devices
+    if (Provider.of<DeviceData>(context).deviceTitles.isEmpty) {
+      return Center(
+        child: Text(
+          'No devices available.\nAdd devices to view data.',
+          style: TextStyle(fontSize: 18),
+          textAlign: TextAlign.center, // Align the text in the center
+        ),
+      );
+    }
+
+    // Continue building the chart as before
     double minY = heartRateData.values.reduce((min, val) => val < min ? val : min).toDouble();
     double maxY = heartRateData.values.reduce((max, val) => val > max ? val : max).toDouble();
 
