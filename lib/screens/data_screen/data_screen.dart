@@ -145,14 +145,16 @@ class _DataScreenState extends State<DataScreen> {
         children: [
           SizedBox(height: 12), // Add spacing
           DropdownButton<String>(
-            value: selectedDevice,
+            value: Provider.of<DeviceData>(context).deviceTitles.contains(selectedDevice) ? selectedDevice : Provider.of<DeviceData>(context).deviceTitles.isEmpty ? '' : Provider.of<DeviceData>(context).deviceTitles.first,
             items: Provider.of<DeviceData>(context).deviceTitles.map((String title) {
               return DropdownMenuItem<String>(
                 value: title,
                 child: Text(title),
               );
             }).toList(),
-            onChanged: (String? newValue) {
+            onChanged: Provider.of<DeviceData>(context).deviceTitles.isEmpty
+                ? null
+                : (String? newValue) {
               setState(() {
                 selectedDevice = newValue!;
               });
