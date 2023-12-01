@@ -1,4 +1,3 @@
-- different cooldown time for a heartrate triggered emission
 - rate settings at end of day (satified-dissatisfied)
 - notes from caretaker/teacher
 - way to look at past settings
