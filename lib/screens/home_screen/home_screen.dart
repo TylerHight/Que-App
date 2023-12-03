@@ -1,3 +1,24 @@
+/// home_screen.dart
+///
+/// Main Screen
+///
+/// This file includes a list of the connected aromatherapy
+/// devices and a "plus" button at the top right where new devices
+/// can be connected. When the "plus" button is selected, a dialog
+/// opens where a list of available bluetooth devices is shown.
+/// Once the user selects the aromatherapy necklace, the user
+/// chooses a name for the device and a widget for the device is
+/// generated.
+/// Each aromatherapy device has its own widget with four
+/// buttons and the chosen title of the device. There is a power
+/// button for turning the device on and off, a settings button
+/// for changing the device settings, a positive emission button
+/// for releasing a positive emission, and a negative emission button
+/// for releasing a negative emission.
+///
+/// Author: Tyler Hight
+///
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../device_data.dart';

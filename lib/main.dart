@@ -1,3 +1,9 @@
+/// main.dart
+///
+/// Description
+///
+/// Author: Tyler Hight
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen/home_screen.dart';
@@ -42,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> _screens = [
     HomeScreen(),
     SettingsScreen(),
-    DataScreen(),
+    //DataScreen(),
     AccountScreen(),
   ];
 
@@ -68,10 +74,10 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.settings),
             label: 'Settings',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.data_usage),
-            label: 'Data',
-          ),
+          /// BottomNavigationBarItem(
+          ///   icon: Icon(Icons.data_usage),
+          ///   label: 'Data',
+          /// ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
             label: 'Account',

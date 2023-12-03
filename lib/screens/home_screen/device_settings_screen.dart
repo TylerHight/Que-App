@@ -191,6 +191,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       margin: EdgeInsets.only(bottom: 16.0),
       child: ListTile(
         title: Text('Connect to heart rate monitor'),
+        // TODO: Add a subheading that shows the name of the connect bluetooth device
         onTap: () {
           _selectBluetoothDevice(context);
         },

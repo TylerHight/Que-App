@@ -30,6 +30,7 @@ class HeartRateMonitorConnection {
           title: Text('Select Bluetooth Device'),
           content: Column(
             children: [
+              // TODO: add a dummy device that starts the simulated HR
               for (var result in scanResults)
                 ListTile(
                   title: Text(result.device.name ?? 'Unknown Device'),
