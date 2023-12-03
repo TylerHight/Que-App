@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:que_app/device_data.dart';
 import 'package:provider/provider.dart';
 import 'utils/duration_picker_dialog.dart';
+import 'utils/heart_rate_monitor_connection.dart';
 
 class DeviceSettingsScreen extends StatefulWidget {
   final VoidCallback onDelete;
@@ -32,6 +33,10 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
   void initState() {
     super.initState();
     _loadSettings();
+  }
+
+  void _selectBluetoothDevice(BuildContext context) {
+    HeartRateMonitorConnection.selectBluetoothDevice(context);
   }
 
   void _loadSettings() {
@@ -97,6 +102,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
               });
             },
           ),
+          _buildBluetoothConnectionSetting(), // Added this line
           _buildSettingCard(
             title: 'Heart rate emission duration',
             value: isHeartRateEmissionEnabled
@@ -152,6 +158,10 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     bool switchValue = false,
     ValueChanged<bool>? onSwitchChanged,
   }) {
+    if (title.toLowerCase() == 'connect to heart rate monitor') {
+      return _buildBluetoothConnectionSetting();
+    }
+
     return Card(
       elevation: 4.0,
       margin: EdgeInsets.only(bottom: 16.0),
@@ -170,6 +180,20 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         )
             : Text(value),
         onTap: onTap,
+        trailing: Icon(Icons.arrow_forward_ios),
+      ),
+    );
+  }
+
+  Widget _buildBluetoothConnectionSetting() {
+    return Card(
+      elevation: 4.0,
+      margin: EdgeInsets.only(bottom: 16.0),
+      child: ListTile(
+        title: Text('Connect to heart rate monitor'),
+        onTap: () {
+          _selectBluetoothDevice(context);
+        },
         trailing: Icon(Icons.arrow_forward_ios),
       ),
     );
@@ -265,8 +289,6 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       );
     }
   }
-
-
 
   void _updateTimeSeriesData(String title, Duration selectedDuration, int? heartRateThreshold, bool isPeriodicEmissionEnabled, bool isHeartRateEmissionEnabled) {
     final totalSeconds = selectedDuration.inSeconds;
