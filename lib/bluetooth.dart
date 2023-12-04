@@ -71,3 +71,4 @@ void main() {
     print('Sampled Heart Rate: $currentHeartRate');
   });
 }
+

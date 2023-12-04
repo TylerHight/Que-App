@@ -30,7 +30,17 @@ class HeartRateMonitorConnection {
           title: Text('Select Bluetooth Device'),
           content: Column(
             children: [
-              // TODO: add a dummy device that starts the simulated HR
+              // Add a dummy device that starts the simulated HR
+              ListTile(
+                title: Text('Simulated Heart Rate Device'),
+                onTap: () {
+                  // Handle the selected Bluetooth device
+                  print('Selected Bluetooth Device: Simulated Heart Rate Device');
+                  // TODO: Start the simulated heart rate
+                  Navigator.of(context).pop();
+                },
+              ),
+              // Display other available devices
               for (var result in scanResults)
                 ListTile(
                   title: Text(result.device.name ?? 'Unknown Device'),

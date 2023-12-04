@@ -191,13 +191,35 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       margin: EdgeInsets.only(bottom: 16.0),
       child: ListTile(
         title: Text('Connect to heart rate monitor'),
-        // TODO: Add a subheading that shows the name of the connect bluetooth device
+        subtitle: _buildConnectedDeviceSubtitle(), // Added this line
         onTap: () {
           _selectBluetoothDevice(context);
         },
         trailing: Icon(Icons.arrow_forward_ios),
       ),
     );
+  }
+
+  Widget _buildConnectedDeviceSubtitle() {
+    // TODO: Replace the dummyDeviceName and isConnected logic with actual data
+    String dummyDeviceName = 'Simulated Heart Rate Device';
+    bool isConnected = true;
+
+    if (isConnected) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            dummyDeviceName,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Text('Not connected');
+    }
   }
 
   String _formatDuration(Duration duration) {
