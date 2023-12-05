@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:provider/provider.dart';
+import '../../../device_data.dart';
 
 class HeartRateMonitorConnection {
   static Future<void> selectBluetoothDevice(BuildContext context) async {
@@ -30,24 +32,14 @@ class HeartRateMonitorConnection {
           title: Text('Select Bluetooth Device'),
           content: Column(
             children: [
-              // Add a dummy device that starts the simulated HR
-              ListTile(
-                title: Text('Simulated Heart Rate Device'),
-                onTap: () {
-                  // Handle the selected Bluetooth device
-                  print('Selected Bluetooth Device: Simulated Heart Rate Device');
-                  // TODO: Start the simulated heart rate
-                  Navigator.of(context).pop();
-                },
-              ),
-              // Display other available devices
               for (var result in scanResults)
                 ListTile(
                   title: Text(result.device.name ?? 'Unknown Device'),
                   onTap: () {
                     // Handle the selected Bluetooth device
                     print('Selected Bluetooth Device: ${result.device.name}');
-                    // TODO: Implement your logic for the selected device
+                    // Update the UI with the connected device name
+                    _updateConnectedDeviceName(context, result.device.name);
                     Navigator.of(context).pop();
                   },
                 ),
@@ -69,5 +61,10 @@ class HeartRateMonitorConnection {
 
     // Stop scanning when the dialog is closed
     scanSubscription.cancel();
+  }
+
+  // New method to update the connected device name
+  static void _updateConnectedDeviceName(BuildContext context, String deviceName) {
+    Provider.of<DeviceData>(context, listen: false).setConnectedHRDeviceName(deviceName);
   }
 }

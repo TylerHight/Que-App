@@ -75,6 +75,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
             onTap: () {
               _selectDuration(context, 'positive scent duration');
             },
+            // TODO: Add switch to enable/disable positive emissions
           ),
           _buildSettingCard(
             title: 'Negative scent duration',
@@ -84,6 +85,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
             onTap: () {
               _selectDuration(context, 'negative scent duration');
             },
+            // TODO: Add switch to enable/disable negative emissions
           ),
           _buildSettingCard(
             title: 'Periodic emission timer',
@@ -133,6 +135,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         padding: EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: widget.onDelete,
+          // TODO: add deletion confirmation popup
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.red,
             minimumSize: const Size(50, 32),
@@ -191,7 +194,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       margin: EdgeInsets.only(bottom: 16.0),
       child: ListTile(
         title: Text('Connect to heart rate monitor'),
-        subtitle: _buildConnectedDeviceSubtitle(), // Added this line
+        subtitle: _buildConnectedDeviceSubtitle(false), // Set isConnected to false
         onTap: () {
           _selectBluetoothDevice(context);
         },
@@ -200,15 +203,15 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     );
   }
 
-  Widget _buildConnectedDeviceSubtitle() {
-    // TODO: Replace the dummyDeviceName and isConnected logic with actual data
+  Widget _buildConnectedDeviceSubtitle(bool isConnected) {
+    // TODO: Replace the dummyDeviceName with actual data (the actual name of the device)
     String dummyDeviceName = 'Simulated Heart Rate Device';
-    bool isConnected = true;
 
     if (isConnected) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text('Connected to:'),
           Text(
             dummyDeviceName,
             style: TextStyle(

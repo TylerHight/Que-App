@@ -47,16 +47,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _screens = [
     HomeScreen(),
-    SettingsScreen(),
-    //DataScreen(),
-    AccountScreen(),
+/*    SettingsScreen(),
+    DataScreen(),
+    AccountScreen(),*/
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
+      /*bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -74,16 +74,16 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.settings),
             label: 'Settings',
           ),
-          /// BottomNavigationBarItem(
-          ///   icon: Icon(Icons.data_usage),
-          ///   label: 'Data',
-          /// ),
+          BottomNavigationBarItem(
+             icon: Icon(Icons.data_usage),
+             label: 'Data',
+           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
             label: 'Account',
           ),
         ],
-      ),
+      ),*/
     );
   }
 }

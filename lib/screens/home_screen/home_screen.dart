@@ -83,6 +83,7 @@ class HomeScreen extends StatelessWidget {
               addDevice(context);
             },
           ),
+          // TODO: Add settings button to change universal device settings
         ],
       ),
       body: deviceTitles.isEmpty

@@ -15,6 +15,7 @@ class DeviceTimeSeriesData {
   int heartRateEmissionDuration;
   int heartRateThreshold;
   bool heartRateEmissionsOn; // if enabled or disabled
+  String connectedHRDeviceName = ""; // New property
 
   DeviceTimeSeriesData({
     required this.timestamp,
@@ -124,8 +125,21 @@ class DeviceData extends ChangeNotifier {
         print('Negative Emission Duration: ${dataPoint.negativeEmissionDuration}');
         print('Periodic Emission Timer Length: ${dataPoint.periodicEmissionTimerLength}');
         print('Periodic Emission: ${dataPoint.periodicEmissionOn}');
+        print('Connected Heart Rate Device Name: ${dataPoint.connectedHRDeviceName}');
         print('\n');
       });
     });
+  }
+
+  // New method to set the connected HR device name
+  void setConnectedHRDeviceName(String deviceName) {
+    // Set the connected HR device name for each device title
+    _deviceDataMap.keys.forEach((title) {
+      if (_deviceDataMap[title]!.isNotEmpty) {
+        _deviceDataMap[title]!.first.connectedHRDeviceName = deviceName;
+      }
+    });
+
+    notifyListeners();
   }
 }

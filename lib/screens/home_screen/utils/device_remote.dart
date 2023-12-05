@@ -67,9 +67,13 @@ class DeviceRemote extends StatelessWidget {
                       iconSize: 30.0,
                       onPressedTurnOn: () {
                         onTap();
+                        // TODO: enable all emissions that are turned on in the device settings
+                        // TODO: communicate via bluetooth to turn on the device
                       },
                       onPressedTurnOff: () {
                         onTap();
+                        // TODO: disable all emissions that are turned on in the device settings (but keep setting as on)
+                        // TODO: communicate via bluetooth to turn off the device
                       },
                     ),
                   ],
