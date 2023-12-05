@@ -11,11 +11,13 @@ class DeviceTimeSeriesData {
   int positiveEmissionDuration;
   int negativeEmissionDuration;
   int periodicEmissionTimerLength;
-  bool periodicEmissionOn; // if enabled or disabled
+  bool periodicEmissionEnabled; // if enabled or disabled
   int heartRateEmissionDuration;
   int heartRateThreshold;
-  bool heartRateEmissionsOn; // if enabled or disabled
-  String connectedHRDeviceName = ""; // New property
+  bool heartRateEmissionsEnabled; // if enabled or disabled
+  String connectedHRDeviceName = "";
+  bool positiveEmissionsEnabled; // if enabled or disabled
+  bool negativeEmissionsEnabled; // if enabled or disabled
 
   DeviceTimeSeriesData({
     required this.timestamp,
@@ -26,10 +28,12 @@ class DeviceTimeSeriesData {
     this.positiveEmissionDuration = 10,
     this.negativeEmissionDuration = 10,
     this.periodicEmissionTimerLength = 2,
-    this.periodicEmissionOn = false,
+    this.periodicEmissionEnabled = false,
     this.heartRateEmissionDuration = 10,
     this.heartRateThreshold = 80,
-    this.heartRateEmissionsOn = false, // Initialize the new field
+    this.heartRateEmissionsEnabled = false,
+    this.positiveEmissionsEnabled = false,
+    this.negativeEmissionsEnabled = false,
   });
 
   factory DeviceTimeSeriesData.fromPrevious(DeviceTimeSeriesData previous, {
@@ -45,6 +49,8 @@ class DeviceTimeSeriesData {
     int? heartRateEmissionDuration,
     int? heartRateThreshold,
     bool? heartRateEmissions,
+    bool? positiveEmissionsEnabled,
+    bool? negativeEmissionsEnabled,
   }) {
     return DeviceTimeSeriesData(
       timestamp: timestamp ?? previous.timestamp,
@@ -57,7 +63,9 @@ class DeviceTimeSeriesData {
       periodicEmissionTimerLength: periodicEmissionTimerLength ?? previous.periodicEmissionTimerLength,
       heartRateEmissionDuration: heartRateEmissionDuration ?? previous.heartRateEmissionDuration,
       heartRateThreshold: heartRateThreshold ?? previous.heartRateThreshold,
-      heartRateEmissionsOn: heartRateEmissions ?? previous.heartRateEmissionsOn, // Set the new field
+      heartRateEmissionsEnabled: heartRateEmissions ?? previous.heartRateEmissionsEnabled, // Set the new field
+      positiveEmissionsEnabled: positiveEmissionsEnabled ?? previous.positiveEmissionsEnabled,
+      negativeEmissionsEnabled: negativeEmissionsEnabled ?? previous.negativeEmissionsEnabled,
     );
   }
 }
@@ -124,7 +132,7 @@ class DeviceData extends ChangeNotifier {
         print('Positive Emission Duration: ${dataPoint.positiveEmissionDuration}');
         print('Negative Emission Duration: ${dataPoint.negativeEmissionDuration}');
         print('Periodic Emission Timer Length: ${dataPoint.periodicEmissionTimerLength}');
-        print('Periodic Emission: ${dataPoint.periodicEmissionOn}');
+        print('Periodic Emission: ${dataPoint.periodicEmissionEnabled}');
         print('Connected Heart Rate Device Name: ${dataPoint.connectedHRDeviceName}');
         print('\n');
       });

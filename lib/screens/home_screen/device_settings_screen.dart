@@ -28,6 +28,8 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
 
   bool isPeriodicEmissionEnabled = false;
   bool isHeartRateEmissionEnabled = false;
+  bool isPositiveEmissionEnabled = false;
+  bool isNegativeEmissionEnabled = false;
 
   @override
   void initState() {
@@ -53,8 +55,8 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       _selectedDurations['heart rate emission duration'] =
           Duration(seconds: deviceSettings.heartRateEmissionDuration);
       _heartRateThreshold = deviceSettings.heartRateThreshold;
-      isPeriodicEmissionEnabled = deviceSettings.periodicEmissionOn;
-      isHeartRateEmissionEnabled = deviceSettings.heartRateEmissionsOn;
+      isPeriodicEmissionEnabled = deviceSettings.periodicEmissionEnabled;
+      isHeartRateEmissionEnabled = deviceSettings.heartRateEmissionsEnabled;
     });
   }
 
@@ -75,7 +77,14 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
             onTap: () {
               _selectDuration(context, 'positive scent duration');
             },
-            // TODO: Add switch to enable/disable positive emissions
+            isSwitch: true,
+            switchValue: isPositiveEmissionEnabled,
+            onSwitchChanged: (newValue) {
+              setState(() {
+                isPositiveEmissionEnabled = newValue;
+                _updateTimeSeriesData('positive emission toggle', Duration.zero, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled, isPositiveEmissionEnabled, isNegativeEmissionEnabled);
+              });
+            },
           ),
           _buildSettingCard(
             title: 'Negative scent duration',
@@ -85,7 +94,14 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
             onTap: () {
               _selectDuration(context, 'negative scent duration');
             },
-            // TODO: Add switch to enable/disable negative emissions
+            isSwitch: true,
+            switchValue: isNegativeEmissionEnabled,
+            onSwitchChanged: (newValue) {
+              setState(() {
+                isNegativeEmissionEnabled = newValue;
+                _updateTimeSeriesData('negative emission toggle', Duration.zero, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled, isPositiveEmissionEnabled, isNegativeEmissionEnabled);
+              });
+            },
           ),
           _buildSettingCard(
             title: 'Periodic emission timer',
@@ -100,7 +116,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
             onSwitchChanged: (newValue) {
               setState(() {
                 isPeriodicEmissionEnabled = newValue;
-                _updateTimeSeriesData('periodic emission toggle', Duration.zero, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled);
+                _updateTimeSeriesData('periodic emission toggle', Duration.zero, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled, isPositiveEmissionEnabled, isNegativeEmissionEnabled);
               });
             },
           ),
@@ -119,7 +135,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
               setState(() {
                 isHeartRateEmissionEnabled = newValue;
               });
-              _updateTimeSeriesData('heart rate emission toggle', Duration.zero, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled);
+              _updateTimeSeriesData('heart rate emission toggle', Duration.zero, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled, isPositiveEmissionEnabled, isNegativeEmissionEnabled);
             },
           ),
           _buildSettingCard(
@@ -246,7 +262,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       setState(() {
         _selectedDurations[title] = selectedDuration;
       });
-      _updateTimeSeriesData(title, selectedDuration, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled);
+      _updateTimeSeriesData(title, selectedDuration, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled, isPositiveEmissionEnabled, isNegativeEmissionEnabled);
     }
   }
 
@@ -306,17 +322,11 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         _heartRateThreshold = selectedHeartRateThreshold;
       });
 
-      _updateTimeSeriesData(
-        'heart rate threshold',
-        Duration.zero,
-        selectedHeartRateThreshold,
-        isPeriodicEmissionEnabled,
-        isHeartRateEmissionEnabled,
-      );
+      _updateTimeSeriesData('heart rate threshold', Duration.zero, selectedHeartRateThreshold, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled, isPositiveEmissionEnabled, isNegativeEmissionEnabled);
     }
   }
 
-  void _updateTimeSeriesData(String title, Duration selectedDuration, int? heartRateThreshold, bool isPeriodicEmissionEnabled, bool isHeartRateEmissionEnabled) {
+  void _updateTimeSeriesData(String title, Duration selectedDuration, int? heartRateThreshold, bool isPeriodicEmissionEnabled, bool isHeartRateEmissionEnabled, bool isPositiveEmissionsEnabled, bool isNegativeEmissionsEnabled) {
     final totalSeconds = selectedDuration.inSeconds;
     final deviceData = Provider.of<DeviceData>(context, listen: false);
 
@@ -333,9 +343,13 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     } else if (title == "heart rate threshold") {
       newDataPoint.heartRateThreshold = heartRateThreshold ?? 0;
     } else if (title == "periodic emission toggle") {
-      newDataPoint.periodicEmissionOn = isPeriodicEmissionEnabled;
+      newDataPoint.periodicEmissionEnabled = isPeriodicEmissionEnabled;
     } else if (title == "heart rate emission toggle") {
-      newDataPoint.heartRateEmissionsOn = isHeartRateEmissionEnabled;
+      newDataPoint.heartRateEmissionsEnabled = isHeartRateEmissionEnabled;
+    } else if (title == "positive emission toggle") {
+      newDataPoint.positiveEmissionsEnabled = isPositiveEmissionsEnabled;
+    } else if (title == "negative emission toggle") {
+      newDataPoint.negativeEmissionsEnabled = isNegativeEmissionsEnabled;
     }
 
     deviceData.addDataPoint(widget.deviceTitle, newDataPoint);

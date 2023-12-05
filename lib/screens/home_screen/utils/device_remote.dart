@@ -95,7 +95,7 @@ class DeviceRemote extends StatelessWidget {
                 ),
                 SizedBox(width: 8),
                 TimedBinaryButton( // positive emission
-                  periodicEmissionEnabled: deviceSettings.periodicEmissionOn,
+                  periodicEmissionEnabled: deviceSettings.periodicEmissionEnabled,
                   periodicEmissionTimerDuration: Duration(seconds: deviceSettings.periodicEmissionTimerLength),
                   activeColor: Colors.green.shade500,
                   inactiveColor: Colors.grey.shade300,
