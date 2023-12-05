@@ -57,6 +57,8 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       _heartRateThreshold = deviceSettings.heartRateThreshold;
       isPeriodicEmissionEnabled = deviceSettings.periodicEmissionEnabled;
       isHeartRateEmissionEnabled = deviceSettings.heartRateEmissionsEnabled;
+      isPositiveEmissionEnabled = deviceSettings.positiveEmissionsEnabled;
+      isNegativeEmissionEnabled = deviceSettings.negativeEmissionsEnabled;
     });
   }
 
@@ -120,7 +122,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
               });
             },
           ),
-          _buildBluetoothConnectionSetting(), // Added this line
+          _buildBluetoothConnectionSetting(),
           _buildSettingCard(
             title: 'Heart rate emission duration',
             value: isHeartRateEmissionEnabled
@@ -151,7 +153,6 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         padding: EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: widget.onDelete,
-          // TODO: add deletion confirmation popup
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.red,
             minimumSize: const Size(50, 32),
@@ -194,7 +195,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
               value: switchValue,
               onChanged: onSwitchChanged,
             ),
-            Text(value),
+            Text(switchValue ? value : 'Off'), // Show 'Off' when the switch is off
           ],
         )
             : Text(value),
@@ -210,7 +211,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       margin: EdgeInsets.only(bottom: 16.0),
       child: ListTile(
         title: Text('Connect to heart rate monitor'),
-        subtitle: _buildConnectedDeviceSubtitle(false), // Set isConnected to false
+        subtitle: _buildConnectedDeviceSubtitle(false),
         onTap: () {
           _selectBluetoothDevice(context);
         },
@@ -220,7 +221,6 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
   }
 
   Widget _buildConnectedDeviceSubtitle(bool isConnected) {
-    // TODO: Replace the dummyDeviceName with actual data (the actual name of the device)
     String dummyDeviceName = 'Simulated Heart Rate Device';
 
     if (isConnected) {
@@ -280,7 +280,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
               children: [
                 Text('Choose a heart rate threshold:'),
                 Container(
-                  width: 80, // Set the desired width
+                  width: 80,
                   child: DropdownButtonFormField<int>(
                     value: _heartRateThreshold,
                     items: List.generate(200, (index) => index + 1)
@@ -333,13 +333,13 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     DeviceTimeSeriesData newDataPoint = deviceData.getDeviceSettings(widget.deviceTitle);
 
     if (title == "positive scent duration") {
-      newDataPoint.positiveEmissionDuration = totalSeconds;
+      newDataPoint.positiveEmissionDuration = isPositiveEmissionsEnabled ? totalSeconds : 0;
     } else if (title == "negative scent duration") {
-      newDataPoint.negativeEmissionDuration = totalSeconds;
+      newDataPoint.negativeEmissionDuration = isNegativeEmissionsEnabled ? totalSeconds : 0;
     } else if (title == "time between periodic emissions") {
-      newDataPoint.periodicEmissionTimerLength = totalSeconds;
+      newDataPoint.periodicEmissionTimerLength = isPeriodicEmissionEnabled ? totalSeconds : 0;
     } else if (title == "heart rate emission duration") {
-      newDataPoint.heartRateEmissionDuration = totalSeconds;
+      newDataPoint.heartRateEmissionDuration = isHeartRateEmissionEnabled ? totalSeconds : 0;
     } else if (title == "heart rate threshold") {
       newDataPoint.heartRateThreshold = heartRateThreshold ?? 0;
     } else if (title == "periodic emission toggle") {
@@ -348,10 +348,17 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       newDataPoint.heartRateEmissionsEnabled = isHeartRateEmissionEnabled;
     } else if (title == "positive emission toggle") {
       newDataPoint.positiveEmissionsEnabled = isPositiveEmissionsEnabled;
+      if (!isPositiveEmissionsEnabled) {
+        newDataPoint.positiveEmissionDuration = 0;
+      }
     } else if (title == "negative emission toggle") {
       newDataPoint.negativeEmissionsEnabled = isNegativeEmissionsEnabled;
+      if (!isNegativeEmissionsEnabled) {
+        newDataPoint.negativeEmissionDuration = 0;
+      }
     }
 
     deviceData.addDataPoint(widget.deviceTitle, newDataPoint);
   }
+
 }
