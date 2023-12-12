@@ -18,6 +18,7 @@ class DeviceTimeSeriesData {
   String connectedHRDeviceName = "";
   bool positiveEmissionsEnabled; // if enabled or disabled
   bool negativeEmissionsEnabled; // if enabled or disabled
+  String note; // Add this field for storing the note
 
   DeviceTimeSeriesData({
     required this.timestamp,
@@ -34,6 +35,7 @@ class DeviceTimeSeriesData {
     this.heartRateEmissionsEnabled = false,
     this.positiveEmissionsEnabled = false,
     this.negativeEmissionsEnabled = false,
+    this.note = "", // Initialize the note field
   });
 
   factory DeviceTimeSeriesData.fromPrevious(DeviceTimeSeriesData previous, {
@@ -51,6 +53,7 @@ class DeviceTimeSeriesData {
     bool? heartRateEmissions,
     bool? positiveEmissionsEnabled,
     bool? negativeEmissionsEnabled,
+    String? note, // Add the note field to the factory constructor
   }) {
     return DeviceTimeSeriesData(
       timestamp: timestamp ?? previous.timestamp,
@@ -63,9 +66,10 @@ class DeviceTimeSeriesData {
       periodicEmissionTimerLength: periodicEmissionTimerLength ?? previous.periodicEmissionTimerLength,
       heartRateEmissionDuration: heartRateEmissionDuration ?? previous.heartRateEmissionDuration,
       heartRateThreshold: heartRateThreshold ?? previous.heartRateThreshold,
-      heartRateEmissionsEnabled: heartRateEmissions ?? previous.heartRateEmissionsEnabled, // Set the new field
+      heartRateEmissionsEnabled: heartRateEmissions ?? previous.heartRateEmissionsEnabled,
       positiveEmissionsEnabled: positiveEmissionsEnabled ?? previous.positiveEmissionsEnabled,
       negativeEmissionsEnabled: negativeEmissionsEnabled ?? previous.negativeEmissionsEnabled,
+      note: note ?? previous.note, // Set the note field in the factory constructor
     );
   }
 }
