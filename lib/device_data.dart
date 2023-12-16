@@ -143,7 +143,6 @@ class DeviceData extends ChangeNotifier {
     });
   }
 
-  // New method to set the connected HR device name
   void setConnectedHRDeviceName(String deviceName) {
     // Set the connected HR device name for each device title
     _deviceDataMap.keys.forEach((title) {
@@ -154,4 +153,13 @@ class DeviceData extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void setNoteForDevice(String deviceTitle, String note) {
+    final List<DeviceTimeSeriesData>? deviceData = _deviceDataMap[deviceTitle];
+    if (deviceData != null && deviceData.isNotEmpty) {
+      deviceData.first.note = note;
+      notifyListeners();
+    }
+  }
+
 }

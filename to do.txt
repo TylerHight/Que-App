@@ -1,3 +1,3 @@
-- rate settings at end of day (satified-dissatisfied)
+- rate settings at end of day or emission (satified-dissatisfied)
 - notes from caretaker/teacher
 - way to look at past settings

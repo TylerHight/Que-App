@@ -1,5 +1,3 @@
-/// device_remote.dart
-
 import 'package:flutter/material.dart';
 import 'timed_binary_button.dart';
 import 'binary_button.dart';
@@ -76,6 +74,27 @@ class DeviceRemote extends StatelessWidget {
                         // TODO: communicate via bluetooth to turn off the device
                       },
                     ),
+                    SizedBox(width: 8),
+                    // Inside the DeviceRemote widget
+                    Row(
+                      children: [
+                        BinaryButton( // note button
+                          activeColor: Colors.white, // Change the color as per your preference
+                          inactiveColor: Colors.white,
+                          iconData: Icons.note_add,
+                          iconColor: Colors.grey.shade300,
+                          buttonSize: 30.0,
+                          iconSize: 30.0,
+                          onPressedTurnOn: () {
+                            _showNoteDialog(context, deviceData, title);
+                          },
+                          onPressedTurnOff: (){
+                            _showNoteDialog(context, deviceData, title);
+                          },
+                        ),
+                      ],
+                    ),
+
                   ],
                 ),
               ],
@@ -110,6 +129,42 @@ class DeviceRemote extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showNoteDialog(BuildContext context, DeviceData deviceData, String title) {
+    String note = deviceData.getDeviceSettings(title).note;
+    // TODO: Check if the note saves correctly and make the note go away when after submitted
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+      return AlertDialog(
+          title: Text('Enter Note'),
+          content: TextField(
+            onChanged: (value) {
+              note = value;
+            },
+            controller: TextEditingController(text: note),
+            decoration: InputDecoration(hintText: 'Enter your note here'),
+          ),
+          actions: <Widget>[
+          TextButton(
+          onPressed: () {
+        Navigator.of(context).pop();
+      },
+    child: Text('Cancel'),
+    ),
+    TextButton(
+    onPressed: () {
+    deviceData.setNoteForDevice(title, note);
+    Navigator.of(context).pop();
+    },
+      child: Text('Save'),
+    ),
+          ],
+      );
+        },
     );
   }
 }
