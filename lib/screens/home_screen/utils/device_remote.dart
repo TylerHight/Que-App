@@ -46,8 +46,8 @@ class DeviceRemote extends StatelessWidget {
                       activeColor: Colors.green.shade400,
                       inactiveColor: Colors.grey.shade300,
                       iconData: Icons.power_settings_new,
-                      buttonSize: 26.0,
-                      iconSize: 18.0,
+                      buttonSize: 28.0,
+                      iconSize: 20.0,
                       onPressedTurnOn: () {
                         //onTap();
                       },
@@ -62,7 +62,7 @@ class DeviceRemote extends StatelessWidget {
                       iconData: Icons.settings,
                       iconColor: Colors.grey.shade300,
                       buttonSize: 30.0,
-                      iconSize: 30.0,
+                      iconSize: 32.0,
                       onPressedTurnOn: () {
                         onTap();
                         // TODO: enable all emissions that are turned on in the device settings
@@ -81,7 +81,7 @@ class DeviceRemote extends StatelessWidget {
                         BinaryButton( // note button
                           activeColor: Colors.white, // Change the color as per your preference
                           inactiveColor: Colors.white,
-                          iconData: Icons.note_add,
+                          iconData: Icons.assignment_add,
                           iconColor: Colors.grey.shade300,
                           buttonSize: 30.0,
                           iconSize: 30.0,
