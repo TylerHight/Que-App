@@ -7,6 +7,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen/home_screen.dart';
+import 'screens/log_screen/log_screen.dart';
 import 'screens/settings_screen/settings_screen.dart';
 import 'screens/data_screen/data_screen.dart';
 import 'screens/account_screen.dart';
@@ -47,22 +48,27 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _screens = [
     HomeScreen(),
-/*    SettingsScreen(),
+    LogScreen(),
+    /*
+    SettingsScreen(),
     DataScreen(),
-    AccountScreen(),*/
+    AccountScreen(),
+    */
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_currentIndex],
-      /*bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          if (index < _screens.length) {
+            setState(() {
+              _currentIndex = index;
+            });
+          }
         },
         unselectedItemColor: Colors.grey[700],
         items: const [
@@ -70,6 +76,11 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.home),
             label: 'Home',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.format_list_bulleted),
+            label: 'Log',
+          ),
+          /*
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'Settings',
@@ -82,8 +93,9 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.account_circle),
             label: 'Account',
           ),
+           */
         ],
-      ),*/
+      ),
     );
   }
 }
