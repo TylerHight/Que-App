@@ -168,6 +168,15 @@ class DeviceData extends ChangeNotifier {
     final List<DeviceTimeSeriesData>? deviceData = _deviceDataMap[deviceTitle];
     if (deviceData != null && deviceData.isNotEmpty) {
       deviceData.first.note = note;
+
+      // Create a new map with the new note and timestamp added to the front
+      Map<String, DateTime> newLogItems = {note: DateTime.now()};
+      newLogItems.addAll(_logItems);
+
+      // Update the _logItems variable
+      _logItems.clear();
+      _logItems.addAll(newLogItems);
+
       notifyListeners();
     }
   }
