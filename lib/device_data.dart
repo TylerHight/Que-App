@@ -77,6 +77,7 @@ class DeviceTimeSeriesData {
 class DeviceData extends ChangeNotifier {
   final List<String> _deviceTitles = [];
   final Map<String, List<DeviceTimeSeriesData>> _deviceDataMap = {};
+  final Map<String, DateTime> _deviceAddedHistory = {};
 
   List<String> get deviceTitles => _deviceTitles;
 
@@ -89,6 +90,7 @@ class DeviceData extends ChangeNotifier {
     _deviceDataMap[title] = [
       DeviceTimeSeriesData(timestamp: DateTime.now())
     ];
+    _deviceAddedHistory[title] = DateTime.now(); // Store the timestamp in the history
     notifyListeners();
   }
 
@@ -162,4 +164,5 @@ class DeviceData extends ChangeNotifier {
     }
   }
 
+  Map<String, DateTime> get deviceAddedHistory => _deviceAddedHistory;
 }
