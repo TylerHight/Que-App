@@ -45,9 +45,10 @@ class _LogListWidgetState extends State<LogListWidget> {
     return Consumer<DeviceData>(
       builder: (context, deviceData, child) {
         return ListView.builder(
-          itemCount: deviceData.deviceTitles.length,
+          itemCount: deviceData.deviceAddedHistory.length,
           itemBuilder: (context, index) {
-            String deviceTitle = deviceData.deviceTitles[index];
+            String deviceTitle = deviceData.deviceAddedHistory.keys.elementAt(index);
+            DateTime addedTimestamp = deviceData.deviceAddedHistory[deviceTitle] ?? DateTime.now();
             List<DeviceTimeSeriesData> deviceDataPoints = deviceData.getDeviceData(deviceTitle);
 
             // Retrieve the latest data point for the log entry
@@ -57,6 +58,7 @@ class _LogListWidgetState extends State<LogListWidget> {
 
             return LogEntryWidget(
               deviceTitle: deviceTitle,
+              addedTimestamp: addedTimestamp,
               latestDataPoint: latestDataPoint,
             );
           },
@@ -68,10 +70,12 @@ class _LogListWidgetState extends State<LogListWidget> {
 
 class LogEntryWidget extends StatelessWidget {
   final String deviceTitle;
+  final DateTime addedTimestamp;
   final DeviceTimeSeriesData latestDataPoint;
 
   LogEntryWidget({
     required this.deviceTitle,
+    required this.addedTimestamp,
     required this.latestDataPoint,
   });
 
@@ -90,6 +94,7 @@ class LogEntryWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text('Added Timestamp: $addedTimestamp'),
               Text('Timestamp: ${latestDataPoint.timestamp}'),
               Text('Heart Rate: ${latestDataPoint.heartRate}'),
               // Add other relevant data points as needed
