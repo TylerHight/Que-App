@@ -77,7 +77,7 @@ class DeviceTimeSeriesData {
 class DeviceData extends ChangeNotifier {
   final List<String> _deviceTitles = [];
   final Map<String, List<DeviceTimeSeriesData>> _deviceDataMap = {};
-  final Map<String, DateTime> _deviceAddedHistory = {};
+  final Map<String, DateTime> _logItems = {};
 
   List<String> get deviceTitles => _deviceTitles;
 
@@ -92,12 +92,12 @@ class DeviceData extends ChangeNotifier {
     ];
 
     // Create a new map with the new device added to the front
-    Map<String, DateTime> newDeviceAddedHistory = {title: DateTime.now()};
-    newDeviceAddedHistory.addAll(_deviceAddedHistory);
+    Map<String, DateTime> newLogItem = {title: DateTime.now()};
+    newLogItem.addAll(_logItems);
 
-    // Update the _deviceAddedHistory variable
-    _deviceAddedHistory.clear();
-    _deviceAddedHistory.addAll(newDeviceAddedHistory);
+    // Update the newLogItem variable
+    _logItems.clear();
+    _logItems.addAll(newLogItem);
 
     notifyListeners();
   }
@@ -172,5 +172,5 @@ class DeviceData extends ChangeNotifier {
     }
   }
 
-  Map<String, DateTime> get deviceAddedHistory => _deviceAddedHistory;
+  Map<String, DateTime> get logItems => _logItems;
 }

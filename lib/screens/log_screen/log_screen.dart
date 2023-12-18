@@ -45,10 +45,10 @@ class _LogListWidgetState extends State<LogListWidget> {
     return Consumer<DeviceData>(
       builder: (context, deviceData, child) {
         return ListView.builder(
-          itemCount: deviceData.deviceAddedHistory.length,
+          itemCount: deviceData.logItems.length,
           itemBuilder: (context, index) {
-            String deviceTitle = deviceData.deviceAddedHistory.keys.elementAt(index);
-            DateTime addedTimestamp = deviceData.deviceAddedHistory[deviceTitle] ?? DateTime.now();
+            String deviceTitle = deviceData.logItems.keys.elementAt(index);
+            DateTime addedTimestamp = deviceData.logItems[deviceTitle] ?? DateTime.now();
             List<DeviceTimeSeriesData> deviceDataPoints = deviceData.getDeviceData(deviceTitle);
 
             // Retrieve the latest data point for the log entry
