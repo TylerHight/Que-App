@@ -86,11 +86,19 @@ class DeviceData extends ChangeNotifier {
   }
 
   void addDeviceTitle(String title) {
-    _deviceTitles.add(title);
+    _deviceTitles.insert(0, title); // Insert at the beginning of _deviceTitles
     _deviceDataMap[title] = [
       DeviceTimeSeriesData(timestamp: DateTime.now())
     ];
-    _deviceAddedHistory[title] = DateTime.now(); // Store the timestamp in the history
+
+    // Create a new map with the new device added to the front
+    Map<String, DateTime> newDeviceAddedHistory = {title: DateTime.now()};
+    newDeviceAddedHistory.addAll(_deviceAddedHistory);
+
+    // Update the _deviceAddedHistory variable
+    _deviceAddedHistory.clear();
+    _deviceAddedHistory.addAll(newDeviceAddedHistory);
+
     notifyListeners();
   }
 
