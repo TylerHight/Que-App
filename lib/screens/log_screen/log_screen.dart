@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import '../../device_data.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class LogScreen extends StatefulWidget {
   @override
@@ -81,6 +82,9 @@ class LogEntryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Format the timestamp to a more readable format
+    String formattedTimestamp = DateFormat('MMMM dd, yyyy - hh:mm a').format(addedTimestamp);
+
     return Card(
       elevation: 4.0,
       margin: EdgeInsets.symmetric(vertical: 8.0),
@@ -94,9 +98,7 @@ class LogEntryWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Added Timestamp: $addedTimestamp'),
-              Text('Timestamp: ${latestDataPoint.timestamp}'),
-              Text('Heart Rate: ${latestDataPoint.heartRate}'),
+              Text('Added: $formattedTimestamp'),
               // Add other relevant data points as needed
             ],
           ),
