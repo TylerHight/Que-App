@@ -91,8 +91,11 @@ class DeviceData extends ChangeNotifier {
       DeviceTimeSeriesData(timestamp: DateTime.now())
     ];
 
+    // Add the "Device added: " prefix to the device name
+    String logItemTitle = "Device added: $title";
+
     // Create a new map with the new device added to the front
-    Map<String, DateTime> newLogItem = {title: DateTime.now()};
+    Map<String, DateTime> newLogItem = {logItemTitle: DateTime.now()};
     newLogItem.addAll(_logItems);
 
     // Update the newLogItem variable
@@ -171,7 +174,7 @@ class DeviceData extends ChangeNotifier {
       deviceData.first.note = "Note: $note";
 
       // Create a new map with the new note and timestamp added to the front
-      Map<String, DateTime> newLogItems = {"Note: $note": DateTime.now()};
+      Map<String, DateTime> newLogItems = {"Note for $deviceTitle: $note": DateTime.now()};
       newLogItems.addAll(_logItems);
 
       // Update the _logItems variable
