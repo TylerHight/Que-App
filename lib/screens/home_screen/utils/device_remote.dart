@@ -133,38 +133,40 @@ class DeviceRemote extends StatelessWidget {
   }
 
   void _showNoteDialog(BuildContext context, DeviceData deviceData, String title) {
-    String note = deviceData.getDeviceSettings(title).note;
-    // TODO: Check if the note saves correctly and make the note go away when after submitted
+    TextEditingController noteController =
+    TextEditingController();
+    // TODO: Make sure the saved note value (not the log value) is not edited with a header
 
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-      return AlertDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
           title: Text('Enter Note'),
           content: TextField(
             onChanged: (value) {
-              note = value;
+              // You can update the note variable if needed
+              // note = value;
             },
-            controller: TextEditingController(text: note),
+            controller: noteController,
             decoration: InputDecoration(hintText: 'Enter your note here'),
           ),
           actions: <Widget>[
-          TextButton(
-          onPressed: () {
-        Navigator.of(context).pop();
-      },
-    child: Text('Cancel'),
-    ),
-    TextButton(
-    onPressed: () {
-    deviceData.setNoteForDevice(title, note);
-    Navigator.of(context).pop();
-    },
-      child: Text('Save'),
-    ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                deviceData.setNoteForDevice(title, noteController.text);
+                Navigator.of(context).pop();
+              },
+              child: Text('Save'),
+            ),
           ],
-      );
-        },
+        );
+      },
     );
   }
 }

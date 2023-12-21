@@ -98,7 +98,7 @@ class LogEntryWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Added: $formattedTimestamp'),
+              Text(formattedTimestamp),
               // Add other relevant data points as needed
             ],
           ),
