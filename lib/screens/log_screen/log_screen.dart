@@ -86,12 +86,13 @@ class LogEntryWidget extends StatelessWidget {
     String formattedTimestamp = DateFormat('MMMM dd, yyyy - hh:mm a').format(addedTimestamp);
 
     return Card(
+      //TODO: add all device setting changes and activities to log
       elevation: 4.0,
       margin: EdgeInsets.symmetric(vertical: 8.0),
       child: ListTile(
         title: Text(
           deviceTitle,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          //style: TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 8.0),
@@ -106,7 +107,7 @@ class LogEntryWidget extends StatelessWidget {
         onTap: () {
           // Handle onTap for each log entry if needed
         },
-        trailing: Icon(Icons.arrow_forward_ios),
+        //trailing: Icon(Icons.arrow_forward_ios),
       ),
     );
   }
