@@ -133,15 +133,28 @@ class DeviceRemote extends StatelessWidget {
   }
 
   void _showNoteDialog(BuildContext context, DeviceData deviceData, String title) {
-    TextEditingController noteController =
-    TextEditingController();
-    // TODO: Make sure the saved note value (not the log value) is not edited with a header
+    TextEditingController noteController = TextEditingController();
+    int rating = 0; // Variable to store the selected rating
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Enter Note'),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Enter Note'),
+              IconButton(
+                icon: Icon(Icons.thumbs_up_down),
+                onPressed: () {
+                  _showRatingDialog(context, (int selectedRating) {
+                    // Update the rating when the user selects a value
+                    rating = selectedRating;
+                  });
+                },
+              ),
+            ],
+          ),
           content: TextField(
             onChanged: (value) {
               // You can update the note variable if needed
@@ -159,7 +172,8 @@ class DeviceRemote extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                deviceData.setNoteForDevice(title, noteController.text);
+                // Save note and rating
+                //TODO: deviceData.setNoteAndRatingForDevice(title, noteController.text, rating);
                 Navigator.of(context).pop();
               },
               child: Text('Save'),
@@ -169,4 +183,36 @@ class DeviceRemote extends StatelessWidget {
       },
     );
   }
+
+  void _showRatingDialog(BuildContext context, Function(int) onRatingSelected) {
+    int selectedRating = 0;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Rate Current Settings'),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              5,
+                  (index) => IconButton(
+                icon: Icon(
+                  index < selectedRating ? Icons.star : Icons.star_border,
+                  color: Colors.orange,
+                ),
+                onPressed: () {
+                  // Update the selectedRating when a star is tapped
+                  selectedRating = index + 1;
+                  onRatingSelected(selectedRating);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 }

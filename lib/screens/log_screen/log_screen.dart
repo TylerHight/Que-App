@@ -84,6 +84,7 @@ class LogEntryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // Format the timestamp to a more readable format
     String formattedTimestamp = DateFormat('MMMM dd, yyyy - hh:mm a').format(addedTimestamp);
+    //TODO: Add a way to sort log entries
 
     return Card(
       //TODO: add all device setting changes and activities to log
