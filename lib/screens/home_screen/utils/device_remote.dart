@@ -190,29 +190,37 @@ class DeviceRemote extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Rate Current Settings'),
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              5,
-                  (index) => IconButton(
-                icon: Icon(
-                  index < selectedRating ? Icons.star : Icons.star_border,
-                  color: Colors.orange,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Rate Current Settings'),
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  5,
+                      (index) => IconButton(
+                    icon: Icon(
+                      index < selectedRating ? Icons.star : Icons.star_border,
+                      color: index < selectedRating ? Colors.orange : Colors.grey,
+                    ),
+                    onPressed: () {
+                      // Update the selectedRating when a star is tapped
+                      selectedRating = index + 1;
+                      setState(() {}); // Trigger a rebuild to update the star colors
+                      Future.delayed(Duration(milliseconds: 500), () {
+                        onRatingSelected(selectedRating);
+                        Navigator.of(context).pop();
+                      });
+                    },
+                  ),
                 ),
-                onPressed: () {
-                  // Update the selectedRating when a star is tapped
-                  selectedRating = index + 1;
-                  onRatingSelected(selectedRating);
-                  Navigator.of(context).pop();
-                },
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
   }
+
 
 }
