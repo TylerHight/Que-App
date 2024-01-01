@@ -140,28 +140,39 @@ class DeviceRemote extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 8),
               Text('Enter Note'),
-              IconButton(
-                icon: Icon(Icons.thumbs_up_down),
-                onPressed: () {
-                  _showRatingDialog(context, (int selectedRating) {
-                    // Update the rating when the user selects a value
-                    rating = selectedRating;
-                  });
+              TextField(
+                onChanged: (value) {
+                  // You can update the note variable if needed
+                  // note = value;
                 },
+                controller: noteController,
+                decoration: InputDecoration(hintText: 'Enter your note here'),
+              ),
+              SizedBox(height: 24), // Add more space between the note field and the rating
+              Text('Rate Settings:'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  5,
+                      (index) => IconButton(
+                    icon: Icon(
+                      index < rating ? Icons.star : Icons.star_border,
+                      color: index < rating ? Colors.orange : Colors.grey,
+                    ),
+                    onPressed: () {
+                      // Update the selectedRating when a star is tapped
+                      rating = index + 1;
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
               ),
             ],
-          ),
-          content: TextField(
-            onChanged: (value) {
-              // You can update the note variable if needed
-              // note = value;
-            },
-            controller: noteController,
-            decoration: InputDecoration(hintText: 'Enter your note here'),
           ),
           actions: <Widget>[
             TextButton(
@@ -179,44 +190,6 @@ class DeviceRemote extends StatelessWidget {
               child: Text('Save'),
             ),
           ],
-        );
-      },
-    );
-  }
-
-  void _showRatingDialog(BuildContext context, Function(int) onRatingSelected) {
-    int selectedRating = 0;
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: Text('Rate Current Settings'),
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  5,
-                      (index) => IconButton(
-                    icon: Icon(
-                      index < selectedRating ? Icons.star : Icons.star_border,
-                      color: index < selectedRating ? Colors.orange : Colors.grey,
-                    ),
-                    onPressed: () {
-                      // Update the selectedRating when a star is tapped
-                      selectedRating = index + 1;
-                      setState(() {}); // Trigger a rebuild to update the star colors
-                      Future.delayed(Duration(milliseconds: 500), () {
-                        onRatingSelected(selectedRating);
-                        Navigator.of(context).pop();
-                      });
-                    },
-                  ),
-                ),
-              ),
-            );
-          },
         );
       },
     );
