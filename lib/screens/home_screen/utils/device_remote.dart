@@ -4,7 +4,7 @@ import 'binary_button.dart';
 import 'package:que_app/device_data.dart';
 import 'package:provider/provider.dart';
 
-class DeviceRemote extends StatelessWidget {
+class DeviceRemote extends StatefulWidget {
   final String title;
   final VoidCallback onTap;
 
@@ -14,9 +14,27 @@ class DeviceRemote extends StatelessWidget {
   });
 
   @override
+  _DeviceRemoteState createState() => _DeviceRemoteState();
+}
+
+class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMixin {
+  late AnimationController _ratingAnimationController;
+  late int _currentRating;
+
+  @override
+  void initState() {
+    super.initState();
+    _ratingAnimationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500),
+    );
+    _currentRating = 0;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final deviceData = Provider.of<DeviceData>(context);
-    final deviceSettings = deviceData.getDeviceSettings(title);
+    final deviceSettings = deviceData.getDeviceSettings(widget.title);
 
     return Card(
       shape: RoundedRectangleBorder(
@@ -32,7 +50,7 @@ class DeviceRemote extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  widget.title,
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 18.0,
@@ -42,7 +60,7 @@ class DeviceRemote extends StatelessWidget {
                 SizedBox(height: 4),
                 Row(
                   children: [
-                    BinaryButton( // power button
+                    BinaryButton(
                       activeColor: Colors.green.shade400,
                       inactiveColor: Colors.grey.shade300,
                       iconData: Icons.power_settings_new,
@@ -56,7 +74,7 @@ class DeviceRemote extends StatelessWidget {
                       },
                     ),
                     SizedBox(width: 8),
-                    BinaryButton( // settings button
+                    BinaryButton(
                       activeColor: Colors.white,
                       inactiveColor: Colors.white,
                       iconData: Icons.settings,
@@ -64,37 +82,35 @@ class DeviceRemote extends StatelessWidget {
                       buttonSize: 30.0,
                       iconSize: 32.0,
                       onPressedTurnOn: () {
-                        onTap();
+                        widget.onTap();
                         // TODO: enable all emissions that are turned on in the device settings
                         // TODO: communicate via bluetooth to turn on the device
                       },
                       onPressedTurnOff: () {
-                        onTap();
+                        widget.onTap();
                         // TODO: disable all emissions that are turned on in the device settings (but keep setting as on)
                         // TODO: communicate via bluetooth to turn off the device
                       },
                     ),
                     SizedBox(width: 8),
-                    // Inside the DeviceRemote widget
                     Row(
                       children: [
-                        BinaryButton( // note button
-                          activeColor: Colors.white, // Change the color as per your preference
+                        BinaryButton(
+                          activeColor: Colors.white,
                           inactiveColor: Colors.white,
                           iconData: Icons.assignment_add,
                           iconColor: Colors.grey.shade300,
                           buttonSize: 30.0,
                           iconSize: 30.0,
                           onPressedTurnOn: () {
-                            _showNoteDialog(context, deviceData, title);
+                            _showNoteDialog(context, deviceData, widget.title);
                           },
-                          onPressedTurnOff: (){
-                            _showNoteDialog(context, deviceData, title);
+                          onPressedTurnOff: () {
+                            _showNoteDialog(context, deviceData, widget.title);
                           },
                         ),
                       ],
                     ),
-
                   ],
                 ),
               ],
@@ -102,7 +118,7 @@ class DeviceRemote extends StatelessWidget {
             Row(
               children: [
                 SizedBox(width: 8),
-                TimedBinaryButton( // negative emission
+                TimedBinaryButton(
                   periodicEmissionTimerDuration: Duration(seconds: 0),
                   activeColor: Colors.red.shade400,
                   inactiveColor: Colors.grey.shade300,
@@ -113,7 +129,7 @@ class DeviceRemote extends StatelessWidget {
                   autoTurnOffEnabled: true,
                 ),
                 SizedBox(width: 8),
-                TimedBinaryButton( // positive emission
+                TimedBinaryButton(
                   periodicEmissionEnabled: deviceSettings.periodicEmissionEnabled,
                   periodicEmissionTimerDuration: Duration(seconds: deviceSettings.periodicEmissionTimerLength),
                   activeColor: Colors.green.shade500,
@@ -134,66 +150,83 @@ class DeviceRemote extends StatelessWidget {
 
   void _showNoteDialog(BuildContext context, DeviceData deviceData, String title) {
     TextEditingController noteController = TextEditingController();
-    int rating = 0; // Variable to store the selected rating
+    int rating = 0;
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 8),
-              Text('Enter Note'),
-              TextField(
-                onChanged: (value) {
-                  // You can update the note variable if needed
-                  // note = value;
-                },
-                controller: noteController,
-                decoration: InputDecoration(hintText: 'Enter your note here'),
-              ),
-              SizedBox(height: 24), // Add more space between the note field and the rating
-              Text('Rate Settings:'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  5,
-                      (index) => IconButton(
-                    icon: Icon(
-                      index < rating ? Icons.star : Icons.star_border,
-                      color: index < rating ? Colors.orange : Colors.grey,
-                    ),
-                    onPressed: () {
-                      // Update the selectedRating when a star is tapped
-                      rating = index + 1;
-                      Navigator.of(context).pop();
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Enter Note'),
+                  TextField(
+                    onChanged: (value) {
+                      // You can update the note variable if needed
+                      // note = value;
+                    },
+                    controller: noteController,
+                    decoration: InputDecoration(hintText: 'Enter your note here'),
+                  ),
+                  SizedBox(height: 16),
+                  Text('Settings Rating'),
+                  AnimatedBuilder(
+                    animation: _ratingAnimationController,
+                    builder: (context, child) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          5,
+                              (index) => IconButton(
+                            icon: Icon(
+                              index < _currentRating ? Icons.star : Icons.star_border,
+                              color: index < _currentRating ? Colors.orange : Colors.grey,
+                            ),
+                            onPressed: () {
+                              _animateRating(index + 1);
+                            },
+                          ),
+                        ),
+                      );
                     },
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                // Save note and rating
-                //TODO: deviceData.setNoteAndRatingForDevice(title, noteController.text, rating);
-                Navigator.of(context).pop();
-              },
-              child: Text('Save'),
-            ),
-          ],
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Save note and rating
+                    //TODO: deviceData.setNoteAndRatingForDevice(title, noteController.text, rating);
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Save'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
 
+  void _animateRating(int newRating) {
+    setState(() {
+      _currentRating = newRating;
+    });
 
+    _ratingAnimationController.forward(from: 0.0);
+
+    Future.delayed(Duration(milliseconds: 500), () {
+      _ratingAnimationController.reset();
+      Navigator.of(context).pop();
+    });
+  }
 }
