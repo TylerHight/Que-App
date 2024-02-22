@@ -1,21 +1,23 @@
-// device_data.dart
+// File: device_data.dart
+// Description: Contains classes for managing and storing device data and settings 
 
 import 'package:flutter/foundation.dart';
 
+// Stores time series data for the device
 class DeviceTimeSeriesData {
-  final DateTime timestamp;
-  final int heartRate;
-  final bool deviceOn;
-  final bool positiveEmission;
-  final bool negativeEmission;
-  int positiveEmissionDuration;
-  int negativeEmissionDuration;
-  int periodicEmissionTimerLength;
-  bool periodicEmissionEnabled; // if enabled or disabled
-  int heartRateEmissionDuration;
-  int heartRateThreshold;
-  bool heartRateEmissionsEnabled; // if enabled or disabled
-  String connectedHRDeviceName = "";
+  final DateTime timestamp; // timestamp for the data
+  final int heartRate; // heart rate that is being collected from the connected HR device
+  final bool deviceOn; // whether the necklace is on or off
+  final bool positiveEmission; // whether a positive emission is being released or not
+  final bool negativeEmission; // whether a negative emission is being released or not
+  int positiveEmissionDuration; // duration of positive scent emission
+  int negativeEmissionDuration; // duration of negative scent emission
+  int periodicEmissionTimerLength; // length of time between periodically-triggered emissions
+  bool periodicEmissionEnabled; // whether periodic emissions are enabled or disabled
+  int heartRateEmissionDuration; // duration of heart-rate triggered scent emission
+  int heartRateThreshold; // heart rate threshold for triggering scent emission
+  bool heartRateEmissionsEnabled; // if heartrate-triggered emissions are enabled or disabled
+  String connectedHRDeviceName = ""; // name of connected heart rate monitoring device
   bool positiveEmissionsEnabled; // if enabled or disabled
   bool negativeEmissionsEnabled; // if enabled or disabled
   String note; // Add this field for storing the note
