@@ -62,7 +62,7 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                   children: [
                     BinaryButton(
                       activeColor: Colors.green.shade400,
-                      inactiveColor: Colors.grey.shade300,
+                      inactiveColor: Colors.grey.shade400,
                       iconData: Icons.power_settings_new,
                       buttonSize: 28.0,
                       iconSize: 20.0,
@@ -75,10 +75,10 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                     ),
                     SizedBox(width: 8),
                     BinaryButton(
-                      activeColor: Colors.white,
-                      inactiveColor: Colors.white,
+                      activeColor: Colors.transparent,
+                      inactiveColor: Colors.transparent,
                       iconData: Icons.settings,
-                      iconColor: Colors.grey.shade300,
+                      iconColor: Colors.grey.shade400,
                       buttonSize: 30.0,
                       iconSize: 32.0,
                       onPressedTurnOn: () {
@@ -96,10 +96,10 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                     Row(
                       children: [
                         BinaryButton(
-                          activeColor: Colors.white,
-                          inactiveColor: Colors.white,
+                          activeColor: Colors.transparent,
+                          inactiveColor: Colors.transparent,
                           iconData: Icons.assignment_add,
-                          iconColor: Colors.grey.shade300,
+                          iconColor: Colors.grey.shade400,
                           buttonSize: 30.0,
                           iconSize: 30.0,
                           onPressedTurnOn: () {
