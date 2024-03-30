@@ -12,7 +12,7 @@
 import 'dart:async';
 
 class BluetoothOperations {
-  StreamController<int> _heartRateController = StreamController<int>();
+  final StreamController<int> _heartRateController = StreamController<int>();
   int _currentHeartRate = 60;
 
   // Other Bluetooth-related functions and variables...
@@ -27,7 +27,7 @@ class BluetoothOperations {
   }
 
   void increaseHeartRate(int initialHeartRate, int targetHeartRate) {
-    Timer.periodic(Duration(seconds: 1), (innerTimer) {
+    Timer.periodic(const Duration(seconds: 1), (innerTimer) {
       if (initialHeartRate < targetHeartRate) {
         _currentHeartRate = initialHeartRate + 40 ~/ 12; // Increase by 40 bpm over 12 seconds
         _heartRateController.add(_currentHeartRate);
@@ -40,7 +40,7 @@ class BluetoothOperations {
   }
 
   void decreaseHeartRate(int initialHeartRate) {
-    Timer.periodic(Duration(seconds: 1), (innerTimer) {
+    Timer.periodic(const Duration(seconds: 1), (innerTimer) {
       if (initialHeartRate > 60) {
         _currentHeartRate = initialHeartRate - 40 ~/ 12; // Decrease by 40 bpm over 12 seconds
         _heartRateController.add(_currentHeartRate);
@@ -66,7 +66,7 @@ void main() {
   bluetooth.emulateHeartRate();
 
   // Outside operation sampling heart rate every 3 seconds
-  Timer.periodic(Duration(seconds: 3), (timer) {
+  Timer.periodic(const Duration(seconds: 3), (timer) {
     int currentHeartRate = bluetooth.getCurrentHeartRate();
     print('Sampled Heart Rate: $currentHeartRate');
   });

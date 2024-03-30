@@ -7,7 +7,7 @@ class DurationPickerDialog extends StatefulWidget {
   final Duration? initialDuration;
   bool isPeriodicEmissionEnabled;
 
-  DurationPickerDialog({
+  DurationPickerDialog({super.key, 
     required this.title,
     this.initialDuration,
     required this.isPeriodicEmissionEnabled,

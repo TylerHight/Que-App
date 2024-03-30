@@ -27,6 +27,8 @@ import 'device_settings_screen.dart';
 import 'utils/device_name_dialog.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final deviceData = Provider.of<DeviceData>(context);
@@ -65,17 +67,17 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Devices',
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: false,
         backgroundColor: Colors.blue,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
         elevation: 4.0,
         actions: <Widget>[
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.add,
               color: Colors.white,
             ),
@@ -101,7 +103,7 @@ class HomeScreen extends StatelessWidget {
         itemCount: deviceTitles.length,
         itemBuilder: (context, index) {
           return Padding(
-            padding: EdgeInsets.all(2.0),
+            padding: const EdgeInsets.all(2.0),
             child: DeviceRemote(
               title: deviceTitles[index],
               onTap: () {

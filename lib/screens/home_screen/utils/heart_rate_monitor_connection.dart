@@ -29,7 +29,7 @@ class HeartRateMonitorConnection {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Select Bluetooth Device'),
+          title: const Text('Select Bluetooth Device'),
           content: Column(
             children: [
               for (var result in scanResults)
@@ -52,7 +52,7 @@ class HeartRateMonitorConnection {
                 scanSubscription.cancel();
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
           ],
         );

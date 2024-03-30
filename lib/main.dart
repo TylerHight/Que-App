@@ -8,9 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen/home_screen.dart';
 import 'screens/log_screen/log_screen.dart';
-import 'screens/settings_screen/settings_screen.dart';
-import 'screens/data_screen/data_screen.dart';
-import 'screens/account_screen.dart';
 import 'device_data.dart'; // Import the DeviceData class
 
 void main() {
@@ -47,8 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    HomeScreen(),
-    LogScreen(),
+    const HomeScreen(),
+    const LogScreen(),
     /*
     SettingsScreen(),
     DataScreen(),

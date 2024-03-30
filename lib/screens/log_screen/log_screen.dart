@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
 class LogScreen extends StatefulWidget {
+  const LogScreen({super.key});
+
   @override
   _LogScreenState createState() => _LogScreenState();
 }
@@ -18,10 +20,10 @@ class _LogScreenState extends State<LogScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Log'),
+        title: const Text('Log'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: const Padding(
+        padding: EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -36,6 +38,8 @@ class _LogScreenState extends State<LogScreen> {
 }
 
 class LogListWidget extends StatefulWidget {
+  const LogListWidget({super.key});
+
   @override
   _LogListWidgetState createState() => _LogListWidgetState();
 }
@@ -74,7 +78,7 @@ class LogEntryWidget extends StatelessWidget {
   final DateTime addedTimestamp;
   final DeviceTimeSeriesData latestDataPoint;
 
-  LogEntryWidget({
+  const LogEntryWidget({super.key, 
     required this.deviceTitle,
     required this.addedTimestamp,
     required this.latestDataPoint,
@@ -89,7 +93,7 @@ class LogEntryWidget extends StatelessWidget {
     return Card(
       //TODO: add all device setting changes and activities to log
       elevation: 4.0,
-      margin: EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: ListTile(
         title: Text(
           deviceTitle,

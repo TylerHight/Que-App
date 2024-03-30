@@ -8,7 +8,7 @@ class DeviceRemote extends StatefulWidget {
   final String title;
   final VoidCallback onTap;
 
-  DeviceRemote({
+  const DeviceRemote({super.key, 
     required this.title,
     required this.onTap,
   });
@@ -26,7 +26,7 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
     super.initState();
     _ratingAnimationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 500),
     );
     _currentRating = 0;
   }
@@ -42,7 +42,7 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
       ),
       elevation: 4.0,
       child: Padding(
-        padding: EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(12.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -51,13 +51,13 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
               children: [
                 Text(
                   widget.title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Row(
                   children: [
                     BinaryButton(
@@ -73,7 +73,7 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                         //onTap();
                       },
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     BinaryButton(
                       activeColor: Colors.transparent,
                       inactiveColor: Colors.transparent,
@@ -92,7 +92,7 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                         // TODO: communicate via bluetooth to turn off the device
                       },
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Row(
                       children: [
                         BinaryButton(
@@ -117,9 +117,9 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
             ),
             Row(
               children: [
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 TimedBinaryButton(
-                  periodicEmissionTimerDuration: Duration(seconds: 0),
+                  periodicEmissionTimerDuration: const Duration(seconds: 0),
                   activeColor: Colors.red.shade400,
                   inactiveColor: Colors.grey.shade300,
                   iconData: Icons.sentiment_very_dissatisfied,
@@ -128,7 +128,7 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                   autoTurnOffDuration: Duration(seconds: deviceSettings.negativeEmissionDuration),
                   autoTurnOffEnabled: true,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 TimedBinaryButton(
                   periodicEmissionEnabled: deviceSettings.periodicEmissionEnabled,
                   periodicEmissionTimerDuration: Duration(seconds: deviceSettings.periodicEmissionTimerLength),
@@ -161,17 +161,17 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Enter Note'),
+                  const Text('Enter Note'),
                   TextField(
                     onChanged: (value) {
                       // You can update the note variable if needed
                       // note = value;
                     },
                     controller: noteController,
-                    decoration: InputDecoration(hintText: 'Enter your note here'),
+                    decoration: const InputDecoration(hintText: 'Enter your note here'),
                   ),
-                  SizedBox(height: 16),
-                  Text('Settings Rating'),
+                  const SizedBox(height: 16),
+                  const Text('Settings Rating'),
                   AnimatedBuilder(
                     animation: _ratingAnimationController,
                     builder: (context, child) {
@@ -199,7 +199,7 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Cancel'),
+                  child: const Text('Cancel'),
                 ),
                 TextButton(
                   onPressed: () {
@@ -207,7 +207,7 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                     //TODO: deviceData.setNoteAndRatingForDevice(title, noteController.text, rating);
                     Navigator.of(context).pop();
                   },
-                  child: Text('Save'),
+                  child: const Text('Save'),
                 ),
               ],
             );
@@ -224,7 +224,7 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
 
     _ratingAnimationController.forward(from: 0.0);
 
-    Future.delayed(Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       _ratingAnimationController.reset();
       Navigator.of(context).pop();
     });

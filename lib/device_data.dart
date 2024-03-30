@@ -142,7 +142,7 @@ class DeviceData extends ChangeNotifier {
       print('Number of Data Points: ${dataPoints.length}');
       print('\n');
 
-      dataPoints.forEach((dataPoint) {
+      for (var dataPoint in dataPoints) {
         print('Timestamp: ${dataPoint.timestamp}');
         print('Heart Rate: ${dataPoint.heartRate}');
         print('Device On: ${dataPoint.deviceOn}');
@@ -154,17 +154,17 @@ class DeviceData extends ChangeNotifier {
         print('Periodic Emission: ${dataPoint.periodicEmissionEnabled}');
         print('Connected Heart Rate Device Name: ${dataPoint.connectedHRDeviceName}');
         print('\n');
-      });
+      }
     });
   }
 
   void setConnectedHRDeviceName(String deviceName) {
     // Set the connected HR device name for each device title
-    _deviceDataMap.keys.forEach((title) {
+    for (var title in _deviceDataMap.keys) {
       if (_deviceDataMap[title]!.isNotEmpty) {
         _deviceDataMap[title]!.first.connectedHRDeviceName = deviceName;
       }
-    });
+    }
 
     notifyListeners();
   }

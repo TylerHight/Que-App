@@ -17,7 +17,7 @@ class DeviceSettingsScreen extends StatefulWidget {
 }
 
 class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
-  Map<String, Duration?> _selectedDurations = {
+  final Map<String, Duration?> _selectedDurations = {
     'positive scent duration': null,
     'negative scent duration': null,
     'time between periodic emissions': null,
@@ -69,7 +69,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         title: Text('${widget.deviceTitle} Settings'),
       ),
       body: ListView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         children: [
           _buildSettingCard(
             title: 'Positive scent duration',
@@ -150,7 +150,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         ],
       ),
       bottomNavigationBar: Container(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: widget.onDelete,
           style: ElevatedButton.styleFrom(
@@ -184,7 +184,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
 
     return Card(
       elevation: 4.0,
-      margin: EdgeInsets.only(bottom: 16.0),
+      margin: const EdgeInsets.only(bottom: 16.0),
       child: ListTile(
         title: Text(title),
         subtitle: isSwitch
@@ -200,7 +200,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         )
             : Text(value),
         onTap: onTap,
-        trailing: Icon(Icons.arrow_forward_ios),
+        trailing: const Icon(Icons.arrow_forward_ios),
       ),
     );
   }
@@ -208,14 +208,14 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
   Widget _buildBluetoothConnectionSetting() {
     return Card(
       elevation: 4.0,
-      margin: EdgeInsets.only(bottom: 16.0),
+      margin: const EdgeInsets.only(bottom: 16.0),
       child: ListTile(
-        title: Text('Connect to heart rate monitor'),
+        title: const Text('Connect to heart rate monitor'),
         subtitle: _buildConnectedDeviceSubtitle(false),
         onTap: () {
           _selectBluetoothDevice(context);
         },
-        trailing: Icon(Icons.arrow_forward_ios),
+        trailing: const Icon(Icons.arrow_forward_ios),
       ),
     );
   }
@@ -227,17 +227,17 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Connected to:'),
+          const Text('Connected to:'),
           Text(
             dummyDeviceName,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
           ),
         ],
       );
     } else {
-      return Text('Not connected');
+      return const Text('Not connected');
     }
   }
 
@@ -272,14 +272,14 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       builder: (BuildContext context) {
         int? enteredHeartRateThreshold;
         return AlertDialog(
-          title: Text('Select Heart Rate Threshold'),
-          content: Container(
+          title: const Text('Select Heart Rate Threshold'),
+          content: SizedBox(
             width: double.minPositive,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Choose a heart rate threshold:'),
-                Container(
+                const Text('Choose a heart rate threshold:'),
+                SizedBox(
                   width: 80,
                   child: DropdownButtonFormField<int>(
                     value: _heartRateThreshold,
@@ -304,13 +304,13 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(enteredHeartRateThreshold);
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );

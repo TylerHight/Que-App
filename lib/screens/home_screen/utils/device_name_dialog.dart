@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class DeviceNameDialog extends StatefulWidget {
   final Function(String) onDeviceNameEntered;
 
-  DeviceNameDialog({required this.onDeviceNameEntered});
+  const DeviceNameDialog({super.key, required this.onDeviceNameEntered});
 
   @override
   _DeviceNameDialogState createState() => _DeviceNameDialogState();
@@ -17,20 +17,20 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Enter Device Name'),
+      title: const Text('Enter Device Name'),
       content: TextField(
         controller: _deviceNameController,
-        decoration: InputDecoration(labelText: 'Device Name'),
+        decoration: const InputDecoration(labelText: 'Device Name'),
       ),
       actions: <Widget>[
         TextButton(
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         TextButton(
-          child: Text('Save'),
+          child: const Text('Save'),
           onPressed: () {
             String deviceName = _deviceNameController.text.trim();
             if (deviceName.isNotEmpty) {

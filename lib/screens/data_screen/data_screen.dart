@@ -7,6 +7,8 @@ import '../../device_data.dart'; // Import your DeviceData class
 import 'package:provider/provider.dart'; // Import the provider package
 
 class DataScreen extends StatefulWidget {
+  const DataScreen({super.key});
+
   @override
   _DataScreenState createState() => _DataScreenState();
 }
@@ -18,7 +20,7 @@ class _DataScreenState extends State<DataScreen> {
   Map<DateTime, double> heartRateData = generateHeartRateData(
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0, 0),
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 17, 30, 0),
-    Duration(hours: 1),
+    const Duration(hours: 1),
   );
 
   DateTime selectedStartDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0, 0);
@@ -27,7 +29,7 @@ class _DataScreenState extends State<DataScreen> {
   DateTime originalStartDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 0, 0);
   DateTime originalEndDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 17, 30, 0);
 
-  final TextStyle textStyle = TextStyle(fontSize: 15);
+  final TextStyle textStyle = const TextStyle(fontSize: 15);
 
   Future<void> _selectStartDate() async {
     final selectedDate = await showDatePicker(
@@ -84,7 +86,7 @@ class _DataScreenState extends State<DataScreen> {
   Widget _buildChart() {
     // Check if there are devices
     if (Provider.of<DeviceData>(context).deviceTitles.isEmpty) {
-      return Center(
+      return const Center(
         child: Text(
           'No devices available.\nAdd devices to view data.',
           style: TextStyle(fontSize: 18),
@@ -144,7 +146,7 @@ class _DataScreenState extends State<DataScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: Text(
+        title: const Text(
           'Heart Rate and Device Data',
           style: TextStyle(
             color: Colors.white,
@@ -155,7 +157,7 @@ class _DataScreenState extends State<DataScreen> {
       ),
       body: Column(
         children: [
-          SizedBox(height: 12), // Add spacing
+          const SizedBox(height: 12), // Add spacing
           DropdownButton<String>(
             value: Provider.of<DeviceData>(context).deviceTitles.contains(selectedDevice) ? selectedDevice : Provider.of<DeviceData>(context).deviceTitles.isEmpty ? '' : Provider.of<DeviceData>(context).deviceTitles.first,
             items: Provider.of<DeviceData>(context).deviceTitles.map((String title) {
@@ -172,46 +174,46 @@ class _DataScreenState extends State<DataScreen> {
               });
             },
           ),
-          SizedBox(height: 12), // Add spacing
+          const SizedBox(height: 12), // Add spacing
           Expanded(
             child: Center(
               child: _buildChart(),
             ),
           ),
-          SizedBox(height: 10), // Add spacing
+          const SizedBox(height: 10), // Add spacing
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.date_range), // Date Range icon
-              SizedBox(width: 8),
+              const Icon(Icons.date_range), // Date Range icon
+              const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: _selectStartDate,
-                child: Text(
+                child: const Text(
                   'Select Start Date/Time',
                   style: TextStyle(fontSize: 15),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 8), // Add spacing
+          const SizedBox(height: 8), // Add spacing
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.date_range), // Date Range icon
-              SizedBox(width: 8),
+              const Icon(Icons.date_range), // Date Range icon
+              const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: _selectEndDate,
-                child: Text(
+                child: const Text(
                   'Select End Date/Time',
                   style: TextStyle(fontSize: 15),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 8), // Add spacing
+          const SizedBox(height: 8), // Add spacing
           ElevatedButton(
             onPressed: resetXAxis,
-            child: Row(
+            child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.refresh), // Reset icon
@@ -223,7 +225,7 @@ class _DataScreenState extends State<DataScreen> {
               ],
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
         ],
       ),
     );

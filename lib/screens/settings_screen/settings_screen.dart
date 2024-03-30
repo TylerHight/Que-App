@@ -4,14 +4,16 @@ import 'package:flutter/material.dart';
 import 'info_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings Screen'),
+        title: const Text('Settings Screen'),
       ),
       body: ListView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         children: [
           _buildSettingCard(
             title: 'Setting 1',
@@ -29,18 +31,18 @@ class SettingsScreen extends StatelessWidget {
           ),
           Card(
             elevation: 4.0,
-            margin: EdgeInsets.only(bottom: 16.0),
+            margin: const EdgeInsets.only(bottom: 16.0),
             child: ListTile(
-              title: Text('Info'),
+              title: const Text('Info'),
               onTap: () {
                 // Navigate to the InfoScreen
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => InfoScreen(),
+                    builder: (context) => const InfoScreen(),
                   ),
                 );
               },
-              trailing: Icon(Icons.arrow_forward_ios),
+              trailing: const Icon(Icons.arrow_forward_ios),
             ),
           ),
         ],
@@ -55,12 +57,12 @@ class SettingsScreen extends StatelessWidget {
   }) {
     return Card(
       elevation: 4.0,
-      margin: EdgeInsets.only(bottom: 16.0),
+      margin: const EdgeInsets.only(bottom: 16.0),
       child: ListTile(
         title: Text(title),
         subtitle: Text(value),
         onTap: onTap,
-        trailing: Icon(Icons.arrow_forward_ios),
+        trailing: const Icon(Icons.arrow_forward_ios),
       ),
     );
   }

@@ -10,7 +10,7 @@ class BinaryButton extends StatefulWidget {
   final VoidCallback? onPressedTurnOn; // Restored onPressed parameters
   final VoidCallback? onPressedTurnOff; // as optional parameters
 
-  BinaryButton({
+  const BinaryButton({super.key, 
     this.activeColor,
     this.inactiveColor = Colors.grey,
     this.buttonSize = 48.0,
@@ -37,7 +37,7 @@ class _BinaryButtonState extends State<BinaryButton>
 
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 150),
     );
 
     _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
