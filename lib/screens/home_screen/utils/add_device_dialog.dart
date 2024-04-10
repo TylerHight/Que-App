@@ -1,4 +1,4 @@
-// device_name_dialog.dart
+// add_device_dialog.dart
 
 import 'package:flutter/material.dart';
 

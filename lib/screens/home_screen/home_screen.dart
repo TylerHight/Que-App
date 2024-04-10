@@ -24,7 +24,7 @@ import 'package:provider/provider.dart';
 import '../../device_data.dart';
 import 'utils/device_remote.dart';
 import 'device_settings_screen.dart';
-import 'utils/device_name_dialog.dart';
+import 'utils/add_device_dialog.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

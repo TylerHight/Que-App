@@ -120,9 +120,9 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                 const SizedBox(width: 8),
                 TimedBinaryButton(
                   periodicEmissionTimerDuration: const Duration(seconds: 0),
-                  activeColor: Colors.red.shade400,
+                  activeColor: Colors.lightBlue.shade400,
                   inactiveColor: Colors.grey.shade300,
-                  iconData: Icons.sentiment_very_dissatisfied,
+                  iconData: Icons.air,
                   buttonSize: 50.0,
                   iconSize: 38.0,
                   autoTurnOffDuration: Duration(seconds: deviceSettings.negativeEmissionDuration),
@@ -134,7 +134,7 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                   periodicEmissionTimerDuration: Duration(seconds: deviceSettings.periodicEmissionTimerLength),
                   activeColor: Colors.green.shade500,
                   inactiveColor: Colors.grey.shade300,
-                  iconData: Icons.mood,
+                  iconData: Icons.air,
                   buttonSize: 50.0,
                   iconSize: 38.0,
                   autoTurnOffDuration: Duration(seconds: deviceSettings.positiveEmissionDuration),
@@ -150,7 +150,6 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
 
   void _showNoteDialog(BuildContext context, DeviceData deviceData, String title) {
     TextEditingController noteController = TextEditingController();
-    int rating = 0;
 
     showDialog(
       context: context,
