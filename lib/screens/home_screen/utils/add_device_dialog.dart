@@ -4,7 +4,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 class DeviceNameDialog extends StatefulWidget {
   final Function(String) onDeviceNameEntered;
 
-  const DeviceNameDialog({super.key, required this.onDeviceNameEntered});
+  const DeviceNameDialog({Key? key, required this.onDeviceNameEntered}) : super(key: key);
 
   @override
   _DeviceNameDialogState createState() => _DeviceNameDialogState();
@@ -13,15 +13,23 @@ class DeviceNameDialog extends StatefulWidget {
 class _DeviceNameDialogState extends State<DeviceNameDialog> {
   final TextEditingController _deviceNameController = TextEditingController();
   BluetoothDevice? _selectedDevice;
-  List<BluetoothDevice> _availableDevices = []; // Store available devices
+  List<ScanResult> _scanResults = []; // Store scan results
 
   @override
   void initState() {
     super.initState();
     FlutterBlue.instance.scanResults.listen((results) {
-      _availableDevices = results.map((result) => result.device!).toList();
-      setState(() {}); // Trigger UI rebuild
+      setState(() {
+        _scanResults = results;
+      });
     });
+    FlutterBlue.instance.startScan();
+  }
+
+  @override
+  void dispose() {
+    FlutterBlue.instance.stopScan();
+    super.dispose();
   }
 
   @override
@@ -31,19 +39,31 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Display a dropdown menu of available Bluetooth devices (optional)
-          _selectedDevice != null
-              ? Text('Selected Device: ${_selectedDevice?.name ?? 'Unknown Device'}')
-              : DropdownButtonFormField<BluetoothDevice>(
-            value: _selectedDevice,
-            items: _availableDevices.map((device) {
-              return DropdownMenuItem<BluetoothDevice>(
-                value: device,
-                child: Text(device.name ?? 'Unknown Device'),
+          // Display a dropdown menu of available Bluetooth devices
+          DropdownButtonFormField<ScanResult>(
+            value: _selectedDevice != null
+                ? _scanResults.firstWhere(
+                  (result) => result.device.id == _selectedDevice!.id,
+              orElse: () => _scanResults.isNotEmpty ? _scanResults[0] : _scanResults.first,
+            )
+                : _scanResults.isNotEmpty ? _scanResults[0] : null,
+            items: _scanResults.isNotEmpty
+                ? _scanResults.map((result) {
+              return DropdownMenuItem<ScanResult>(
+                value: result,
+                child: Text(result.device.name ?? 'Unknown Device'),
               );
-            }).toList(),
-            onChanged: (device) => setState(() => _selectedDevice = device),
-            hint: const Text('Select Device (Optional)'),
+            }).toList()
+                : [
+              DropdownMenuItem<ScanResult>(
+                value: null,
+                child: Text('No devices found'),
+              ),
+            ],
+            onChanged: _scanResults.isNotEmpty
+                ? (result) => setState(() => _selectedDevice = result!.device)
+                : null,
+            hint: _scanResults.isEmpty ? const Text('No devices found') : const Text('Select Device (Optional)'),
           ),
           const SizedBox(height: 16.0),
           TextField(
@@ -60,11 +80,9 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
         TextButton(
           child: const Text('Save'),
           onPressed: () {
-            String deviceName;
-            if (_selectedDevice != null) {
+            String deviceName = _deviceNameController.text.trim();
+            if (deviceName.isEmpty && _selectedDevice != null) {
               deviceName = _selectedDevice!.name ?? '';
-            } else {
-              deviceName = _deviceNameController.text.trim();
             }
             if (deviceName.isNotEmpty) {
               widget.onDeviceNameEntered(deviceName);
