@@ -18,18 +18,22 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
   @override
   void initState() {
     super.initState();
-    FlutterBlue.instance.scanResults.listen((results) {
-      setState(() {
-        _scanResults = results;
-      });
-    });
-    FlutterBlue.instance.startScan();
+    _startScan();
   }
 
   @override
   void dispose() {
     FlutterBlue.instance.stopScan();
     super.dispose();
+  }
+
+  void _startScan() {
+    FlutterBlue.instance.startScan();
+    FlutterBlue.instance.scanResults.listen((results) {
+      setState(() {
+        _scanResults = results;
+      });
+    });
   }
 
   @override
@@ -61,9 +65,15 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
               ),
             ],
             onChanged: _scanResults.isNotEmpty
-                ? (result) => setState(() => _selectedDevice = result!.device)
+                ? (result) {
+              setState(() {
+                _selectedDevice = result!.device;
+              });
+            }
                 : null,
-            hint: _scanResults.isEmpty ? const Text('No devices found') : const Text('Select Device (Optional)'),
+            hint: _scanResults.isEmpty
+                ? const Text('No devices found')
+                : const Text('Select Device (Optional)'),
           ),
           const SizedBox(height: 16.0),
           TextField(
@@ -75,7 +85,10 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
       actions: <Widget>[
         TextButton(
           child: const Text('Cancel'),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            FlutterBlue.instance.stopScan();
+            Navigator.of(context).pop();
+          },
         ),
         TextButton(
           child: const Text('Save'),
@@ -86,6 +99,7 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
             }
             if (deviceName.isNotEmpty) {
               widget.onDeviceNameEntered(deviceName);
+              FlutterBlue.instance.stopScan();
               Navigator.of(context).pop();
             }
           },
