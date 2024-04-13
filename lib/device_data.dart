@@ -21,6 +21,7 @@ class DeviceTimeSeriesData {
   bool positiveEmissionsEnabled; // if enabled or disabled
   bool negativeEmissionsEnabled; // if enabled or disabled
   String note; // Add this field for storing the note
+  String? bluetoothDeviceID; // bluetooth connection to the pendant
 
   DeviceTimeSeriesData({
     required this.timestamp,
@@ -38,6 +39,7 @@ class DeviceTimeSeriesData {
     this.positiveEmissionsEnabled = false,
     this.negativeEmissionsEnabled = false,
     this.note = "", // Initialize the note field
+    this.bluetoothDeviceID,
   });
 
   factory DeviceTimeSeriesData.fromPrevious(DeviceTimeSeriesData previous, {
@@ -87,10 +89,13 @@ class DeviceData extends ChangeNotifier {
     return _deviceDataMap[deviceTitle] ?? [];
   }
 
-  void addDeviceTitle(String title) {
-    _deviceTitles.insert(0, title); // Insert at the beginning of _deviceTitles
+  void addDeviceTitle(String title, {String? bluetoothDeviceId}) {
+    _deviceTitles.insert(0, title);
     _deviceDataMap[title] = [
-      DeviceTimeSeriesData(timestamp: DateTime.now())
+      DeviceTimeSeriesData(
+        timestamp: DateTime.now(),
+        bluetoothDeviceID: bluetoothDeviceId,
+      )
     ];
 
     // Add the "Device added: " prefix to the device name
