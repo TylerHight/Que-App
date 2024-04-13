@@ -31,20 +31,21 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
   bool isPositiveEmissionEnabled = false;
   bool isNegativeEmissionEnabled = false;
 
+  late DeviceData deviceData; // Declare a variable to hold DeviceData instance
+
   @override
   void initState() {
     super.initState();
+    // Retrieve DeviceData instance in initState
+    deviceData = Provider.of<DeviceData>(context, listen: false);
+    // Load settings when the screen initializes
     _loadSettings();
   }
 
-  void _selectBluetoothDevice(BuildContext context) {
-    HeartRateMonitorConnection.selectBluetoothDevice(context);
-  }
-
   void _loadSettings() {
-    final deviceData = Provider.of<DeviceData>(context, listen: false);
+    // Access device settings using deviceData
     final deviceSettings = deviceData.getDeviceSettings(widget.deviceTitle);
-
+    // Update the state with the loaded settings
     setState(() {
       _selectedDurations['positive scent duration'] =
           Duration(seconds: deviceSettings.positiveEmissionDuration);
@@ -122,6 +123,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
               });
             },
           ),
+          _buildBluetoothDeviceIDSetting(widget.deviceTitle), // Pass deviceTitle here
           _buildBluetoothConnectionSetting(),
           _buildSettingCard(
             title: 'Heart rate emission duration',
@@ -205,6 +207,19 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     );
   }
 
+  Widget _buildBluetoothDeviceIDSetting(String deviceTitle) {
+    final deviceData = Provider.of<DeviceData>(context);
+    final deviceSettings = deviceData.getDeviceSettings(deviceTitle);
+    final bluetoothDeviceID = deviceSettings.bluetoothDeviceID ?? '';
+
+    return _buildSettingCard(
+      title: 'Bluetooth Device ID',
+      value: bluetoothDeviceID.isNotEmpty ? bluetoothDeviceID : 'Not available',
+      onTap: () {}, // You can define an action here if needed
+    );
+  }
+
+
   Widget _buildBluetoothConnectionSetting() {
     return Card(
       elevation: 4.0,
@@ -213,7 +228,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
         title: const Text('Connect to heart rate monitor'),
         subtitle: _buildConnectedDeviceSubtitle(false),
         onTap: () {
-          _selectBluetoothDevice(context);
+          //_selectBluetoothDevice(context);
         },
         trailing: const Icon(Icons.arrow_forward_ios),
       ),
