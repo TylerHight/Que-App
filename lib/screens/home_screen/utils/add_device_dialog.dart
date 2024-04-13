@@ -1,16 +1,18 @@
+// add_device_dialog.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class DeviceNameDialog extends StatefulWidget {
-  final Function(String) onDeviceNameEntered;
+  final Function({required String deviceName, required String bluetoothDeviceID}) onDeviceNameEntered;
 
-  const DeviceNameDialog({Key? key, required this.onDeviceNameEntered})
-      : super(key: key);
+  const DeviceNameDialog({Key? key, required this.onDeviceNameEntered}) : super(key: key);
 
   @override
   _DeviceNameDialogState createState() => _DeviceNameDialogState();
 }
+
 
 class _DeviceNameDialogState extends State<DeviceNameDialog> {
   final TextEditingController _deviceNameController = TextEditingController();
@@ -74,15 +76,13 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
           child: const Text('Save'),
           onPressed: () {
             String deviceName = _deviceNameController.text.trim();
-            if (deviceName.isEmpty && _selectedDevice.isNotEmpty) {
-              deviceName = _availableDevices
-                  .firstWhere((device) => device.device.id.toString() == _selectedDevice,
-                  orElse: () => _availableDevices.first)
-                  .device
-                  .name;
-            }
+            String bluetoothDeviceID = _selectedDevice.isNotEmpty
+                ? _selectedDevice
+                : '';
+
             if (deviceName.isNotEmpty) {
-              widget.onDeviceNameEntered(deviceName);
+              // Call addDeviceTitle with the provided device name and Bluetooth device ID
+              widget.onDeviceNameEntered(deviceName: deviceName, bluetoothDeviceID: bluetoothDeviceID);
               Navigator.of(context).pop();
             }
           },

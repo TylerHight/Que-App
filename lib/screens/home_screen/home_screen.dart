@@ -38,8 +38,8 @@ class HomeScreen extends StatelessWidget {
       showDialog(
         context: context,
         builder: (context) => DeviceNameDialog(
-          onDeviceNameEntered: (deviceName) {
-            deviceData.addDeviceTitle(deviceName);
+          onDeviceNameEntered: ({required String deviceName, required String bluetoothDeviceID}) { // Specify parameter types
+            deviceData.addDeviceTitle(deviceName, bluetoothDeviceID: bluetoothDeviceID); // Pass both parameters to addDeviceTitle
           },
         ),
       );

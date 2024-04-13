@@ -58,6 +58,7 @@ class DeviceTimeSeriesData {
     bool? positiveEmissionsEnabled,
     bool? negativeEmissionsEnabled,
     String? note, // Add the note field to the factory constructor
+    String? bluetoothDeviceID,
   }) {
     return DeviceTimeSeriesData(
       timestamp: timestamp ?? previous.timestamp,
@@ -74,6 +75,7 @@ class DeviceTimeSeriesData {
       positiveEmissionsEnabled: positiveEmissionsEnabled ?? previous.positiveEmissionsEnabled,
       negativeEmissionsEnabled: negativeEmissionsEnabled ?? previous.negativeEmissionsEnabled,
       note: note ?? previous.note, // Set the note field in the factory constructor
+      bluetoothDeviceID: bluetoothDeviceID ?? previous.bluetoothDeviceID,
     );
   }
 }
@@ -89,12 +91,12 @@ class DeviceData extends ChangeNotifier {
     return _deviceDataMap[deviceTitle] ?? [];
   }
 
-  void addDeviceTitle(String title, {String? bluetoothDeviceId}) {
+  void addDeviceTitle(String title, {String? bluetoothDeviceID}) {
     _deviceTitles.insert(0, title);
     _deviceDataMap[title] = [
       DeviceTimeSeriesData(
         timestamp: DateTime.now(),
-        bluetoothDeviceID: bluetoothDeviceId,
+        bluetoothDeviceID: bluetoothDeviceID,
       )
     ];
 
@@ -111,6 +113,7 @@ class DeviceData extends ChangeNotifier {
 
     notifyListeners();
   }
+
 
   void deleteDeviceTitle(int index) {
     final title = _deviceTitles[index];
