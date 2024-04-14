@@ -1,4 +1,5 @@
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:que_app/device_data.dart';
 
 class Bluetooth {
   static final Bluetooth _instance = Bluetooth._internal();
@@ -14,9 +15,18 @@ class Bluetooth {
     _bleController = BLEController();
   }
 
+  BLEController get bleController => _bleController; // Getter for bleController
+
   // Method to connect to a BLE device
   Future<void> connectToDevice(BluetoothDevice device) async {
     await _bleController.connectToDevice(device);
+
+    // After successful connection, obtain the Bluetooth device ID and associated title
+    String deviceTitle = "Arduino Nano BLE 33"; // Example title
+    String bluetoothDeviceID = device.id.toString(); // Example Bluetooth device ID
+
+    // Add the device title along with its Bluetooth device ID
+    DeviceData().addDeviceTitle(deviceTitle, bluetoothDeviceID: bluetoothDeviceID);
   }
 
   // Method to disconnect from the connected BLE device

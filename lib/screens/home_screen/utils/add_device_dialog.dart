@@ -23,7 +23,7 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
   @override
   void initState() {
     super.initState();
-    _bleController = BLEController(); // Initialize BLEController instance
+    _bleController = Bluetooth().bleController; // Initialize BLEController instance
     _requestLocationPermissionAndStartScanning();
   }
 
