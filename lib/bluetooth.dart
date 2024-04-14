@@ -1,49 +1,74 @@
 import 'package:flutter_blue/flutter_blue.dart';
 
-class BLEController {
-  static late BluetoothDevice _device;
-  static late BluetoothCharacteristic _fan1Characteristic;
-  static bool _isConnected = false;
+class Bluetooth {
+  static final Bluetooth _instance = Bluetooth._internal();
+  late FlutterBlue _flutterBlue;
+  late BLEController _bleController;
 
-  static Future<void> connectToDevice() async {
-    final FlutterBlue flutterBlue = FlutterBlue.instance;
-
-    // Start scanning for devices
-    flutterBlue.scan(timeout: Duration(seconds: 4)).listen((scanResult) {
-      // Connect to the device when found
-      _device = scanResult.device;
-      _device.connect().then((value) {
-        // Discover services and characteristics
-        _device.discoverServices().then((services) {
-          for (BluetoothService service in services) {
-            service.characteristics.forEach((characteristic) {
-              // Check for characteristics you're interested in
-              if (characteristic.uuid.toString() == '19B10001-E8F2-537E-4F6C-D104768A1214') {
-                _fan1Characteristic = characteristic;
-                _isConnected = true;
-              }
-              // Add more if needed for other characteristics
-            });
-          }
-        });
-      });
-    });
+  factory Bluetooth() {
+    return _instance;
   }
 
-  static Future<void> disconnect() async {
-    if (_isConnected) {
-      await _device.disconnect();
-      _isConnected = false;
-    }
+  Bluetooth._internal() {
+    _flutterBlue = FlutterBlue.instance;
+    _bleController = BLEController();
   }
 
-  static Future<void> turnOnFan1() async {
-    if (_isConnected) {
-      // Send command to turn on fan1
-      await _fan1Characteristic.write([1]); // Assuming 1 means turn on
-    }
+  // Method to connect to a BLE device
+  Future<void> connectToDevice(BluetoothDevice device) async {
+    await _bleController.connectToDevice(device);
   }
 
-// Add more functions for other commands as needed
+  // Method to disconnect from the connected BLE device
+  Future<void> disconnectFromDevice() async {
+    await _bleController.disconnect();
+  }
 
+  // Method to send data to the connected BLE device
+  Future<void> sendData(List<int> data) async {
+    await _bleController.sendData(data);
+  }
+
+  // Scan for available BLE devices
+  Stream<List<ScanResult>> scanForDevices() {
+    return _flutterBlue.scanResults;
+  }
 }
+
+class BLEController {
+  BluetoothDevice? _connectedDevice;
+  late BluetoothCharacteristic _characteristic;
+
+  // Method to connect to a BLE device
+  Future<void> connectToDevice(BluetoothDevice device) async {
+    _connectedDevice = device;
+    List<BluetoothService> services = await device.discoverServices();
+    for (BluetoothService service in services) {
+      for (BluetoothCharacteristic characteristic in service.characteristics) {
+        if (characteristic.properties.write) {
+          _characteristic = characteristic;
+          return;
+        }
+      }
+    }
+    throw Exception('No writable characteristic found.');
+  }
+
+  // Method to disconnect from the connected BLE device
+  Future<void> disconnect() async {
+    if (_connectedDevice != null) {
+      await _connectedDevice!.disconnect();
+      _connectedDevice = null;
+    }
+  }
+
+  // Method to send data to the connected BLE device
+  Future<void> sendData(List<int> data) async {
+    if (_characteristic != null) {
+      await _characteristic.write(data);
+    } else {
+      throw Exception('No characteristic available to write data.');
+    }
+  }
+}
+

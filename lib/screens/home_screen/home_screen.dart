@@ -93,7 +93,7 @@ class HomeScreen extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0), // Add horizontal padding
             child: Text(
-              'Add new devices with the plus button at the top right.',
+              'Connect to a Que with the plus button at the top right.',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
               textAlign: TextAlign.center, // Center the text
             ),

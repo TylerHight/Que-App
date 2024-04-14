@@ -1,8 +1,7 @@
-// add_device_dialog.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:que_app/bluetooth.dart'; // Import the Bluetooth file
 
 class DeviceNameDialog extends StatefulWidget {
   final Function({required String deviceName, required String bluetoothDeviceID}) onDeviceNameEntered;
@@ -13,12 +12,91 @@ class DeviceNameDialog extends StatefulWidget {
   _DeviceNameDialogState createState() => _DeviceNameDialogState();
 }
 
-
 class _DeviceNameDialogState extends State<DeviceNameDialog> {
   final TextEditingController _deviceNameController = TextEditingController();
   String _selectedDevice = ''; // Default selected device
   List<ScanResult> _availableDevices = [];
   bool _isScanning = false;
+
+  late BLEController _bleController; // Declare BLEController instance
+
+  @override
+  void initState() {
+    super.initState();
+    _bleController = BLEController(); // Initialize BLEController instance
+    _requestLocationPermissionAndStartScanning();
+  }
+
+  @override
+  void dispose() {
+    _stopScanning();
+    super.dispose();
+  }
+
+  Future<void> _requestLocationPermissionAndStartScanning() async {
+    if (await Permission.location.isDenied) {
+      await Permission.location.request();
+    }
+
+    bool isAvailable = await FlutterBlue.instance.isAvailable;
+    bool isOn = await FlutterBlue.instance.isOn;
+
+    if (isAvailable && isOn) {
+      _startScanning();
+    } else {
+      _showBluetoothAlert(isAvailable, isOn);
+    }
+  }
+
+  void _startScanning() {
+    setState(() {
+      _isScanning = true;
+    });
+
+    Bluetooth().scanForDevices().listen((results) {
+      setState(() {
+        _availableDevices = results;
+      });
+    });
+
+    FlutterBlue.instance.startScan(timeout: const Duration(seconds: 10));
+  }
+
+  void _stopScanning() {
+    FlutterBlue.instance.stopScan();
+    setState(() {
+      _isScanning = false;
+    });
+  }
+
+  void _showBluetoothAlert(bool isAvailable, bool isOn) {
+    String title = 'Bluetooth Error';
+    String message = '';
+
+    if (!isAvailable) {
+      message = 'Bluetooth is not available on this device.';
+    } else if (!isOn) {
+      message = 'Bluetooth is turned off. Please turn it on and try again.';
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +161,7 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
             if (deviceName.isNotEmpty) {
               // Call addDeviceTitle with the provided device name and Bluetooth device ID
               widget.onDeviceNameEntered(deviceName: deviceName, bluetoothDeviceID: bluetoothDeviceID);
+              _connectToDevice();
               Navigator.of(context).pop();
             }
           },
@@ -91,80 +170,11 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _requestLocationPermissionAndStartScanning();
-  }
-
-  @override
-  void dispose() {
-    _stopScanning();
-    super.dispose();
-  }
-
-  Future<void> _requestLocationPermissionAndStartScanning() async {
-    if (await Permission.location.isDenied) {
-      await Permission.location.request();
+  void _connectToDevice() async {
+    try {
+      await _bleController.connectToDevice(_availableDevices.first.device);
+    } catch (e) {
+      print('Failed to connect to device: $e');
     }
-
-    bool isAvailable = await FlutterBlue.instance.isAvailable;
-    bool isOn = await FlutterBlue.instance.isOn;
-
-    if (isAvailable && isOn) {
-      _startScanning();
-    } else {
-      _showBluetoothAlert(isAvailable, isOn);
-    }
-  }
-
-  void _startScanning() {
-    setState(() {
-      _isScanning = true;
-    });
-
-    FlutterBlue.instance.scanResults.listen((results) {
-      setState(() {
-        _availableDevices = results;
-      });
-    });
-
-    FlutterBlue.instance.startScan(timeout: const Duration(seconds: 10));
-  }
-
-  void _stopScanning() {
-    FlutterBlue.instance.stopScan();
-    setState(() {
-      _isScanning = false;
-    });
-  }
-
-  void _showBluetoothAlert(bool isAvailable, bool isOn) {
-    String title = 'Bluetooth Error';
-    String message = '';
-
-    if (!isAvailable) {
-      message = 'Bluetooth is not available on this device.';
-    } else if (!isOn) {
-      message = 'Bluetooth is turned off. Please turn it on and try again.';
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }
