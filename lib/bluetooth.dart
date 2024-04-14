@@ -5,6 +5,7 @@ class Bluetooth {
   static final Bluetooth _instance = Bluetooth._internal();
   late FlutterBlue _flutterBlue;
   late BLEController _bleController;
+  List<BluetoothDevice> _availableDevices = []; // Define _availableDevices list
 
   factory Bluetooth() {
     return _instance;
@@ -15,39 +16,52 @@ class Bluetooth {
     _bleController = BLEController();
   }
 
-  BLEController get bleController => _bleController; // Getter for bleController
+  BLEController get bleController => _bleController;
 
-  // Method to connect to a BLE device
   Future<void> connectToDevice(BluetoothDevice device) async {
     await _bleController.connectToDevice(device);
 
-    // After successful connection, obtain the Bluetooth device ID and associated title
-    String deviceTitle = "Arduino Nano BLE 33"; // Example title
-    String bluetoothDeviceID = device.id.toString(); // Example Bluetooth device ID
+    String deviceTitle = "Arduino Nano BLE 33";
+    String bluetoothDeviceID = device.id.toString();
 
-    // Add the device title along with its Bluetooth device ID
     DeviceData().addDeviceTitle(deviceTitle, bluetoothDeviceID: bluetoothDeviceID);
   }
 
-  // Method to disconnect from the connected BLE device
   Future<void> disconnectFromDevice() async {
     await _bleController.disconnect();
   }
 
-  // Method to send data to the connected BLE device
   Future<void> sendData(List<int> data) async {
     await _bleController.sendData(data);
   }
 
-  // Scan for available BLE devices
   Stream<List<ScanResult>> scanForDevices() {
     return _flutterBlue.scanResults;
   }
+
+  // Method to handle scanning for devices and populating _availableDevices list
+  void startDeviceScanning() {
+    scanForDevices().listen((List<ScanResult> results) {
+      _availableDevices.clear(); // Clear the list before populating with new results
+      for (ScanResult result in results) {
+        if (!_availableDevices.contains(result.device)) {
+          _availableDevices.add(result.device);
+        }
+      }
+      // Optionally, you can notify listeners or update UI with the new list of available devices
+    });
+  }
+
+  List<BluetoothDevice> get availableDevices => _availableDevices;
 }
+
 
 class BLEController {
   BluetoothDevice? _connectedDevice;
   late BluetoothCharacteristic _characteristic;
+
+  // Getter to access the connected Bluetooth device
+  BluetoothDevice? get connectedDevice => _connectedDevice;
 
   // Method to connect to a BLE device
   Future<void> connectToDevice(BluetoothDevice device) async {
@@ -81,4 +95,5 @@ class BLEController {
     }
   }
 }
+
 

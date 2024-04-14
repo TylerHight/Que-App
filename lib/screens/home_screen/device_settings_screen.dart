@@ -1,10 +1,10 @@
-// device_settings_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:que_app/device_data.dart';
 import 'package:provider/provider.dart';
 import 'utils/duration_picker_dialog.dart';
 import 'utils/heart_rate_monitor_connection.dart';
+import 'package:que_app/bluetooth.dart'; // Import the Bluetooth class
+import 'package:flutter_blue/flutter_blue.dart';
 
 class DeviceSettingsScreen extends StatefulWidget {
   final VoidCallback onDelete;
@@ -17,6 +17,8 @@ class DeviceSettingsScreen extends StatefulWidget {
 }
 
 class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
+  late final BLEController _bleController = BLEController();
+
   final Map<String, Duration?> _selectedDurations = {
     'positive scent duration': null,
     'negative scent duration': null,
@@ -210,14 +212,18 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
   Widget _buildBluetoothDeviceIDSetting(String deviceTitle) {
     final deviceData = Provider.of<DeviceData>(context);
     final deviceSettings = deviceData.getDeviceSettings(deviceTitle);
-    final bluetoothDeviceID = deviceSettings.bluetoothDeviceID ?? '';
+    String bluetoothDeviceID = deviceSettings.bluetoothDeviceID ?? ''; // Get the Bluetooth device ID
+
+    // Retrieve the connected Bluetooth device name using the BLEController
+    String bluetoothDeviceName = Bluetooth().bleController.connectedDevice?.name ?? 'Not connected'; // Assuming `_bleController` is accessible here
 
     return _buildSettingCard(
-      title: 'Bluetooth Device ID',
-      value: bluetoothDeviceID.isNotEmpty ? bluetoothDeviceID : 'Not available',
+      title: 'Bluetooth Device',
+      value: bluetoothDeviceName.isNotEmpty ? bluetoothDeviceName : 'Not connected',
       onTap: () {}, // You can define an action here if needed
     );
   }
+
 
 
   Widget _buildBluetoothConnectionSetting() {
