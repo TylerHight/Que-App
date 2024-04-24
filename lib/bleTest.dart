@@ -23,8 +23,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final String serviceUUID = "0000180a-0000-1000-8000-00805f9b34fb";
-  final String characteristicUUID = "00002a57-0000-1000-8000-00805f9b34fb";
-  BluetoothCharacteristic? characteristic;
+  final String controlCharacteristicUUID = "00002a57-0000-1000-8000-00805f9b34fb";
+  final String settingCharacteristicUUID = "19B10002-E8F2-537E-4F6C-D104768A1214";
+  BluetoothCharacteristic? controlCharacteristic;
+  BluetoothCharacteristic? settingCharacteristic;
   bool connected = false;
 
   FlutterBlue flutterBlue = FlutterBlue.instance;
@@ -67,11 +69,13 @@ class _MyHomePageState extends State<MyHomePage> {
           print("Target service found.");
           print("Searching for matching characteristic(s) in service...");
           for (var characteristic in service.characteristics) {
-            print("Comparing UUIDs: ${characteristic.uuid} == $characteristicUUID");
-            if (characteristic.uuid.toString() == characteristicUUID) {
-              print("Characteristic found: ${characteristic.uuid}");
-              this.characteristic = characteristic;
-              break; // Exit the loop once the characteristic is found
+            print("Found characteristic UUIDs: $characteristic.uuid");
+            if (characteristic.uuid.toString() == controlCharacteristicUUID) {
+              print("Control characteristic found: ${characteristic.uuid}");
+              controlCharacteristic = characteristic;
+            } else if (characteristic.uuid.toString() == settingCharacteristicUUID) {
+              print("Setting characteristic found: ${characteristic.uuid}");
+              settingCharacteristic = characteristic;
             } else {
               print("UUIDs did not match");
             }
