@@ -24,17 +24,18 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final String serviceUUID = "0000180a-0000-1000-8000-00805f9b34fb";
   final String controlCharacteristicUUID = "00002a57-0000-1000-8000-00805f9b34fb";
-  final String settingCharacteristicUUID = "19B10002-E8F2-537E-4F6C-D104768A1214";
+  final String settingCharacteristicUUID = "19b10001-e8f2-537e-4f6c-d104768a1214";
   BluetoothCharacteristic? controlCharacteristic;
   BluetoothCharacteristic? settingCharacteristic;
   bool connected = false;
+  TextEditingController _fan1DurationController = TextEditingController();
 
   FlutterBlue flutterBlue = FlutterBlue.instance;
   List<BluetoothDevice> devices = [];
 
   void _startScan() {
     // start scanning
-    flutterBlue.startScan(timeout: Duration(seconds: 4));
+    flutterBlue.startScan(timeout: const Duration(seconds: 4));
 
     // listen to scan results
     flutterBlue.scanResults.listen((List<ScanResult> results) {
@@ -93,8 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
-
   void _disconnectFromDevice() async {
     try {
       await flutterBlue.connectedDevices
@@ -112,15 +111,31 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _toggleLED(int value) async {
-    final characteristic = this.characteristic;
+  void sendCommand(int value) async {
+    final characteristic = controlCharacteristic;
     if (characteristic != null) {
       List<int> data = [value];
-      print("Sending command to Arduino: $data");
+      print("Sending control command to Arduino: $data");
       await characteristic.write(data);
       print("Command sent successfully!");
     } else {
       print("Characteristic is null. Cannot send command to Arduino.");
+    }
+  }
+
+  void sendSetting(int value1, int value2) async {
+    final characteristic = settingCharacteristic;
+    if (characteristic != null) {
+      List<int> data = [value1, value2];
+      print("Sending setting to Arduino: $data");
+      try {
+        await characteristic.write(data);
+        print("Setting sent successfully!");
+      } catch (e) {
+        print("Error sending setting: $e");
+      }
+    } else {
+      print("Setting characteristic is null. Cannot send setting to Arduino.");
     }
   }
 
@@ -143,32 +158,75 @@ class _MyHomePageState extends State<MyHomePage> {
             connected
                 ? ElevatedButton(
               onPressed: () {
-                _toggleLED(0);
+                sendCommand(0);
               },
-              child: Text('Turn LEDs Off'),
+              child: Text('Turn fan1 on'),
             )
                 : SizedBox(),
-            SizedBox(height: 20),
             connected
                 ? Column(
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    _toggleLED(1);
+                    sendCommand(1);
                   },
-                  child: Text('Turn Red LED On'),
+                  child: Text('Turn fan1 off'),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    _toggleLED(2);
+                    sendCommand(2);
                   },
-                  child: Text('Turn Green LED On'),
+                  child: Text('Turn fan2 On'),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    _toggleLED(3);
+                    sendCommand(3);
                   },
-                  child: Text('Turn Blue LED On'),
+                  child: Text('Turn fan2 off'),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Set fan1 duration'),
+                              content: TextFormField(
+                                controller: _fan1DurationController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText: 'Enter duration (seconds)',
+                                ),
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    String durationString =
+                                        _fan1DurationController.text;
+                                    int duration = int.tryParse(
+                                        durationString) ?? 0;
+                                    sendCommand(duration);
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Set'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        child: Text('Set fan1 duration'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             )
