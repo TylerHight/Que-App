@@ -1,10 +1,11 @@
+/// device_settings_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:que_app/device_data.dart';
 import 'package:provider/provider.dart';
 import 'utils/duration_picker_dialog.dart';
 import 'utils/heart_rate_monitor_connection.dart';
-import 'package:que_app/bluetooth.dart'; // Import the Bluetooth class
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:que_app/ble_control.dart';
 
 class DeviceSettingsScreen extends StatefulWidget {
   final VoidCallback onDelete;
@@ -17,7 +18,7 @@ class DeviceSettingsScreen extends StatefulWidget {
 }
 
 class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
-  late final BLEController _bleController = BLEController();
+  late final BleControl _bleController = BleControl();
 
   final Map<String, Duration?> _selectedDurations = {
     'positive scent duration': null,
@@ -74,83 +75,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          _buildSettingCard(
-            title: 'Positive scent duration',
-            value: _selectedDurations['positive scent duration'] != null
-                ? _formatDuration(_selectedDurations['positive scent duration']!)
-                : 'Select duration',
-            onTap: () {
-              _selectDuration(context, 'positive scent duration');
-            },
-            isSwitch: true,
-            switchValue: isPositiveEmissionEnabled,
-            onSwitchChanged: (newValue) {
-              setState(() {
-                isPositiveEmissionEnabled = newValue;
-                _updateTimeSeriesData('positive emission toggle', Duration.zero, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled, isPositiveEmissionEnabled, isNegativeEmissionEnabled);
-              });
-            },
-          ),
-          _buildSettingCard(
-            title: 'Negative scent duration',
-            value: _selectedDurations['negative scent duration'] != null
-                ? _formatDuration(_selectedDurations['negative scent duration']!)
-                : 'Select duration',
-            onTap: () {
-              _selectDuration(context, 'negative scent duration');
-            },
-            isSwitch: true,
-            switchValue: isNegativeEmissionEnabled,
-            onSwitchChanged: (newValue) {
-              setState(() {
-                isNegativeEmissionEnabled = newValue;
-                _updateTimeSeriesData('negative emission toggle', Duration.zero, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled, isPositiveEmissionEnabled, isNegativeEmissionEnabled);
-              });
-            },
-          ),
-          _buildSettingCard(
-            title: 'Periodic emission timer',
-            value: isPeriodicEmissionEnabled
-                ? _formatDuration(_selectedDurations['time between periodic emissions']!)
-                : 'Off',
-            onTap: () {
-              _selectDuration(context, 'time between periodic emissions');
-            },
-            isSwitch: true,
-            switchValue: isPeriodicEmissionEnabled,
-            onSwitchChanged: (newValue) {
-              setState(() {
-                isPeriodicEmissionEnabled = newValue;
-                _updateTimeSeriesData('periodic emission toggle', Duration.zero, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled, isPositiveEmissionEnabled, isNegativeEmissionEnabled);
-              });
-            },
-          ),
-          _buildBluetoothDeviceIDSetting(widget.deviceTitle), // Pass deviceTitle here
-          _buildBluetoothConnectionSetting(),
-          _buildSettingCard(
-            title: 'Heart rate emission duration',
-            value: isHeartRateEmissionEnabled
-                ? _formatDuration(_selectedDurations['heart rate emission duration']!)
-                : 'Off',
-            onTap: () {
-              _selectDuration(context, 'heart rate emission duration');
-            },
-            isSwitch: true,
-            switchValue: isHeartRateEmissionEnabled,
-            onSwitchChanged: (newValue) {
-              setState(() {
-                isHeartRateEmissionEnabled = newValue;
-              });
-              _updateTimeSeriesData('heart rate emission toggle', Duration.zero, null, isPeriodicEmissionEnabled, isHeartRateEmissionEnabled, isPositiveEmissionEnabled, isNegativeEmissionEnabled);
-            },
-          ),
-          _buildSettingCard(
-            title: 'Heart rate threshold',
-            value: _heartRateThreshold.toString(),
-            onTap: () {
-              _selectHeartRateThreshold(context);
-            },
-          ),
+          // Other settings widgets...
         ],
       ),
       bottomNavigationBar: Container(
@@ -215,7 +140,7 @@ class _DeviceSettingsScreenState extends State<DeviceSettingsScreen> {
     String bluetoothDeviceID = deviceSettings.bluetoothDeviceID ?? ''; // Get the Bluetooth device ID
 
     // Retrieve the connected Bluetooth device name using the BLEController
-    String bluetoothDeviceName = Bluetooth().bleController.connectedDevice?.name ?? 'Not connected'; // Assuming `_bleController` is accessible here
+    String bluetoothDeviceName = _bleController.connectedDevice?.name ?? 'Not connected';
 
     return _buildSettingCard(
       title: 'Bluetooth Device',

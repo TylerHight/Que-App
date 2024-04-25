@@ -1,14 +1,113 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:que_app/ble_control.dart'; // Import the BleControl file
+
+class BleControl {
+  final String serviceUUID = "0000180a-0000-1000-8000-00805f9b34fb";
+  final String controlCharacteristicUUID = "00002a57-0000-1000-8000-00805f9b34fb";
+  final String settingCharacteristicUUID = "19b10001-e8f2-537e-4f6c-d104768a1214";
+  BluetoothCharacteristic? controlCharacteristic;
+  BluetoothCharacteristic? settingCharacteristic;
+  bool connected = false;
+
+  FlutterBlue flutterBlue = FlutterBlue.instance;
+  List<BluetoothDevice> devices = [];
+  StreamSubscription<List<ScanResult>>? _scanSubscription;
+  BluetoothDevice? connectedDevice;
+
+  Stream<List<ScanResult>> startScan() {
+    // Check if scan is already active
+    if (_scanSubscription == null) {
+      print("Starting BLE scan...");
+      _scanSubscription = flutterBlue.scanResults.listen((List<ScanResult> results) {
+        for (ScanResult result in results) {
+          print('${result.device.name} found! rssi: ${result.rssi}');
+          if (!devices.contains(result.device)) {
+            devices.add(result.device);
+          }
+        }
+      });
+
+      return flutterBlue.scanResults;
+    }
+    return Stream.empty();
+  }
+
+  void stopScan() {
+    print('Stopping BLE scan...');
+    flutterBlue.stopScan();
+    _scanSubscription?.cancel();
+  }
+
+  Future<void> connectToDevice(BluetoothDevice device) async {
+    try {
+      print("Stopping BLE scan");
+      stopScan();
+      print('Connecting to device: ${device.name}');
+      await device.connect();
+
+      print("Waiting to discover services...");
+      await Future.delayed(const Duration(seconds: 1));
+
+      print("Discovering services...");
+      List<BluetoothService> services = await device.discoverServices();
+      print("Available services on ${device.name}:");
+      for (var service in services) {
+        print("- Service UUID: ${service.uuid}");
+        if (service.uuid.toString() == serviceUUID) {
+          print("Target service found.");
+          print("Searching for matching characteristic(s) in service...");
+          for (var characteristic in service.characteristics) {
+            print("Found characteristic UUIDs: $characteristic.uuid");
+            if (characteristic.uuid.toString() == controlCharacteristicUUID) {
+              print("Control characteristic found: ${characteristic.uuid}");
+              controlCharacteristic = characteristic;
+            } else if (characteristic.uuid.toString() == settingCharacteristicUUID) {
+              print("Setting characteristic found: ${characteristic.uuid}");
+              settingCharacteristic = characteristic;
+            } else {
+              print("UUIDs did not match");
+            }
+          }
+          print("Exiting _connectToDevice method");
+          break;
+        }
+      }
+
+      connected = true;
+    } catch (e) {
+      print("Error connecting to device: $e");
+    }
+  }
+
+  void disconnectFromDevice(BluetoothDevice device) async {
+    try {
+      await device.disconnect();
+      connected = false;
+    } catch (e) {
+      print("Error disconnecting from device: $e");
+    }
+  }
+
+  void sendCommand(int value) async {
+    final characteristic = controlCharacteristic;
+    if (characteristic != null) {
+      List<int> data = [value];
+      print("Sending control command to Arduino: $data");
+      await characteristic.write(data);
+      print("Command sent successfully!");
+    } else {
+      print("Characteristic is null. Cannot send command to Arduino.");
+    }
+  }
+}
 
 class DeviceNameDialog extends StatefulWidget {
-  final Function({required String deviceName, required String bluetoothDeviceID})
-  onDeviceNameEntered;
+  final Function({required String deviceName, required String bluetoothDeviceID}) onDeviceNameEntered;
 
-  const DeviceNameDialog({Key? key, required this.onDeviceNameEntered})
-      : super(key: key);
+  const DeviceNameDialog({Key? key, required this.onDeviceNameEntered}) : super(key: key);
 
   @override
   _DeviceNameDialogState createState() => _DeviceNameDialogState();
@@ -36,33 +135,27 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
   }
 
   Future<void> _requestLocationPermissionAndStartScanning() async {
-    print('Requesting location permission...');
     if (await Permission.location.isDenied) {
       await Permission.location.request();
     }
 
-    print('Checking Bluetooth availability...');
     bool isAvailable = await FlutterBlue.instance.isAvailable;
     bool isOn = await FlutterBlue.instance.isOn;
 
     if (isAvailable && isOn) {
-      print('Bluetooth is available and turned on. Starting scanning...');
       _startScanning();
     } else {
-      print('Bluetooth is not available or turned off.');
       _showBluetoothAlert(isAvailable, isOn);
     }
   }
 
   void _startScanning() {
-    print('Starting BLE scan...');
     setState(() {
       _isScanning = true;
     });
 
     _bleControl.startScan().listen(
           (results) {
-        print('Scan results received: $results');
         setState(() {
           _availableDevices = results;
         });
@@ -76,7 +169,6 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
   }
 
   void _stopScanning() {
-    print('Stopping BLE scan...');
     _bleControl.stopScan();
   }
 
@@ -146,13 +238,10 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
               });
               _connectToDevice(device!.device); // Call connectToDevice when device is selected
             },
-            hint: _availableDevices.isEmpty ? const Text('No devices found') : const Text('Select Device (Optional)'),
+            hint: _availableDevices.isEmpty
+                ? const Text('No devices found')
+                : const Text('Select Device (Optional)'),
             disabledHint: const Text('No devices found'),
-          ),
-          const SizedBox(height: 8.0),
-          ElevatedButton(
-            onPressed: _isScanning ? null : _startScanning,
-            child: const Text('Rescan'),
           ),
         ],
       ),
@@ -182,7 +271,7 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
 
   void _connectToDevice(BluetoothDevice device) async {
     try {
-      print('Connecting to device: ${device.name}');
+      print('Connecting to device');
       await _bleControl.connectToDevice(device);
     } catch (e) {
       print('Failed to connect to device: $e');
