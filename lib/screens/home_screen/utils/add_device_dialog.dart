@@ -78,7 +78,11 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
   void _stopScanning() {
     print('Stopping BLE scan...');
     _bleControl.stopScan();
+    setState(() {
+      _isScanning = false; // Set _isScanning to false when scanning is stopped
+    });
   }
+
 
   void _showBluetoothAlert(bool isAvailable, bool isOn) {
     String title = 'Bluetooth Error';

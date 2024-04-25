@@ -21,6 +21,7 @@ class BleControl {
     // Check if scan is already active
     if (_scanSubscription == null) {
       print("Starting BLE scan...");
+      flutterBlue.startScan(timeout: const Duration(seconds: 4));
       _scanSubscription = flutterBlue.scanResults.listen((List<ScanResult> results) {
         for (ScanResult result in results) {
           print('${result.device.name} found! rssi: ${result.rssi}');
