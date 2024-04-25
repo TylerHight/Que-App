@@ -222,6 +222,86 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   child: Text('Set fan1 duration'),
                 ),
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Set fan2 duration'),
+                        content: TextFormField(
+                          controller: _fan1DurationController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Enter seconds',
+                          ),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              int seconds = int.tryParse(_fan1DurationController.text) ?? 0;
+                              sendSetting(5, seconds); // Use 5 as the first parameter
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Set'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  child: Text('Set fan2 duration'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Set emission interval'),
+                        content: TextFormField(
+                          controller: _fan1DurationController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Enter seconds',
+                          ),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              int seconds = int.tryParse(_fan1DurationController.text) ?? 0;
+                              sendSetting(6, seconds); // Use 6 as the first parameter
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Set'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  child: Text('Set emission interval'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    sendCommand(7);
+                  },
+                  child: Text('Turn on periodic emissions'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    sendCommand(8);
+                  },
+                  child: Text('Turn off periodic emissions'),
+                ),
               ],
             )
                 : SizedBox(),
