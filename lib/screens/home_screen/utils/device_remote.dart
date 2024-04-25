@@ -3,6 +3,7 @@ import 'timed_binary_button.dart';
 import 'binary_button.dart';
 import 'package:que_app/device_data.dart';
 import 'package:provider/provider.dart';
+import 'package:que_app/ble_control.dart';
 
 class DeviceRemote extends StatefulWidget {
   final String title;
@@ -20,6 +21,7 @@ class DeviceRemote extends StatefulWidget {
 class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMixin {
   late AnimationController _ratingAnimationController;
   late int _currentRating;
+  late BleControl _bleControl;
 
   @override
   void initState() {
@@ -29,6 +31,7 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
       duration: const Duration(milliseconds: 500),
     );
     _currentRating = 0;
+    _bleControl = BleControl();
   }
 
   @override
@@ -113,6 +116,14 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                   iconSize: 38.0,
                   autoTurnOffDuration: Duration(seconds: deviceSettings.negativeEmissionDuration),
                   autoTurnOffEnabled: true,
+                  onPressedTurnOn: () {
+                    widget.onTap();
+                    _bleControl.sendCommand(0);
+                  },
+                  onPressedTurnOff: () {
+                    widget.onTap();
+                    _bleControl.sendCommand(1);
+                  },
                 ),
                 const SizedBox(width: 8),
                 TimedBinaryButton(
@@ -125,6 +136,14 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                   iconSize: 38.0,
                   autoTurnOffDuration: Duration(seconds: deviceSettings.positiveEmissionDuration),
                   autoTurnOffEnabled: true,
+                  onPressedTurnOn: () {
+                    widget.onTap();
+                    _bleControl.sendCommand(2);
+                  },
+                  onPressedTurnOff: () {
+                    widget.onTap();
+                    _bleControl.sendCommand(3);
+                  },
                 ),
               ],
             ),

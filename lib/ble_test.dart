@@ -124,20 +124,24 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void sendSetting(int value1, int value2) async {
-    final characteristic = settingCharacteristic;
+    final characteristic = controlCharacteristic;
     if (characteristic != null) {
-      List<int> data = [value1, value2];
-      print("Sending setting to Arduino: $data");
       try {
-        await characteristic.write(data);
-        print("Setting sent successfully!");
+        // Send the first integer
+        await characteristic.write([value1]);
+        print("Setting 1 sent successfully!");
+
+        // Send the second integer
+        await characteristic.write([value2]);
+        print("Setting 2 sent successfully!");
       } catch (e) {
         print("Error sending setting: $e");
       }
     } else {
-      print("Setting characteristic is null. Cannot send setting to Arduino.");
+      print("Characteristic is null. Cannot send setting to Arduino.");
     }
   }
+
 
   @override
   void initState() {
@@ -184,49 +188,39 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   child: Text('Turn fan2 off'),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text('Set fan1 duration'),
-                              content: TextFormField(
-                                controller: _fan1DurationController,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                  labelText: 'Enter duration (seconds)',
-                                ),
-                              ),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Cancel'),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    String durationString =
-                                        _fan1DurationController.text;
-                                    int duration = int.tryParse(
-                                        durationString) ?? 0;
-                                    sendCommand(duration);
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Set'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        child: Text('Set fan1 duration'),
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Set fan1 duration'),
+                        content: TextFormField(
+                          controller: _fan1DurationController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Enter seconds',
+                          ),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              int seconds = int.tryParse(_fan1DurationController.text) ?? 0;
+                              sendSetting(4, seconds);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Set'),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    );
+                  },
+                  child: Text('Set fan1 duration'),
                 ),
               ],
             )
