@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:que_app/ble_control.dart'; // Import the BleControl file
+import 'package:provider/provider.dart';
+import 'package:que_app/device_data.dart';
 
 class DeviceNameDialog extends StatefulWidget {
   final Function({required String deviceName, required String bluetoothDeviceID})
@@ -171,6 +173,9 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
             if (deviceName.isNotEmpty) {
               // Call addDeviceTitle with the provided device name and Bluetooth device ID
               widget.onDeviceNameEntered(deviceName: deviceName, bluetoothDeviceID: bluetoothDeviceID);
+              // Save the device to device_data.dart
+              Provider.of<DeviceData>(context, listen: false).addDeviceTitle(deviceName, bluetoothDeviceID: bluetoothDeviceID);
+
               Navigator.of(context).pop();
             }
           },
