@@ -153,11 +153,6 @@ class _DeviceNameDialogState extends State<DeviceNameDialog> {
             hint: _availableDevices.isEmpty ? const Text('No devices found') : const Text('Select Device (Optional)'),
             disabledHint: const Text('No devices found'),
           ),
-          const SizedBox(height: 8.0),
-          ElevatedButton(
-            onPressed: _isScanning ? null : _startScanning,
-            child: const Text('Rescan'),
-          ),
         ],
       ),
       actions: <Widget>[
