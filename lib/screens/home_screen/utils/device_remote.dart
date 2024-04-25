@@ -61,20 +61,6 @@ class _DeviceRemoteState extends State<DeviceRemote> with TickerProviderStateMix
                 Row(
                   children: [
                     BinaryButton(
-                      activeColor: Colors.green.shade400,
-                      inactiveColor: Colors.grey.shade400,
-                      iconData: Icons.power_settings_new,
-                      buttonSize: 28.0,
-                      iconSize: 20.0,
-                      onPressedTurnOn: () {
-                        //onTap();
-                      },
-                      onPressedTurnOff: () {
-                        //onTap();
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    BinaryButton(
                       activeColor: Colors.transparent,
                       inactiveColor: Colors.transparent,
                       iconData: Icons.settings,
