@@ -1,0 +1,33 @@
+Project structure:
+- lib
+    - models
+        - README.md             // Description of the models subdirectory.
+        - device.dart
+        - note.dart
+        - setting.dart
+    - screens
+        - device_control
+            - README.md           // Description of the device_control subdirectory.
+            - device_control_screen.dart
+            - device_remote.dart
+            - device_settings.dart
+        - notes
+            - README.md           // Description of the notes subdirectory.
+            - notes_screen.dart
+            - note_editor.dart
+        - shared
+            - README.md           // Description of the shared subdirectory.
+            - widgets
+                - README.md         // Description of the widgets subdirectory.
+                - custom_button.dart
+                - device_card.dart
+                - note_card.dart
+    - services
+        - README.md             // Description of the services subdirectory.
+        - ble_service.dart
+        - database_service.dart
+    - utils
+        - README.md             // Description of the utils subdirectory.
+        - ble_utils.dart
+        - date_time_utils.dart
+    - main.dart               // Entry point of the Flutter app.
