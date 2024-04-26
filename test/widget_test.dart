@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:que_app/device_data.dart';
-import 'package:que_app/screens/home_screen/device_settings_screen.dart';
+import 'package:que_app/screens/device_control/device_settings_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {

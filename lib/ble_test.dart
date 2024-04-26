@@ -1,3 +1,6 @@
+/// ble_test.dart
+/// A test app for BLE functionality
+
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 

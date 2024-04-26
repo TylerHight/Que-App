@@ -1,0 +1,1 @@
+models directory: Contains data models representing entities such as devices, notes, and settings.
