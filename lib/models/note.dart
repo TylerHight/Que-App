@@ -1,3 +1,4 @@
+/// note.dart
 import 'package:que_app/models/device.dart';
 
 class Note {
@@ -7,4 +8,24 @@ class Note {
   Device? device;
 
   Note({required this.id, required this.content, required this.creationDate, this.device});
+
+  Note copy({
+    String? id,
+    String? content,
+    DateTime? creationDate,
+    Device? device,
+  }) =>
+      Note(
+        id: id ?? this.id,
+        content: content ?? this.content,
+        creationDate: creationDate ?? this.creationDate,
+        device: device ?? this.device,
+      );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'content': content,
+    'creationDate': creationDate.toIso8601String(),
+    'device': device?.toJson(),
+  };
 }

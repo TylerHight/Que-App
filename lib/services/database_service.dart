@@ -2,6 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:que_app/models/device.dart';
 import 'package:que_app/models/note.dart';
+import 'package:que_app/models/setting.dart';
 
 class DatabaseService {
   static final DatabaseService instance = DatabaseService._init();
@@ -29,24 +30,55 @@ class DatabaseService {
     final textType = 'TEXT NOT NULL';
 
     await db.execute('''
-CREATE TABLE $tableDevices ( 
-  ${DeviceFields.id} $idType, 
-  ${DeviceFields.name} $textType,
-  ${DeviceFields.type} $textType,
-  ${DeviceFields.isConnected} BOOLEAN
+CREATE TABLE devices ( 
+  id $idType, 
+  name $textType,
+  type $textType,
+  isConnected BOOLEAN
   )
 ''');
 
     await db.execute('''
-CREATE TABLE $tableNotes (
-  ${NoteFields.id} $idType,
-  ${NoteFields.content} $textType,
-  ${NoteFields.creationDate} TEXT,
-  ${NoteFields.deviceId} INTEGER,
-  FOREIGN KEY (${NoteFields.deviceId}) REFERENCES $tableDevices (${DeviceFields.id})
+CREATE TABLE notes (
+  id $idType,
+  content $textType,
+  creationDate TEXT,
+  deviceId INTEGER,
+  FOREIGN KEY (deviceId) REFERENCES devices (id)
+  )
+''');
+
+    await db.execute('''
+CREATE TABLE deviceSettings (
+  id $idType,
+  deviceId INTEGER,
+  settingName $textType,
+  settingValue TEXT,
+  FOREIGN KEY (deviceId) REFERENCES devices (id)
   )
 ''');
   }
 
-// Add methods for insert, update, delete, and retrieve operations...
+  Future<Device> createDevice(Device device) async {
+    final db = await instance.database;
+
+    final id = await db.insert('devices', device.toJson());
+    return device.copy(id: id);
+  }
+
+  Future<Note> createNote(Note note) async {
+    final db = await instance.database;
+
+    final id = await db.insert('notes', note.toJson());
+    return note.copy(id: id);
+  }
+
+  Future<DeviceSettings> createDeviceSetting(DeviceSettings setting) async {
+    final db = await instance.database;
+
+    final id = await db.insert('deviceSettings', setting.toJson());
+    return setting.copy(id: id);
+  }
+
+// Add methods for read, update, and delete operations...
 }
