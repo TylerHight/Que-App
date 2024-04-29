@@ -1,6 +1,3 @@
-/// add_device_dialog.dart
-/// Popup where the user selects a bluetooth device and names it
-
 import 'package:flutter/material.dart';
 
 class AddDeviceDialog extends StatefulWidget {
@@ -28,13 +25,13 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
         ),
       ),
       actions: <Widget>[
-        FlatButton(
+        TextButton(
           child: Text('Cancel'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        FlatButton(
+        TextButton(
           child: Text('Add'),
           onPressed: () {
             // Implement logic to add the device here

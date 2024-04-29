@@ -14,6 +14,14 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,  // Add this line
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        appBarTheme: AppBarTheme(
+          iconTheme: IconThemeData(color: Colors.white), // Set icon color to white
+        ),
+        textTheme: TextTheme(headline6: TextStyle(color: Colors.white)), // Set text color to white
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey[400], // Set unselected item color to white
+        ),
       ),
       home: MyHomePage(),
     );
@@ -45,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.blue, // Set the background color to blue
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.devices),
@@ -56,7 +65,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
         onTap: _onItemTapped,
       ),
     );
