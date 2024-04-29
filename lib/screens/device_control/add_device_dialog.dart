@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:que_app/services/ble_service.dart';
-import 'package:que_app/utils/ble_utils.dart'; // Change "your_app_name" to the actual package name
-
+import 'package:que_app/utils/ble_utils.dart';
 
 class AddDeviceDialog extends StatefulWidget {
   @override
@@ -10,15 +9,16 @@ class AddDeviceDialog extends StatefulWidget {
 }
 
 class _AddDeviceDialogState extends State<AddDeviceDialog> {
-  BleService bleService = BleService();
-  BleUtils bleUtils = BleUtils();
-
+  late BleService bleService;
+  late BleUtils bleUtils;
   List<BluetoothDevice> nearbyDevices = [];
   BluetoothDevice? selectedDevice;
 
   @override
   void initState() {
     super.initState();
+    bleService = BleService();
+    bleUtils = BleUtils();
     _startScan();
   }
 
@@ -39,7 +39,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
         child: ListBody(
           children: <Widget>[
             TextFormField(
-              decoration: InputDecoration(labelText: 'Que Name'),
+              decoration: InputDecoration(labelText: 'Name'),
             ),
             DropdownButtonFormField<BluetoothDevice>(
               decoration: InputDecoration(labelText: 'Select Que'),
@@ -55,6 +55,17 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                 child: Text(device.name),
               ))
                   .toList(),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: 5, // Adjust the width as needed
+              child: ElevatedButton(
+                onPressed: _startScan,
+                style: ButtonStyle(
+                  minimumSize: MaterialStateProperty.all(Size(0, 40)), // Adjust the height as needed
+                ),
+                child: Text('Rescan'),
+              ),
             ),
           ],
         ),
