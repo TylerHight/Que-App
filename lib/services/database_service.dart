@@ -1,3 +1,6 @@
+/// database_service.dart
+/// Handles database operations
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:que_app/models/device.dart';
