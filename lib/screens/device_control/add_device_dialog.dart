@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_blue/flutter_blue.dart';
+import 'package:que_app/services/ble_service.dart';
+import 'package:que_app/utils/ble_utils.dart'; // Change "your_app_name" to the actual package name
+
 
 class AddDeviceDialog extends StatefulWidget {
   @override
@@ -6,6 +10,27 @@ class AddDeviceDialog extends StatefulWidget {
 }
 
 class _AddDeviceDialogState extends State<AddDeviceDialog> {
+  BleService bleService = BleService();
+  BleUtils bleUtils = BleUtils();
+
+  List<BluetoothDevice> nearbyDevices = [];
+  BluetoothDevice? selectedDevice;
+
+  @override
+  void initState() {
+    super.initState();
+    _startScan();
+  }
+
+  Future<void> _startScan() async {
+    try {
+      nearbyDevices = await bleUtils.startScan();
+      setState(() {});
+    } catch (e) {
+      print("Error scanning for nearby devices: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -13,13 +38,23 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
       content: SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            // Add your form fields or any content here
-            // For example:
             TextFormField(
-              decoration: InputDecoration(labelText: 'Device Name'),
+              decoration: InputDecoration(labelText: 'Que Name'),
             ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Device Type'),
+            DropdownButtonFormField<BluetoothDevice>(
+              decoration: InputDecoration(labelText: 'Select Que'),
+              value: selectedDevice,
+              onChanged: (BluetoothDevice? device) {
+                setState(() {
+                  selectedDevice = device;
+                });
+              },
+              items: nearbyDevices
+                  .map((device) => DropdownMenuItem(
+                value: device,
+                child: Text(device.name),
+              ))
+                  .toList(),
             ),
           ],
         ),
