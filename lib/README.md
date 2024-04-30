@@ -8,6 +8,7 @@ Project structure:
     - screens
         - device_control
             - README.md           // Description of the device_control subdirectory.
+            - add_device_dialog.dart // for finding and adding new Ques
             - device_control_screen.dart
             - device_remote.dart
             - device_settings.dart
@@ -31,3 +32,4 @@ Project structure:
         - ble_utils.dart
         - date_time_utils.dart
     - main.dart               // Entry point of the Flutter app.
+    - app_data.dart // stores application-wide data

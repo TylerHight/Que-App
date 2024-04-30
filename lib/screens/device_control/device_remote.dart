@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:math'; // Import dart:math for generating random icons
 
 class DeviceRemote extends StatelessWidget {
-  final String title;
+  final String deviceName;
+  final String connectedQueName;
+
   final VoidCallback? onButton1Pressed;
   final VoidCallback? onButton2Pressed;
   final VoidCallback? onButton3Pressed;
@@ -12,7 +14,9 @@ class DeviceRemote extends StatelessWidget {
 
   const DeviceRemote({
     Key? key,
-    required this.title,
+    required this.deviceName,
+    required this.connectedQueName,
+
     this.onButton1Pressed,
     this.onButton2Pressed,
     this.onButton3Pressed,
@@ -51,7 +55,7 @@ class DeviceRemote extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  deviceName,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 10.0),
@@ -59,32 +63,18 @@ class DeviceRemote extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
-                      onPressed: onButton1Pressed,
-                      child: _generateRandomIcon(),
-                      style: ElevatedButton.styleFrom(
-                        shape: CircleBorder(),
-                      ),
-                    ),
-                    ElevatedButton(
                       onPressed: onButton2Pressed,
-                      child: _generateRandomIcon(),
                       style: ElevatedButton.styleFrom(
-                        shape: CircleBorder(),
+                        shape: const CircleBorder(),
                       ),
+                      child: const Icon(Icons.settings),
                     ),
                     ElevatedButton(
                       onPressed: onButton3Pressed,
-                      child: _generateRandomIcon(),
                       style: ElevatedButton.styleFrom(
-                        shape: CircleBorder(),
+                        shape: const CircleBorder(),
                       ),
-                    ),
-                    ElevatedButton(
-                      onPressed: onButton4Pressed,
-                      child: _generateRandomIcon(),
-                      style: ElevatedButton.styleFrom(
-                        shape: CircleBorder(),
-                      ),
+                      child: const Icon(Icons.description),
                     ),
                   ],
                 ),

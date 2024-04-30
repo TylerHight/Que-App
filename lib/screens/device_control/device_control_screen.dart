@@ -32,7 +32,8 @@ class DeviceControlScreen extends StatelessWidget {
         children: <Widget>[
           // Display three instances of DeviceRemote
           DeviceRemote(
-            title: 'Device 1',
+            deviceName: 'Device 1',
+            connectedQueName: "N/A",
             onButton1Pressed: () {
               // Handle button 1 pressed
             },
@@ -53,11 +54,13 @@ class DeviceControlScreen extends StatelessWidget {
             },
           ),
           DeviceRemote(
-            title: 'Device 2',
+            deviceName: 'Device 2',
+            connectedQueName: "N/A",
             // Add onPressed handlers as needed
           ),
           DeviceRemote(
-            title: 'Device 3',
+            deviceName: 'Device 3',
+            connectedQueName: "N/A",
             // Add onPressed handlers as needed
           ),
           // Add more DeviceRemote widgets as needed
