@@ -13,6 +13,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   late BleUtils bleUtils;
   List<BluetoothDevice> nearbyDevices = [];
   BluetoothDevice? selectedDevice;
+  final _nameController = TextEditingController();
 
   @override
   void initState() {
@@ -20,6 +21,12 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     bleService = BleService();
     bleUtils = BleUtils();
     _startScan();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 
   Future<void> _startScan() async {
@@ -39,6 +46,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
         child: ListBody(
           children: <Widget>[
             TextFormField(
+              controller: _nameController,
               decoration: InputDecoration(labelText: 'Name'),
             ),
             DropdownButtonFormField<BluetoothDevice>(
@@ -80,13 +88,21 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
         TextButton(
           child: Text('Add'),
           onPressed: () {
-            // Implement logic to add the device here
-            // You can access form values using form fields controllers or state
-            // Once done, you can close the dialog
-            Navigator.of(context).pop();
+            _addDevice();
           },
         ),
       ],
     );
+  }
+
+  void _addDevice() {
+    final name = _nameController.text;
+    final connectedQueueName =
+    selectedDevice != null ? selectedDevice!.name : 'none';
+
+    // Implement logic to add the device here
+    // You can access form values using form fields controllers or state
+    // Once done, you can close the dialog
+    Navigator.of(context).pop();
   }
 }

@@ -35,9 +35,8 @@ class DatabaseService {
     await db.execute('''
 CREATE TABLE devices ( 
   id $idType, 
-  name $textType,
-  type $textType,
-  isConnected BOOLEAN
+  deviceName $textType,
+  connectedQueueName $textType
   )
 ''');
 
@@ -66,7 +65,7 @@ CREATE TABLE deviceSettings (
     final db = await instance.database;
 
     final id = await db.insert('devices', device.toJson());
-    return device.copy(id: id);
+    return device.copy(id: id.toString()); // Adjusted to match the change in the Device class
   }
 
   Future<Note> createNote(Note note) async {
