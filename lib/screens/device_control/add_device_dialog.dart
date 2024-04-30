@@ -100,14 +100,14 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
 
   void _addDevice() {
     final name = _nameController.text;
-    final connectedQueueName =
-    selectedDevice != null ? selectedDevice!.name : 'none';
+    final connectedQueName =
+      selectedDevice != null ? selectedDevice!.name : 'none';
 
     // Create a new Device instance with the provided information
     final newDevice = Device(
       id: UniqueKey().toString(), // Generate a unique id for the new device
       deviceName: name,
-      connectedQueueName: connectedQueueName,
+      connectedQueName: connectedQueName,
     );
 
     // Add the new device to your list of devices or database
@@ -120,8 +120,8 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
       // You can replace devicesList with your actual list of devices
       devicesList.add(DeviceRemote(
         deviceName: newDevice.deviceName,
-        connectedQueueName: newDevice.connectedQueueName,
-      ));
+        connectedQueName: newDevice.connectedQueName,
+      ) as Device);
     });
 
     // Close the dialog
