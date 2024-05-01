@@ -1,12 +1,16 @@
+// add_device_dialog.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:que_app/services/ble_service.dart';
 import 'package:que_app/utils/ble_utils.dart';
 import 'package:que_app/models/device.dart';
-import 'package:que_app/screens/device_control/device_remote.dart';
-import 'package:que_app/app_data.dart';
 
 class AddDeviceDialog extends StatefulWidget {
+  final Function(Device) onDeviceAdded;
+
+  AddDeviceDialog({required this.onDeviceAdded});
+
   @override
   _AddDeviceDialogState createState() => _AddDeviceDialogState();
 }
@@ -101,7 +105,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   void _addDevice() {
     final name = _nameController.text;
     final connectedQueName =
-      selectedDevice != null ? selectedDevice!.name : 'none';
+    selectedDevice != null ? selectedDevice!.name : 'none';
 
     // Create a new Device instance with the provided information
     final newDevice = Device(
@@ -110,19 +114,8 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
       connectedQueName: connectedQueName,
     );
 
-    // Add the new device to your list of devices or database
-    // Here you can store it in a List<Device>, database, or any other data structure
-    // Example: devices.add(newDevice);
-
-    // Update the UI to reflect the addition of the new device
-    setState(() {
-      // Add the new DeviceRemote widget to the ListView
-      // You can replace devicesList with your actual list of devices
-      devicesList.add(DeviceRemote(
-        deviceName: newDevice.deviceName,
-        connectedQueName: newDevice.connectedQueName,
-      ) as Device);
-    });
+    // Pass the new device back to the callback function
+    widget.onDeviceAdded(newDevice);
 
     // Close the dialog
     Navigator.of(context).pop();

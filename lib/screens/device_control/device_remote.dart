@@ -56,11 +56,11 @@ class DeviceRemote extends StatelessWidget {
               children: [
                 Text(
                   deviceName,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0), // Increase text size
                 ),
                 SizedBox(height: 10.0),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     ElevatedButton(
                       onPressed: onButton2Pressed,
@@ -69,6 +69,7 @@ class DeviceRemote extends StatelessWidget {
                       ),
                       child: const Icon(Icons.settings),
                     ),
+                    SizedBox(width: 10.0), // Increase spacing
                     ElevatedButton(
                       onPressed: onButton3Pressed,
                       style: ElevatedButton.styleFrom(
@@ -81,12 +82,13 @@ class DeviceRemote extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(width: 20.0),
+          SizedBox(width: 10.0), // Add spacing
           Expanded(
             flex: 1,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                SizedBox(height: 10.0), // Add spacing to align with title
                 InkWell(
                   onTap: onMainButton1Pressed,
                   child: Container(
@@ -94,13 +96,13 @@ class DeviceRemote extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: Colors.blue,
                     ),
-                    padding: EdgeInsets.all(15.0),
+                    padding: EdgeInsets.all(10.0), // Reduce padding
                     child: Center(
                       child: Icon(Icons.add),
                     ),
                   ),
                 ),
-                SizedBox(height: 20.0),
+                SizedBox(height: 10.0), // Add spacing
                 InkWell(
                   onTap: onMainButton2Pressed,
                   child: Container(
@@ -108,7 +110,7 @@ class DeviceRemote extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: Colors.blue,
                     ),
-                    padding: EdgeInsets.all(15.0),
+                    padding: EdgeInsets.all(10.0), // Reduce padding
                     child: Center(
                       child: Icon(Icons.remove),
                     ),
@@ -121,4 +123,5 @@ class DeviceRemote extends StatelessWidget {
       ),
     );
   }
+  
 }

@@ -1,70 +1,57 @@
-import 'package:flutter/material.dart';
-import 'add_device_dialog.dart'; // Import the dialog file
-import 'device_remote.dart'; // Import the DeviceRemote widget
+// device_control_screen.dart
 
-class DeviceControlScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'add_device_dialog.dart';
+import 'device_remote.dart';
+import 'package:que_app/app_data.dart';
+import 'package:que_app/models/device.dart';
+
+class DeviceControlScreen extends StatefulWidget {
+  @override
+  _DeviceControlScreenState createState() => _DeviceControlScreenState();
+}
+
+class _DeviceControlScreenState extends State<DeviceControlScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'Device Control',
-          style: TextStyle(color: Colors.white), // Set the text color to white
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.blue, // Set the background color to blue
+        backgroundColor: Colors.blue,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () {
-              // Show the dialog when the add button is tapped
-              showDialog(
+            onPressed: () async {
+              final result = await showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  // Return the dialog widget
-                  return AddDeviceDialog();
+                  return AddDeviceDialog(
+                    onDeviceAdded: (Device newDevice) {
+                      // Update the device list if a new device was added
+                      setState(() {
+                        devicesList.add(newDevice);
+                      });
+                    },
+                  );
                 },
               );
             },
           ),
         ],
       ),
-      body: ListView(
-        children: <Widget>[
-          // Display three instances of DeviceRemote
-          DeviceRemote(
-            deviceName: 'Device 1',
-            connectedQueName: "N/A",
-            onButton1Pressed: () {
-              // Handle button 1 pressed
-            },
-            onButton2Pressed: () {
-              // Handle button 2 pressed
-            },
-            onButton3Pressed: () {
-              // Handle button 3 pressed
-            },
-            onButton4Pressed: () {
-              // Handle button 4 pressed
-            },
-            onMainButton1Pressed: () {
-              // Handle main button 1 pressed
-            },
-            onMainButton2Pressed: () {
-              // Handle main button 2 pressed
-            },
-          ),
-          DeviceRemote(
-            deviceName: 'Device 2',
-            connectedQueName: "N/A",
-            // Add onPressed handlers as needed
-          ),
-          DeviceRemote(
-            deviceName: 'Device 3',
-            connectedQueName: "N/A",
-            // Add onPressed handlers as needed
-          ),
-          // Add more DeviceRemote widgets as needed
-        ],
+      body: ListView.builder(
+        itemCount: devicesList.length,
+        itemBuilder: (context, index) {
+          final device = devicesList[index];
+          return DeviceRemote(
+            deviceName: device.deviceName,
+            connectedQueName: device.connectedQueName,
+            // Add handlers as needed
+          );
+        },
       ),
     );
   }
