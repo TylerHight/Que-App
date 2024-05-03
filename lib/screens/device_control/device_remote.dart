@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math'; // Import dart:math for generating random icons
+import 'timed_binary_button.dart'; // Import the TimedBinaryButton widget
 
 class DeviceRemote extends StatelessWidget {
   final String deviceName;
@@ -46,7 +47,7 @@ class DeviceRemote extends StatelessWidget {
         border: Border.all(color: Colors.grey), // Add visible borders
         borderRadius: BorderRadius.circular(8.0), // Rounded corners
       ),
-      padding: EdgeInsets.all(12.0),
+      padding: EdgeInsets.all(10.0),
       child: Row(
         children: [
           Expanded(
@@ -58,9 +59,8 @@ class DeviceRemote extends StatelessWidget {
                   deviceName,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0), // Increase text size
                 ),
-                SizedBox(height: 10.0),
+                SizedBox(height: 0.0),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     ElevatedButton(
                       onPressed: onButton2Pressed,
@@ -69,7 +69,7 @@ class DeviceRemote extends StatelessWidget {
                       ),
                       child: const Icon(Icons.settings),
                     ),
-                    SizedBox(width: 10.0), // Increase spacing
+                    SizedBox(width: 5), // Adjust the spacing as needed
                     ElevatedButton(
                       onPressed: onButton3Pressed,
                       style: ElevatedButton.styleFrom(
@@ -83,45 +83,32 @@ class DeviceRemote extends StatelessWidget {
             ),
           ),
           SizedBox(width: 10.0), // Add spacing
-          Expanded(
-            flex: 1,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: 10.0), // Add spacing to align with title
-                InkWell(
-                  onTap: onMainButton1Pressed,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue,
-                    ),
-                    padding: EdgeInsets.all(10.0), // Reduce padding
-                    child: Center(
-                      child: Icon(Icons.add),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10.0), // Add spacing
-                InkWell(
-                  onTap: onMainButton2Pressed,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blue,
-                    ),
-                    padding: EdgeInsets.all(10.0), // Reduce padding
-                    child: Center(
-                      child: Icon(Icons.remove),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end, // Align to the end (right)
+            children: [
+              TimedBinaryButton(
+                iconData: Icons.add,
+                onPressedTurnOn: onMainButton1Pressed,
+                onPressedTurnOff: () {}, // Set to empty function as it's not used
+                autoTurnOffDuration: Duration(seconds: 3), // Set auto turn-off duration
+                autoTurnOffEnabled: false, // Disable auto turn-off
+                periodicEmissionTimerDuration: Duration(seconds: 1), // Set periodic emission duration
+                periodicEmissionEnabled: false, // Disable periodic emission
+              ),
+              SizedBox(width: 10.0), // Add spacing between buttons
+              TimedBinaryButton(
+                iconData: Icons.remove,
+                onPressedTurnOn: onMainButton2Pressed,
+                onPressedTurnOff: () {}, // Set to empty function as it's not used
+                autoTurnOffDuration: Duration(seconds: 3), // Set auto turn-off duration
+                autoTurnOffEnabled: false, // Disable auto turn-off
+                periodicEmissionTimerDuration: Duration(seconds: 1), // Set periodic emission duration
+                periodicEmissionEnabled: false, // Disable periodic emission
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-  
 }
