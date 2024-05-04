@@ -42,73 +42,70 @@ class DeviceRemote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey), // Add visible borders
-        borderRadius: BorderRadius.circular(8.0), // Rounded corners
+
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
       ),
-      padding: EdgeInsets.all(10.0),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: Column(
+      elevation: 4.0,
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   deviceName,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0), // Increase text size
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0), // Increase text size
                 ),
-                SizedBox(height: 0.0),
+                const SizedBox(height: 4),
                 Row(
                   children: [
-                    ElevatedButton(
+                    IconButton(
                       onPressed: onButton2Pressed,
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
-                      ),
-                      child: const Icon(Icons.settings),
+                      icon: const Icon(Icons.settings, size: 30),
                     ),
-                    SizedBox(width: 5), // Adjust the spacing as needed
-                    ElevatedButton(
+                    IconButton(
                       onPressed: onButton3Pressed,
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
-                      ),
-                      child: const Icon(Icons.description),
+                      icon: const Icon(Icons.description, size: 30),
                     ),
                   ],
                 ),
               ],
             ),
-          ),
-          SizedBox(width: 10.0), // Add spacing
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end, // Align to the end (right)
-            children: [
-              TimedBinaryButton(
-                iconData: Icons.add,
-                onPressedTurnOn: onMainButton1Pressed,
-                onPressedTurnOff: () {}, // Set to empty function as it's not used
-                autoTurnOffDuration: Duration(seconds: 3), // Set auto turn-off duration
-                autoTurnOffEnabled: false, // Disable auto turn-off
-                periodicEmissionTimerDuration: Duration(seconds: 1), // Set periodic emission duration
-                periodicEmissionEnabled: false, // Disable periodic emission
-              ),
-              SizedBox(width: 10.0), // Add spacing between buttons
-              TimedBinaryButton(
-                iconData: Icons.remove,
-                onPressedTurnOn: onMainButton2Pressed,
-                onPressedTurnOff: () {}, // Set to empty function as it's not used
-                autoTurnOffDuration: Duration(seconds: 3), // Set auto turn-off duration
-                autoTurnOffEnabled: false, // Disable auto turn-off
-                periodicEmissionTimerDuration: Duration(seconds: 1), // Set periodic emission duration
-                periodicEmissionEnabled: false, // Disable periodic emission
-              ),
-            ],
-          ),
-        ],
+            Row(
+              children: [
+                const SizedBox(width: 8),
+                TimedBinaryButton(
+                  periodicEmissionTimerDuration: const Duration(seconds: 0),
+                  activeColor: Colors.lightBlue.shade400,
+                  inactiveColor: Colors.grey.shade300,
+                  iconData: Icons.air,
+                  buttonSize: 55.0,
+                  iconSize: 40.0,
+                  autoTurnOffDuration: Duration(seconds: 3),
+                  autoTurnOffEnabled: true,
+                ),
+                const SizedBox(width: 8),
+                TimedBinaryButton(
+                  periodicEmissionEnabled: false,
+                  periodicEmissionTimerDuration: Duration(seconds: 1),
+                  activeColor: Colors.green.shade500,
+                  inactiveColor: Colors.grey.shade300,
+                  iconData: Icons.air,
+                  buttonSize: 55.0,
+                  iconSize: 40.0,
+                  autoTurnOffDuration: Duration(seconds: 3),
+                  autoTurnOffEnabled: true,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
+
 }
