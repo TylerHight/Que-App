@@ -42,70 +42,82 @@ class DeviceRemote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      elevation: 4.0,
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  deviceName,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0), // Increase text size
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: onButton2Pressed,
-                      icon: const Icon(Icons.settings, size: 30),
+    return Padding(
+      padding: const EdgeInsets.only(top: 20.0), // Add padding at the top of the card
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        elevation: 4.0,
+        child: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 11.0), // Add padding to the left of the title
+                    child: Text(
+                      deviceName,
+                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
                     ),
-                    IconButton(
-                      onPressed: onButton3Pressed,
-                      icon: const Icon(Icons.description, size: 30),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                const SizedBox(width: 8),
-                TimedBinaryButton(
-                  periodicEmissionTimerDuration: const Duration(seconds: 0),
-                  activeColor: Colors.lightBlue.shade400,
-                  inactiveColor: Colors.grey.shade300,
-                  iconData: Icons.air,
-                  buttonSize: 55.0,
-                  iconSize: 40.0,
-                  autoTurnOffDuration: Duration(seconds: 3),
-                  autoTurnOffEnabled: true,
-                ),
-                const SizedBox(width: 8),
-                TimedBinaryButton(
-                  periodicEmissionEnabled: false,
-                  periodicEmissionTimerDuration: Duration(seconds: 1),
-                  activeColor: Colors.green.shade500,
-                  inactiveColor: Colors.grey.shade300,
-                  iconData: Icons.air,
-                  buttonSize: 55.0,
-                  iconSize: 40.0,
-                  autoTurnOffDuration: Duration(seconds: 3),
-                  autoTurnOffEnabled: true,
-                ),
-              ],
-            ),
-          ],
+                  ),
+                  const SizedBox(height: 0),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: onButton2Pressed,
+                        icon: Icon(
+                            Icons.settings,
+                            size: 28,
+                            color: Colors.grey.shade400
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: onButton3Pressed,
+                        icon: Icon(
+                            Icons.description,
+                            size: 28,
+                            color: Colors.grey.shade400
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  const SizedBox(width: 8),
+                  TimedBinaryButton(
+                    periodicEmissionTimerDuration: const Duration(seconds: 0),
+                    activeColor: Colors.lightBlue.shade400,
+                    inactiveColor: Colors.grey.shade300,
+                    iconData: Icons.air,
+                    buttonSize: 55.0,
+                    iconSize: 40.0,
+                    autoTurnOffDuration: Duration(seconds: 3),
+                    autoTurnOffEnabled: true,
+                  ),
+                  const SizedBox(width: 8),
+                  TimedBinaryButton(
+                    periodicEmissionEnabled: false,
+                    periodicEmissionTimerDuration: Duration(seconds: 1),
+                    activeColor: Colors.green.shade500,
+                    inactiveColor: Colors.grey.shade300,
+                    iconData: Icons.air,
+                    buttonSize: 55.0,
+                    iconSize: 40.0,
+                    autoTurnOffDuration: Duration(seconds: 3),
+                    autoTurnOffEnabled: true,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-
 }
