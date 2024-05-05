@@ -1,4 +1,4 @@
-// device_control_screen.dart
+/// device_control_screen.dart
 
 import 'package:flutter/material.dart';
 import 'add_device_dialog.dart';
@@ -46,10 +46,15 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
         itemCount: devicesList.length,
         itemBuilder: (context, index) {
           final device = devicesList[index];
-          return DeviceRemote(
-            deviceName: device.deviceName,
-            connectedQueName: device.connectedQueName,
-            // Add handlers as needed
+          return Container(
+            margin: const EdgeInsets.only(top: 5.0), // Adjust the value as needed
+            child: DeviceRemote(
+              deviceName: device.deviceName,
+              connectedQueName: device.connectedQueName,
+              emission1Duration: device.emission1Duration,
+              emission2Duration: device.emission2Duration,
+              // Add handlers as needed
+            ),
           );
         },
       ),
