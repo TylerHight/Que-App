@@ -7,6 +7,8 @@ import 'dart:async';
 // optionally automatically turns off after a
 // set duration
 
+//TODO: Make it disable-able (when not connected via ble)
+
 class TimedBinaryButton extends StatefulWidget {
   final Color? activeColor;
   final Color? inactiveColor;
