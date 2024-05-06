@@ -1,3 +1,5 @@
+/// device_remote.dart
+
 import 'package:flutter/material.dart';
 import 'dart:math'; // Import dart:math for generating random icons
 import 'timed_binary_button.dart'; // Import the TimedBinaryButton widget

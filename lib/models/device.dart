@@ -1,21 +1,24 @@
-/// device.dart
-
 import 'dart:math';
 
 class Device {
   final String id;
   final String deviceName;
   final String connectedQueName;
+  static const Duration defaultEmissionDuration = const Duration(seconds: 40);
   final Duration emission1Duration;
   final Duration emission2Duration;
+
+  // Map to associate characteristics with their respective services
+  final Map<String, List<String>> bluetoothServiceCharacteristics;
 
   // Private constructor for generating a random ID
   Device._({
     required this.id,
     required this.deviceName,
     required this.connectedQueName,
-    this.emission1Duration = const Duration(seconds: 40),
-    this.emission2Duration = const Duration(seconds: 40),
+    this.emission1Duration = defaultEmissionDuration,
+    this.emission2Duration = defaultEmissionDuration,
+    required this.bluetoothServiceCharacteristics,
   });
 
   // Factory constructor to generate a random ID if one is not provided
@@ -25,6 +28,7 @@ class Device {
     required String connectedQueName,
     Duration? emission1Duration,
     Duration? emission2Duration,
+    required Map<String, List<String>> bluetoothServiceCharacteristics,
   }) {
     // If no ID is provided, generate a random one
     final generatedId = id ?? _generateRandomId();
@@ -32,8 +36,9 @@ class Device {
       id: generatedId,
       deviceName: deviceName,
       connectedQueName: connectedQueName,
-      emission1Duration: emission1Duration ?? const Duration(seconds: 40),
-      emission2Duration: emission2Duration ?? const Duration(seconds: 40),
+      emission1Duration: emission1Duration ?? defaultEmissionDuration,
+      emission2Duration: emission2Duration ?? defaultEmissionDuration,
+      bluetoothServiceCharacteristics: bluetoothServiceCharacteristics,
     );
   }
 
@@ -56,6 +61,7 @@ class Device {
     String? connectedQueName,
     Duration? emission1Duration,
     Duration? emission2Duration,
+    Map<String, List<String>>? bluetoothServiceCharacteristics,
   }) =>
       Device(
         id: id ?? this.id,
@@ -63,6 +69,7 @@ class Device {
         connectedQueName: connectedQueName ?? this.connectedQueName,
         emission1Duration: emission1Duration ?? this.emission1Duration,
         emission2Duration: emission2Duration ?? this.emission2Duration,
+        bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? this.bluetoothServiceCharacteristics,
       );
 
   Map<String, dynamic> toJson() => {
@@ -71,5 +78,6 @@ class Device {
     'connectedQueueName': connectedQueName,
     'emission1Duration': emission1Duration.inSeconds,
     'emission2Duration': emission2Duration.inSeconds,
+    'bluetoothServiceCharacteristics': bluetoothServiceCharacteristics,
   };
 }
