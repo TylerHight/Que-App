@@ -49,10 +49,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
           return Container(
             margin: const EdgeInsets.only(top: 5.0), // Adjust the value as needed
             child: DeviceRemote(
-              deviceName: device.deviceName,
-              connectedQueName: device.connectedQueName,
-              emission1Duration: device.emission1Duration,
-              emission2Duration: device.emission2Duration,
+              device: device,
               // Add handlers as needed
             ),
           );

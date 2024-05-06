@@ -28,7 +28,7 @@ class Device {
     required String connectedQueName,
     Duration? emission1Duration,
     Duration? emission2Duration,
-    required Map<String, List<String>> bluetoothServiceCharacteristics,
+    Map<String, List<String>>? bluetoothServiceCharacteristics, // Make it optional
   }) {
     // If no ID is provided, generate a random one
     final generatedId = id ?? _generateRandomId();
@@ -38,7 +38,7 @@ class Device {
       connectedQueName: connectedQueName,
       emission1Duration: emission1Duration ?? defaultEmissionDuration,
       emission2Duration: emission2Duration ?? defaultEmissionDuration,
-      bluetoothServiceCharacteristics: bluetoothServiceCharacteristics,
+      bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? {}, // Assign empty map as default
     );
   }
 

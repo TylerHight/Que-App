@@ -1,35 +1,13 @@
-/// device_remote.dart
-
 import 'package:flutter/material.dart';
-import 'dart:math'; // Import dart:math for generating random icons
 import 'timed_binary_button.dart'; // Import the TimedBinaryButton widget
+import 'package:que_app/models/device.dart'; // Import the Device class from your package
 
 class DeviceRemote extends StatelessWidget {
-  final String deviceName;
-  final String connectedQueName;
-  final Duration emission1Duration;
-  final Duration emission2Duration;
-
-  final VoidCallback? onSettingsButtonPressed;
-  final VoidCallback? onNoteButtonPressed;
-  final VoidCallback? onEmission1PressedOn;
-  final VoidCallback? onEmission1PressedOff;
-  final VoidCallback? onEmission2PressedOn;
-  final VoidCallback? onEmission2PressedOff;
+  final Device device;
 
   const DeviceRemote({
     Key? key,
-    required this.deviceName,
-    required this.connectedQueName,
-    required this.emission1Duration,
-    required this.emission2Duration,
-
-    this.onSettingsButtonPressed,
-    this.onNoteButtonPressed,
-    this.onEmission1PressedOn,
-    this.onEmission1PressedOff,
-    this.onEmission2PressedOn,
-    this.onEmission2PressedOff,
+    required this.device,
   }) : super(key: key);
 
   @override
@@ -52,7 +30,7 @@ class DeviceRemote extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(left: 11.0), // Add padding to the left of the title
                     child: Text(
-                      deviceName,
+                      device.deviceName,
                       style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
                     ),
                   ),
@@ -60,7 +38,9 @@ class DeviceRemote extends StatelessWidget {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: onSettingsButtonPressed,
+                        onPressed: () {
+                          // Add your onPressed logic here
+                        },
                         icon: Icon(
                             Icons.settings,
                             size: 28,
@@ -68,7 +48,9 @@ class DeviceRemote extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        onPressed: onNoteButtonPressed,
+                        onPressed: () {
+                          // Add your onPressed logic here
+                        },
                         icon: Icon(
                             Icons.description,
                             size: 28,
@@ -89,7 +71,7 @@ class DeviceRemote extends StatelessWidget {
                     iconData: Icons.air,
                     buttonSize: 55.0,
                     iconSize: 40.0,
-                    autoTurnOffDuration: emission1Duration,
+                    autoTurnOffDuration: device.emission1Duration,
                     autoTurnOffEnabled: true,
                   ),
                   const SizedBox(width: 8),
@@ -101,7 +83,7 @@ class DeviceRemote extends StatelessWidget {
                     iconData: Icons.air,
                     buttonSize: 55.0,
                     iconSize: 40.0,
-                    autoTurnOffDuration: emission1Duration,
+                    autoTurnOffDuration: device.emission2Duration,
                     autoTurnOffEnabled: true,
                   ),
                 ],
