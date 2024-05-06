@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'timed_binary_button.dart'; // Import the TimedBinaryButton widget
 import 'package:que_app/models/device.dart'; // Import the Device class from your package
+import 'package:que_app/services/ble_service.dart'; // Import the BleService class
 
 class DeviceRemote extends StatelessWidget {
   final Device device;
+  final BleService bleService; // Add a BleService instance
 
   const DeviceRemote({
     Key? key,
     required this.device,
+    required this.bleService,
   }) : super(key: key);
 
   @override
@@ -73,6 +76,9 @@ class DeviceRemote extends StatelessWidget {
                     iconSize: 40.0,
                     autoTurnOffDuration: device.emission1Duration,
                     autoTurnOffEnabled: true,
+                    onPressedTurnOn: () {
+                      bleService.sendCommand(device.controlCharacteristic, 1);
+                    },
                   ),
                   const SizedBox(width: 8),
                   TimedBinaryButton(

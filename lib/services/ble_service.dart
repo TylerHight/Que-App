@@ -1,5 +1,3 @@
-/// ble_service.dart
-
 import 'package:flutter_blue/flutter_blue.dart';
 
 class BleService {
@@ -40,13 +38,12 @@ class BleService {
     }
   }
 
-  Future<void> sendCommand(int command) async {
+  Future<void> sendCommand(BluetoothCharacteristic? characteristic, int command) async {
     try {
-      final characteristic = controlCharacteristic;
       if (characteristic != null) {
         await characteristic.write([command]);
       } else {
-        throw Exception("Control characteristic is null");
+        throw Exception("Characteristic is null");
       }
     } catch (e) {
       throw Exception("Error sending command: $e");

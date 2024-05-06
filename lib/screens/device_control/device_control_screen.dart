@@ -1,10 +1,9 @@
-/// device_control_screen.dart
-
 import 'package:flutter/material.dart';
 import 'add_device_dialog.dart';
 import 'device_remote.dart';
 import 'package:que_app/app_data.dart';
 import 'package:que_app/models/device.dart';
+import 'package:que_app/services/ble_service.dart'; // Import the BleService class
 
 class DeviceControlScreen extends StatefulWidget {
   @override
@@ -12,6 +11,9 @@ class DeviceControlScreen extends StatefulWidget {
 }
 
 class _DeviceControlScreenState extends State<DeviceControlScreen> {
+  // Instantiate your BleService
+  BleService bleService = BleService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,6 +52,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
             margin: const EdgeInsets.only(top: 5.0), // Adjust the value as needed
             child: DeviceRemote(
               device: device,
+              bleService: bleService, // Pass the BleService instance
               // Add handlers as needed
             ),
           );

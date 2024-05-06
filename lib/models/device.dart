@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter_blue/flutter_blue.dart';
 
 class Device {
   final String id;
@@ -7,6 +8,13 @@ class Device {
   static const Duration defaultEmissionDuration = const Duration(seconds: 40);
   final Duration emission1Duration;
   final Duration emission2Duration;
+
+  final String serviceUUID = "0000180a-0000-1000-8000-00805f9b34fb";
+  final String controlCharacteristicUUID = "00002a57-0000-1000-8000-00805f9b34fb";
+  final String settingCharacteristicUUID = "19b10001-e8f2-537e-4f6c-d104768a1214";
+
+  BluetoothCharacteristic? controlCharacteristic;
+  BluetoothCharacteristic? settingCharacteristic;
 
   // Map to associate characteristics with their respective services
   final Map<String, List<String>> bluetoothServiceCharacteristics;
@@ -54,6 +62,26 @@ class Device {
       ),
     );
   }
+
+  // Method to get a specific characteristic UUID by service UUID
+  String? getCharacteristicUUID(String serviceUUID) {
+    final characteristics = bluetoothServiceCharacteristics[serviceUUID];
+    if (characteristics != null) {
+      if (characteristics.isNotEmpty) {
+        // Return the first characteristic UUID associated with the service UUID
+        return characteristics.first;
+      } else {
+        // If characteristics list is empty
+        print("No characteristic UUIDs found for service UUID: $serviceUUID");
+        return null;
+      }
+    } else {
+      // If service UUID is not found
+      print("Service UUID not found: $serviceUUID");
+      return null;
+    }
+  }
+
 
   Device copy({
     String? id,
