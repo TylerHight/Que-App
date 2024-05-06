@@ -79,6 +79,9 @@ class DeviceRemote extends StatelessWidget {
                     onPressedTurnOn: () {
                       bleService.sendCommand(device.controlCharacteristic, 1);
                     },
+                    onPressedTurnOff: () {
+                      bleService.sendCommand(device.controlCharacteristic, 2);
+                    },
                   ),
                   const SizedBox(width: 8),
                   TimedBinaryButton(
@@ -91,6 +94,12 @@ class DeviceRemote extends StatelessWidget {
                     iconSize: 40.0,
                     autoTurnOffDuration: device.emission2Duration,
                     autoTurnOffEnabled: true,
+                    onPressedTurnOn: () {
+                      bleService.sendCommand(device.controlCharacteristic, 3);
+                    },
+                    onPressedTurnOff: () {
+                      bleService.sendCommand(device.controlCharacteristic, 4);
+                    },
                   ),
                 ],
               ),

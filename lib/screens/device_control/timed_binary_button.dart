@@ -126,6 +126,7 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
         if (_autoTurnOffTimer.isActive) {
           _autoTurnOffTimer.cancel();
         }
+        widget.onPressedTurnOff?.call(); // Call onPressedTurnOff immediately
       } else {
         if (widget.autoTurnOffEnabled) {
           _secondsLeft = widget.autoTurnOffDuration.inSeconds;
@@ -137,6 +138,7 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
           // Cancel the existing periodic emission timer if it's active
           _periodicEmissionTimer?.cancel();
         }
+        widget.onPressedTurnOn?.call(); // Call onPressedTurnOn immediately
       }
     });
 
@@ -149,6 +151,7 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
       print('Button turned on');
     }
   }
+
 
   void _startPeriodicEmissionTimer() {
     _periodicEmissionTimer = Timer.periodic(widget.periodicEmissionTimerDuration, (timer) {
