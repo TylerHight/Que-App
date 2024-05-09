@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:que_app/screens/device_settings/device_settings.dart'; // Import the SettingsScreen widget
 import 'timed_binary_button.dart'; // Import the TimedBinaryButton widget
 import 'package:que_app/models/device.dart'; // Import the Device class from your package
 import 'package:que_app/services/ble_service.dart'; // Import the BleService class
@@ -49,7 +50,11 @@ class DeviceRemote extends StatelessWidget {
                     children: [
                       IconButton(
                         onPressed: () {
-                          // Add your onPressed logic here
+                          // Open settings screen when settings icon button is tapped
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SettingsScreen(deviceName: device.deviceName,)),
+                          );
                         },
                         icon: Icon(
                             Icons.settings,
