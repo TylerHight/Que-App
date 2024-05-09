@@ -5,7 +5,7 @@ import 'package:que_app/services/ble_service.dart'; // Import the BleService cla
 
 class DeviceRemote extends StatelessWidget {
   final Device device;
-  final BleService bleService; // Add a BleService instance
+  final BleService bleService;
 
   const DeviceRemote({
     Key? key,
@@ -16,7 +16,7 @@ class DeviceRemote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 0.0), // Add padding at the top of the card
+      padding: const EdgeInsets.only(top: 0.0),
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
@@ -25,13 +25,20 @@ class DeviceRemote extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(6.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // Bluetooth Icon indicating connection status
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Icon(
+                  device.connectedQueName == "none" ? Icons.bluetooth_disabled : Icons.bluetooth_connected,
+                  color: device.connectedQueName == "none" ? Colors.grey : Colors.blue,
+                ),
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 11.0), // Add padding to the left of the title
+                    padding: const EdgeInsets.only(left: 11.0),
                     child: Text(
                       device.deviceName,
                       style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
@@ -64,44 +71,40 @@ class DeviceRemote extends StatelessWidget {
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  const SizedBox(width: 8),
-                  TimedBinaryButton(
-                    periodicEmissionTimerDuration: Duration(seconds: 3),
-                    activeColor: Colors.lightBlue.shade400,
-                    inactiveColor: Colors.grey.shade300,
-                    iconData: Icons.air,
-                    buttonSize: 55.0,
-                    iconSize: 40.0,
-                    autoTurnOffDuration: device.emission1Duration,
-                    autoTurnOffEnabled: true,
-                    onPressedTurnOn: () {
-                      bleService.sendCommand(device.controlCharacteristic, 1);
-                    },
-                    onPressedTurnOff: () {
-                      bleService.sendCommand(device.controlCharacteristic, 2);
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  TimedBinaryButton(
-                    periodicEmissionEnabled: false,
-                    periodicEmissionTimerDuration: Duration(seconds: 3),
-                    activeColor: Colors.green.shade500,
-                    inactiveColor: Colors.grey.shade300,
-                    iconData: Icons.air,
-                    buttonSize: 55.0,
-                    iconSize: 40.0,
-                    autoTurnOffDuration: device.emission2Duration,
-                    autoTurnOffEnabled: true,
-                    onPressedTurnOn: () {
-                      bleService.sendCommand(device.controlCharacteristic, 3);
-                    },
-                    onPressedTurnOff: () {
-                      bleService.sendCommand(device.controlCharacteristic, 4);
-                    },
-                  ),
-                ],
+              Spacer(), // Add spacer to push emission buttons to the right
+              TimedBinaryButton(
+                periodicEmissionTimerDuration: Duration(seconds: 3),
+                activeColor: Colors.lightBlue.shade400,
+                inactiveColor: Colors.grey.shade300,
+                iconData: Icons.air,
+                buttonSize: 55.0,
+                iconSize: 40.0,
+                autoTurnOffDuration: device.emission1Duration,
+                autoTurnOffEnabled: true,
+                onPressedTurnOn: () {
+                  bleService.sendCommand(device.controlCharacteristic, 1);
+                },
+                onPressedTurnOff: () {
+                  bleService.sendCommand(device.controlCharacteristic, 2);
+                },
+              ),
+              SizedBox(width: 8), // Add spacing between emission buttons
+              TimedBinaryButton(
+                periodicEmissionEnabled: false,
+                periodicEmissionTimerDuration: Duration(seconds: 3),
+                activeColor: Colors.green.shade500,
+                inactiveColor: Colors.grey.shade300,
+                iconData: Icons.air,
+                buttonSize: 55.0,
+                iconSize: 40.0,
+                autoTurnOffDuration: device.emission2Duration,
+                autoTurnOffEnabled: true,
+                onPressedTurnOn: () {
+                  bleService.sendCommand(device.controlCharacteristic, 3);
+                },
+                onPressedTurnOff: () {
+                  bleService.sendCommand(device.controlCharacteristic, 4);
+                },
               ),
             ],
           ),
@@ -110,3 +113,4 @@ class DeviceRemote extends StatelessWidget {
     );
   }
 }
+
