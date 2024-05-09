@@ -1,5 +1,5 @@
-import 'dart:math';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'dart:math'; // For generating random IDs
+import 'package:flutter_blue/flutter_blue.dart'; // For Bluetooth functionality
 
 class Device {
   final String id;
@@ -8,6 +8,7 @@ class Device {
   static const Duration defaultEmissionDuration = const Duration(seconds: 40);
   final Duration emission1Duration;
   final Duration emission2Duration;
+  bool isBleConnected; // New variable for BLE connection status
 
   final String serviceUUID = "0000180a-0000-1000-8000-00805f9b34fb";
   final String controlCharacteristicUUID = "00002a57-0000-1000-8000-00805f9b34fb";
@@ -26,6 +27,7 @@ class Device {
     required this.connectedQueName,
     this.emission1Duration = defaultEmissionDuration,
     this.emission2Duration = defaultEmissionDuration,
+    required this.isBleConnected, // Updated constructor
     required this.bluetoothServiceCharacteristics,
   });
 
@@ -36,6 +38,7 @@ class Device {
     required String connectedQueName,
     Duration? emission1Duration,
     Duration? emission2Duration,
+    bool? isBleConnected, // Updated constructor
     Map<String, List<String>>? bluetoothServiceCharacteristics, // Make it optional
   }) {
     // If no ID is provided, generate a random one
@@ -46,6 +49,7 @@ class Device {
       connectedQueName: connectedQueName,
       emission1Duration: emission1Duration ?? defaultEmissionDuration,
       emission2Duration: emission2Duration ?? defaultEmissionDuration,
+      isBleConnected: isBleConnected ?? false, // Assign default value
       bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? {}, // Assign empty map as default
     );
   }
@@ -82,13 +86,13 @@ class Device {
     }
   }
 
-
   Device copy({
     String? id,
     String? deviceName,
     String? connectedQueName,
     Duration? emission1Duration,
     Duration? emission2Duration,
+    bool? isBleConnected,
     Map<String, List<String>>? bluetoothServiceCharacteristics,
   }) =>
       Device(
@@ -97,6 +101,7 @@ class Device {
         connectedQueName: connectedQueName ?? this.connectedQueName,
         emission1Duration: emission1Duration ?? this.emission1Duration,
         emission2Duration: emission2Duration ?? this.emission2Duration,
+        isBleConnected: isBleConnected ?? this.isBleConnected,
         bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? this.bluetoothServiceCharacteristics,
       );
 
@@ -106,6 +111,7 @@ class Device {
     'connectedQueueName': connectedQueName,
     'emission1Duration': emission1Duration.inSeconds,
     'emission2Duration': emission2Duration.inSeconds,
+    'isBleConnected': isBleConnected, // Include isBleConnected in JSON serialization
     'bluetoothServiceCharacteristics': bluetoothServiceCharacteristics,
   };
 }

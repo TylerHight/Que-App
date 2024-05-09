@@ -30,8 +30,8 @@ class DeviceRemote extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Icon(
-                  device.connectedQueName == "none" ? Icons.bluetooth_disabled : Icons.bluetooth_connected,
-                  color: device.connectedQueName == "none" ? Colors.grey : Colors.blue,
+                  device.isBleConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
+                  color: device.isBleConnected ? Colors.blue : Colors.grey,
                 ),
               ),
               Column(
@@ -113,4 +113,3 @@ class DeviceRemote extends StatelessWidget {
     );
   }
 }
-
