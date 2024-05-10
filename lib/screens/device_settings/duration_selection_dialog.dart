@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 class DurationSelectionDialog extends StatefulWidget {
+  final String title;
+
+  const DurationSelectionDialog({Key? key, required this.title}) : super(key: key);
+
   @override
   _DurationSelectionDialogState createState() => _DurationSelectionDialogState();
 }
@@ -13,7 +17,10 @@ class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Select Duration'),
+      title: Text(
+        'Set ${widget.title} duration',
+          style: TextStyle(color: Colors.black),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -38,6 +45,7 @@ class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
       ],
     );
   }
+
 
   Widget _buildDurationField(String label, int value, void Function(int) onChanged) {
     return Row(

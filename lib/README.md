@@ -12,6 +12,9 @@ Project structure:
             - device_control_screen.dart
             - device_remote.dart
             - device_settings.dart
+        - device_settings // Used to display and set device settings
+          - device_settings.dart
+          - duration_selection_dialog.dart
         - notes
             - README.md           // Description of the notes subdirectory.
             - notes_screen.dart

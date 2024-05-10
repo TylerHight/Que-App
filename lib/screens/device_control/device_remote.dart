@@ -53,7 +53,7 @@ class DeviceRemote extends StatelessWidget {
                           // Open settings screen when settings icon button is tapped
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => SettingsScreen(deviceName: device.deviceName,)),
+                            MaterialPageRoute(builder: (context) => SettingsScreen(device: device)),
                           );
                         },
                         icon: Icon(
