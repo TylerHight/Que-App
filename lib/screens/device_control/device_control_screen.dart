@@ -46,10 +46,13 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
           final device = Provider.of<DeviceList>(context).devices[index];
           return Container(
             margin: const EdgeInsets.only(top: 5.0), // Adjust the value as needed
-            child: DeviceRemote(
-              device: device,
-              bleService: BleService(), // Instantiate your BleService here if needed
-              // Add handlers as needed
+            child: ChangeNotifierProvider.value( // Provide the Device
+              value: device,
+              child: DeviceRemote(
+                device: device,
+                bleService: BleService(), // Instantiate your BleService here if needed
+                // Add handlers as needed
+              ),
             ),
           );
         },
