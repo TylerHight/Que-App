@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Import provider
 import 'screens/device_control/device_control_screen.dart';
 import 'screens/notes/notes_screen.dart';
+import 'models/device.dart'; // Import the Device class
+import 'models/device_list.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,21 +12,27 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Que App',
-      debugShowCheckedModeBanner: false,  // Add this line
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        appBarTheme: AppBarTheme(
-          iconTheme: IconThemeData(color: Colors.white), // Set icon color to white
+    return MultiProvider( // Change to MultiProvider
+      providers: [
+        ChangeNotifierProvider(create: (_) => DeviceList()), // Provide the DeviceList
+        // Add other providers if needed
+      ],
+      child: MaterialApp(
+        title: 'Que App',
+        debugShowCheckedModeBanner: false,  // Add this line
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          appBarTheme: AppBarTheme(
+            iconTheme: IconThemeData(color: Colors.white), // Set icon color to white
+          ),
+          textTheme: TextTheme(headline6: TextStyle(color: Colors.white)), // Set text color to white
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.grey[400], // Set unselected item color to white
+          ),
         ),
-        textTheme: TextTheme(headline6: TextStyle(color: Colors.white)), // Set text color to white
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey[400], // Set unselected item color to white
-        ),
+        home: MyHomePage(),
       ),
-      home: MyHomePage(),
     );
   }
 }

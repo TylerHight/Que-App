@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Import provider
 import 'package:que_app/models/device.dart';
 import 'duration_selection_dialog.dart';
 
@@ -71,14 +72,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       },
     );
     if (selectedDuration != null) {
-      setState(() {
-        // Update the property of the device with the selected duration
-        propertyToUpdate(widget.device, selectedDuration);
+      // Update the device with the selected duration
+      propertyToUpdate(Provider.of<Device>(context, listen: false), selectedDuration);
 
-        // Print the updated duration along with the setting name
-        print('Updated $title duration: $selectedDuration');
-      });
+      // Print the updated duration along with the setting name
+      print('Updated $title duration: $selectedDuration');
     }
   }
-
 }

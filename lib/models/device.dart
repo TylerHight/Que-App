@@ -1,13 +1,14 @@
 import 'dart:math'; // For generating random IDs
+import 'package:flutter/foundation.dart';
 import 'package:flutter_blue/flutter_blue.dart'; // For Bluetooth functionality
 
-class Device {
+class Device extends ChangeNotifier {
   final String id;
   final String deviceName;
   final String connectedQueName;
   static const Duration defaultEmissionDuration = const Duration(seconds: 40);
-  Duration emission1Duration;
-  Duration emission2Duration;
+  Duration _emission1Duration;
+  Duration _emission2Duration;
   bool isBleConnected; // New variable for BLE connection status
 
   final String serviceUUID = "0000180a-0000-1000-8000-00805f9b34fb";
@@ -20,16 +21,30 @@ class Device {
   // Map to associate characteristics with their respective services
   final Map<String, List<String>> bluetoothServiceCharacteristics;
 
+  Duration get emission1Duration => _emission1Duration;
+  set emission1Duration(Duration value) {
+    _emission1Duration = value;
+    notifyListeners();
+  }
+
+  Duration get emission2Duration => _emission2Duration;
+  set emission2Duration(Duration value) {
+    _emission2Duration = value;
+    notifyListeners();
+  }
+
   // Private constructor for generating a random ID
   Device._({
     required this.id,
     required this.deviceName,
     required this.connectedQueName,
-    this.emission1Duration = defaultEmissionDuration,
-    this.emission2Duration = defaultEmissionDuration,
+    required Duration emission1Duration,
+    required Duration emission2Duration,
     required this.isBleConnected, // Updated constructor
     required this.bluetoothServiceCharacteristics,
-  });
+  })  : _emission1Duration = emission1Duration,
+        _emission2Duration = emission2Duration,
+        super();
 
   // Factory constructor to generate a random ID if one is not provided
   factory Device({

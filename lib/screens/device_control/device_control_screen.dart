@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../models/device_list.dart';
 import 'add_device_dialog.dart';
 import 'device_remote.dart';
-import 'package:que_app/app_data.dart';
 import 'package:que_app/models/device.dart';
 import 'package:que_app/services/ble_service.dart'; // Import the BleService class
+import 'package:provider/provider.dart'; // Import the Provider package
 
 class DeviceControlScreen extends StatefulWidget {
   @override
@@ -11,9 +12,6 @@ class DeviceControlScreen extends StatefulWidget {
 }
 
 class _DeviceControlScreenState extends State<DeviceControlScreen> {
-  // Instantiate your BleService
-  BleService bleService = BleService();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,9 +31,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                   return AddDeviceDialog(
                     onDeviceAdded: (Device newDevice) {
                       // Update the device list if a new device was added
-                      setState(() {
-                        devicesList.add(newDevice);
-                      });
+                      Provider.of<DeviceList>(context, listen: false).add(newDevice);
                     },
                   );
                 },
@@ -45,14 +41,14 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
         ],
       ),
       body: ListView.builder(
-        itemCount: devicesList.length,
+        itemCount: Provider.of<DeviceList>(context).devices.length,
         itemBuilder: (context, index) {
-          final device = devicesList[index];
+          final device = Provider.of<DeviceList>(context).devices[index];
           return Container(
             margin: const EdgeInsets.only(top: 5.0), // Adjust the value as needed
             child: DeviceRemote(
               device: device,
-              bleService: bleService, // Pass the BleService instance
+              bleService: BleService(), // Instantiate your BleService here if needed
               // Add handlers as needed
             ),
           );

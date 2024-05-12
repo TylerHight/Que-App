@@ -76,7 +76,8 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
               child: ElevatedButton(
                 onPressed: _startScan,
                 style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all(Size(0, 40)), // Adjust the height as needed
+                  minimumSize: MaterialStateProperty.all(
+                      Size(0, 40)), // Adjust the height as needed
                 ),
                 child: Text('Rescan'),
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:que_app/screens/device_settings/device_settings.dart'; // Import the SettingsScreen widget
 import 'timed_binary_button.dart'; // Import the TimedBinaryButton widget
 import 'package:que_app/models/device.dart'; // Import the Device class from your package
@@ -16,6 +17,8 @@ class DeviceRemote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final device = Provider.of<Device>(context);
+
     return Padding(
       padding: const EdgeInsets.only(top: 0.0),
       child: Card(
