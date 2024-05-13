@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Import provider
 import 'screens/device_control/device_control_screen.dart';
 import 'screens/notes/notes_screen.dart';
-import 'screens/device_settings/device_settings.dart'; // Import the SettingsScreen widget
-import 'models/device.dart'; // Import the Device class
+import 'package:que_app/models/notes_list.dart';
 import 'models/device_list.dart';
 
 void main() {
@@ -16,6 +15,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider( // Change to MultiProvider
       providers: [
         ChangeNotifierProvider(create: (_) => DeviceList()), // Provide the DeviceList
+        ChangeNotifierProvider(create: (_) => NotesList()), // Provide the NotesList
         // Add other providers if needed
       ],
       child: MaterialApp(

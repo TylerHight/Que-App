@@ -54,8 +54,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           Divider(),
           ListTile(
-            title: Text('Delete this device'),
-            trailing: Icon(Icons.delete),
+            title: Text(
+              'Delete',
+              style: TextStyle(color: Colors.red), // Set text color to red
+            ),
+            trailing: Icon(
+              Icons.delete,
+              color: Colors.red, // Set icon color to red
+            ),
             onTap: _showDeleteDeviceDialog, // Show delete device dialog
           ),
           Divider(),

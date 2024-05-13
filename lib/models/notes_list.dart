@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'note.dart';
 
-class NoteList extends ChangeNotifier {
+class NotesList extends ChangeNotifier {
   List<Note> _notes = [];
 
   List<Note> get notes => _notes;
