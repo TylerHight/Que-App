@@ -69,8 +69,8 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.blue, // Set the background color to blue
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.devices),
-            label: 'Device Control',
+            icon: Icon(Icons.settings_remote),
+            label: 'Que Control',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.note),
