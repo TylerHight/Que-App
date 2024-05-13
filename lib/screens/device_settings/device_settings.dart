@@ -22,7 +22,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: <Widget>[
           ListTile(
             title: Text('Scent one duration'),
-            trailing: Icon(Icons.timer), // Changed to timer icon
+            trailing: Icon(Icons.air), // Changed to timer icon
             onTap: () {
               _showDurationPickerDialog(context, 'scent one', (device, duration) {
                 device.emission1Duration = duration;
@@ -33,7 +33,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Divider(),
           ListTile(
             title: Text('Scent two duration'),
-            trailing: Icon(Icons.timer), // Changed to timer icon
+            trailing: Icon(Icons.air), // Changed to timer icon
             onTap: () {
               _showDurationPickerDialog(context, 'scent two', (device, duration) {
                 device.emission2Duration = duration;
