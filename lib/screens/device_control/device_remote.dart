@@ -72,7 +72,9 @@ class DeviceRemote extends StatelessWidget {
                                 builder: (context) {
                                   return AddNoteDialog(
                                     onNoteAdded: (Note newNote) {
+                                      // Callback logic here
                                     },
+                                    device: device, // Pass the device object
                                   );
                                 },
                               );
@@ -80,12 +82,11 @@ class DeviceRemote extends StatelessWidget {
                           );
                         },
                         icon: Icon(
-                            Icons.description,
-                            size: 28,
-                            color: Colors.grey.shade400
+                          Icons.description,
+                          size: 28,
+                          color: Colors.grey.shade400,
                         ),
                       ),
-
                     ],
                   ),
                 ],

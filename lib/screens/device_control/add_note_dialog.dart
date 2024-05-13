@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:que_app/models/note.dart'; // Import the Note class
-import 'package:que_app/models/notes_list.dart'; // Import the NotesList class
+import 'package:que_app/models/note.dart';
+import 'package:que_app/models/notes_list.dart';
 import 'package:provider/provider.dart';
+import '../../models/device.dart';
 
 class AddNoteDialog extends StatefulWidget {
   final Function(Note) onNoteAdded;
+  final Device? device; // Optional device parameter
 
-  AddNoteDialog({required this.onNoteAdded});
+  AddNoteDialog({required this.onNoteAdded, this.device}); // Initialize the parameter
 
   @override
   _AddNoteDialogState createState() => _AddNoteDialogState();
@@ -58,6 +60,7 @@ class _AddNoteDialogState extends State<AddNoteDialog> {
       id: UniqueKey().toString(),
       content: content,
       creationDate: DateTime.now(),
+      device: widget.device, // Set the device parameter if provided
     );
 
     // Add the new note to the NotesList
