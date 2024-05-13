@@ -51,8 +51,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           Divider(),
           ListTile(
-            title: Text('About'),
-            trailing: Icon(Icons.info_outline), // Changed to info_outline icon
+            title: Text('Delete this device'),
+            trailing: Icon(Icons.delete), // Changed to info_outline icon
             onTap: () {
               // Handle about settings
             },
