@@ -80,12 +80,6 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
-      floatingActionButton: _selectedIndex == 0 ? FloatingActionButton( // Add FloatingActionButton for settings
-        onPressed: () {
-          Navigator.pushNamed(context, '/settings');
-        },
-        child: Icon(Icons.settings),
-      ) : null,
     );
   }
 }
