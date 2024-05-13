@@ -39,16 +39,22 @@ class NotesScreen extends StatelessWidget {
               itemCount: notesList.notes.length,
               itemBuilder: (context, index) {
                 final note = notesList.notes[index];
-                return ListTile(
-                  title: Text(note.content),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Device: ${note.device?.deviceName ?? "N/A"}'),
-                      Text('Created on: ${note.creationDate.toLocal().toString().split('.')[0]}'),
-                    ],
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0), // Add vertical padding
+                  child: ListTile(
+                    title: Text(
+                      note.content,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Device: ${note.device?.deviceName ?? "N/A"}'),
+                        Text('Created on: ${note.creationDate.toLocal().toString().split('.')[0]}'),
+                      ],
+                    ),
                   ),
-                  // Add any other relevant information you want to display
                 );
               },
             );
