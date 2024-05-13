@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Import provider
 import 'screens/device_control/device_control_screen.dart';
 import 'screens/notes/notes_screen.dart';
+import 'screens/device_settings/device_settings.dart'; // Import the SettingsScreen widget
 import 'models/device.dart'; // Import the Device class
 import 'models/device_list.dart';
 
@@ -31,7 +32,10 @@ class MyApp extends StatelessWidget {
             unselectedItemColor: Colors.grey[400], // Set unselected item color to white
           ),
         ),
-        home: MyHomePage(),
+        initialRoute: '/', // Define initial route
+        routes: {
+          '/': (context) => MyHomePage(), // Define the home route
+        },
       ),
     );
   }
@@ -76,6 +80,12 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
+      floatingActionButton: _selectedIndex == 0 ? FloatingActionButton( // Add FloatingActionButton for settings
+        onPressed: () {
+          Navigator.pushNamed(context, '/settings');
+        },
+        child: Icon(Icons.settings),
+      ) : null,
     );
   }
 }

@@ -17,8 +17,6 @@ class DeviceRemote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final device = Provider.of<Device>(context);
-
     return Padding(
       padding: const EdgeInsets.only(top: 0.0),
       child: Card(
@@ -80,38 +78,48 @@ class DeviceRemote extends StatelessWidget {
                 ],
               ),
               Spacer(), // Add spacer to push emission buttons to the right
-              TimedBinaryButton(
-                periodicEmissionTimerDuration: Duration(seconds: 3),
-                activeColor: Colors.lightBlue.shade400,
-                inactiveColor: Colors.grey.shade300,
-                iconData: Icons.air,
-                buttonSize: 55.0,
-                iconSize: 40.0,
-                autoTurnOffDuration: device.emission1Duration,
-                autoTurnOffEnabled: true,
-                onPressedTurnOn: () {
-                  bleService.sendCommand(device.controlCharacteristic, 1);
-                },
-                onPressedTurnOff: () {
-                  bleService.sendCommand(device.controlCharacteristic, 2);
+              Consumer<Device>(
+                builder: (context, device, _) {
+                  return TimedBinaryButton(
+                    key: UniqueKey(), // Add a unique key to force rebuild
+                    periodicEmissionTimerDuration: Duration(seconds: 3),
+                    activeColor: Colors.lightBlue.shade400,
+                    inactiveColor: Colors.grey.shade300,
+                    iconData: Icons.air,
+                    buttonSize: 55.0,
+                    iconSize: 40.0,
+                    autoTurnOffDuration: device.emission1Duration,
+                    autoTurnOffEnabled: true,
+                    onPressedTurnOn: () {
+                      bleService.sendCommand(device.controlCharacteristic, 1);
+                    },
+                    onPressedTurnOff: () {
+                      bleService.sendCommand(device.controlCharacteristic, 2);
+                    },
+                  );
                 },
               ),
               SizedBox(width: 8), // Add spacing between emission buttons
-              TimedBinaryButton(
-                periodicEmissionEnabled: false,
-                periodicEmissionTimerDuration: Duration(seconds: 3),
-                activeColor: Colors.green.shade500,
-                inactiveColor: Colors.grey.shade300,
-                iconData: Icons.air,
-                buttonSize: 55.0,
-                iconSize: 40.0,
-                autoTurnOffDuration: device.emission2Duration,
-                autoTurnOffEnabled: true,
-                onPressedTurnOn: () {
-                  bleService.sendCommand(device.controlCharacteristic, 3);
-                },
-                onPressedTurnOff: () {
-                  bleService.sendCommand(device.controlCharacteristic, 4);
+              Consumer<Device>(
+                builder: (context, device, _) {
+                  return TimedBinaryButton(
+                    key: UniqueKey(), // Add a unique key to force rebuild
+                    periodicEmissionEnabled: false,
+                    periodicEmissionTimerDuration: Duration(seconds: 3),
+                    activeColor: Colors.green.shade500,
+                    inactiveColor: Colors.grey.shade300,
+                    iconData: Icons.air,
+                    buttonSize: 55.0,
+                    iconSize: 40.0,
+                    autoTurnOffDuration: device.emission2Duration,
+                    autoTurnOffEnabled: true,
+                    onPressedTurnOn: () {
+                      bleService.sendCommand(device.controlCharacteristic, 3);
+                    },
+                    onPressedTurnOff: () {
+                      bleService.sendCommand(device.controlCharacteristic, 4);
+                    },
+                  );
                 },
               ),
             ],
