@@ -3,7 +3,8 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:que_app/services/ble_service.dart';
 import 'package:que_app/utils/ble_utils.dart';
 import 'package:que_app/models/device.dart';
-import 'package:que_app/app_data.dart'; // Import app_data.dart to access devicesList
+import 'package:provider/provider.dart';
+import 'package:que_app/models/device_list.dart';
 
 class AddDeviceDialog extends StatefulWidget {
   final Function(Device) onDeviceAdded;
@@ -104,8 +105,10 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
 
   void _addDevice() {
     final name = _nameController.text;
-    final connectedQueName =
-    selectedDevice != null ? selectedDevice!.name : 'none';
+    final connectedQueName = selectedDevice != null ? selectedDevice!.name : 'none';
+
+    // Access the DeviceList provider
+    final deviceList = Provider.of<DeviceList>(context, listen: false);
 
     // Create a new Device instance with the provided information
     final newDevice = Device(
@@ -116,14 +119,14 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
 
     // Set isBleConnected to true for the selected device and false for all other devices
     if (newDevice.connectedQueName != "none") {
-      for (final device in devicesList) {
+      for (final device in deviceList.devices) {
         device.isBleConnected = false;
       }
       newDevice.isBleConnected = true;
     }
 
-    // Pass the new device back to the callback function
-    widget.onDeviceAdded(newDevice);
+    // Add the new device to the DeviceList
+    deviceList.add(newDevice);
 
     // Close the dialog
     Navigator.of(context).pop();
