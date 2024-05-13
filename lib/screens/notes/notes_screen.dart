@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:que_app/models/note.dart';
 import 'package:que_app/models/notes_list.dart';
-
+/// TODO: make each entry show which device it was entered from
 class NotesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
