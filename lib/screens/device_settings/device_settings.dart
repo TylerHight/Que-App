@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:que_app/models/device.dart';
 import 'duration_selection_dialog.dart';
+import 'delete_device_dialog.dart'; // Import the DeleteDeviceDialog
+import 'package:provider/provider.dart';
+import 'package:que_app/models/device_list.dart';
 
 class SettingsScreen extends StatefulWidget {
   final Device device;
@@ -52,10 +55,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Divider(),
           ListTile(
             title: Text('Delete this device'),
-            trailing: Icon(Icons.delete), // Changed to info_outline icon
-            onTap: () {
-              // Handle about settings
-            },
+            trailing: Icon(Icons.delete),
+            onTap: _showDeleteDeviceDialog, // Show delete device dialog
           ),
           Divider(),
           // Add more settings here...
@@ -78,5 +79,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // Print the updated duration along with the setting name
       print('Updated $title duration: $selectedDuration');
     }
+  }
+
+  void _showDeleteDeviceDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return DeleteDeviceDialog(
+          deviceName: widget.device.deviceName,
+          onDelete: () {
+            Provider.of<DeviceList>(context, listen: false).remove(widget.device); // Remove the device from the DeviceList
+            Navigator.pop(context); // Close the dialog
+            Navigator.pop(context); // Close the settings screen and return to the device control screen
+          },
+        );
+      },
+    );
   }
 }
