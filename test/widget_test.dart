@@ -1,122 +1,70 @@
-// widget_test.dart
-
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:que_app/device_data.dart';
-import 'package:que_app/screens/device_control/device_settings_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:que_app/models/device.dart';
+import 'package:que_app/models/device_list.dart';
+import 'package:que_app/screens/device_control/device_control_screen.dart';
+import 'package:que_app/screens/device_control/device_remote.dart';
+import 'package:que_app/screens/device_control/add_device_dialog.dart';
 
 void main() {
-  testWidgets('Open device settings and set Positive scent duration', (WidgetTester tester) async {
-    // Create a DeviceData instance with some initial data
-    final deviceData = DeviceData();
-    deviceData.addDeviceTitle('Test Device');
-
+  testWidgets('Add a new device', (WidgetTester tester) async {
+    // Build the widget tree
     await tester.pumpWidget(
-      MaterialApp(
-        home: MultiProvider(
-          providers: [
-            ChangeNotifierProvider(create: (_) => deviceData),
-          ],
-          child: DeviceSettingsScreen(
-            onDelete: () {},
-            deviceTitle: 'Test Device',
-          ),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => DeviceList()),
+        ],
+        child: MaterialApp(
+          home: DeviceControlScreen(),
         ),
       ),
     );
 
-    // Wait for widgets to load
+    // Verify that there are no devices initially
+    expect(find.byType(DeviceRemote), findsNothing);
+
+    // Tap on the add device button
+    await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
 
-    // Tap on "Positive scent duration"
-    await tester.tap(find.text('Positive scent duration'));
+    // Verify that the add device dialog is displayed
+    expect(find.byType(AddDeviceDialog), findsOneWidget);
+
+    // Enter device name and tap on Add button in the dialog
+    await tester.enterText(find.byType(TextField), 'Test Device');
+    await tester.tap(find.text('Add'));
     await tester.pumpAndSettle();
 
-    // Set the duration to 7 minutes
-    await tester.tap(find.byType(DropdownButton<int>).at(1));
-    await tester.pumpAndSettle();
-    // After opening the dropdown, you can tap on the "7" option
-    await tester.tap(find.text('7'));
-    await tester.pumpAndSettle();
-
-    // Tap "OK" to confirm the duration
-    await tester.tap(find.text('OK'));
-    await tester.pumpAndSettle();
-
-    // Check if a new time series data point was created
-    expect(deviceData.getDeviceData('Test Device').length, 2);
-
-    // Get the created time series data point
-    final newDataPoint = deviceData.getDeviceData('Test Device').first;
-
-    // Check if the positive scent duration was set to 7 minutes (420 seconds)
-    expect(newDataPoint.positiveEmissionDuration, 7*60);
-
-    // You can add more assertions as needed for other settings
+    // Verify that the device is added and displayed
+    expect(find.byType(DeviceRemote), findsOneWidget);
+    expect(find.text('Test Device'), findsOneWidget);
   });
 
-  group('DeviceData', () {
-    test('Adding a device title', () {
-      final deviceData = DeviceData();
-      deviceData.addDeviceTitle('New Device');
-      expect(deviceData.deviceTitles, contains('New Device'));
-    });
+  testWidgets('Render list of devices', (WidgetTester tester) async {
+    // Create a list of devices
+    final devices = [
+      Device(id: '1', deviceName: 'Device 1', connectedQueName: 'Que 1', isBleConnected: false),
+      Device(id: '2', deviceName: 'Device 2', connectedQueName: 'Que 2', isBleConnected: false),
+      Device(id: '3', deviceName: 'Device 3', connectedQueName: 'Que 3', isBleConnected: false),
+    ];
 
-    test('Adding a data point', () {
-      final deviceData = DeviceData();
-      final dataPoint = DeviceTimeSeriesData(timestamp: DateTime.now());
-      deviceData.addDeviceTitle('Device A');
-      deviceData.addDataPoint('Device A', dataPoint);
-      final deviceDataList = deviceData.getDeviceData('Device A');
-      expect(deviceDataList, contains(dataPoint));
-    });
+    // Build the widget tree
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => DeviceList()),
+        ],
+        child: MaterialApp(
+          home: DeviceControlScreen(),
+        ),
+      ),
+    );
 
-    test('Check default values for DeviceTimeSeriesData', () {
-      final defaultDataPoint = DeviceTimeSeriesData(timestamp: DateTime.now());
-
-      // Check the default values of the data point
-      expect(defaultDataPoint.heartRate, 0);
-      expect(defaultDataPoint.deviceOn, false);
-      expect(defaultDataPoint.positiveEmission, false);
-      expect(defaultDataPoint.negativeEmission, false);
-      expect(defaultDataPoint.positiveEmissionDuration, 10);
-      expect(defaultDataPoint.negativeEmissionDuration, 10);
-      expect(defaultDataPoint.periodicEmissionTimerLength, 30 * 60);
-      expect(defaultDataPoint.periodicEmissionEnabled, false);
-    });
-
-    test('Creating a new data point from previous data', () {
-      final previousDataPoint = DeviceTimeSeriesData(
-        timestamp: DateTime(2023, 10, 15),
-        heartRate: 70,
-        deviceOn: true,
-        positiveEmission: true,
-        positiveEmissionDuration: 15,
-        periodicEmissionTimerLength: 900, // 15 minutes
-      );
-
-      final newDataPoint = DeviceTimeSeriesData.fromPrevious(previousDataPoint,
-        heartRate: 80, // Overwrite heartRate
-        positiveEmission: false, // Overwrite positiveEmission
-      );
-
-      expect(newDataPoint.timestamp, previousDataPoint.timestamp);
-      expect(newDataPoint.heartRate, 80); // Verify the updated heartRate
-      expect(newDataPoint.deviceOn, previousDataPoint.deviceOn);
-      expect(newDataPoint.positiveEmission, false); // Verify the updated positiveEmission
-      expect(newDataPoint.negativeEmission, previousDataPoint.negativeEmission);
-      expect(newDataPoint.positiveEmissionDuration, previousDataPoint.positiveEmissionDuration);
-      expect(newDataPoint.negativeEmissionDuration, previousDataPoint.negativeEmissionDuration);
-      expect(newDataPoint.periodicEmissionTimerLength, previousDataPoint.periodicEmissionTimerLength);
-      expect(newDataPoint.periodicEmissionEnabled, previousDataPoint.periodicEmissionEnabled);
-    });
-
-
+    // Verify that the list of devices is rendered correctly
+    expect(find.byType(DeviceRemote), findsNWidgets(3));
+    expect(find.text('Device 1'), findsOneWidget);
+    expect(find.text('Device 2'), findsOneWidget);
+    expect(find.text('Device 3'), findsOneWidget);
   });
 }

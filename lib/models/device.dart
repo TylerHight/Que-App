@@ -1,6 +1,6 @@
-import 'dart:math'; // For generating random IDs
+import 'dart:math';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_blue/flutter_blue.dart'; // For Bluetooth functionality
+import 'package:flutter_blue/flutter_blue.dart';
 
 class Device extends ChangeNotifier {
   final String id;
@@ -9,7 +9,8 @@ class Device extends ChangeNotifier {
   static const Duration defaultEmissionDuration = const Duration(seconds: 40);
   Duration _emission1Duration;
   Duration _emission2Duration;
-  bool isBleConnected; // New variable for BLE connection status
+  bool isBleConnected;
+  final bool isPeriodicEmissionEnabled; // New parameter
 
   final String serviceUUID = "0000180a-0000-1000-8000-00805f9b34fb";
   final String controlCharacteristicUUID = "00002a57-0000-1000-8000-00805f9b34fb";
@@ -18,7 +19,6 @@ class Device extends ChangeNotifier {
   BluetoothCharacteristic? controlCharacteristic;
   BluetoothCharacteristic? settingCharacteristic;
 
-  // Map to associate characteristics with their respective services
   final Map<String, List<String>> bluetoothServiceCharacteristics;
 
   Duration get emission1Duration => _emission1Duration;
@@ -33,30 +33,29 @@ class Device extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Private constructor for generating a random ID
   Device._({
     required this.id,
     required this.deviceName,
     required this.connectedQueName,
     required Duration emission1Duration,
     required Duration emission2Duration,
-    required this.isBleConnected, // Updated constructor
+    required this.isBleConnected,
+    required this.isPeriodicEmissionEnabled, // Include the new parameter
     required this.bluetoothServiceCharacteristics,
   })  : _emission1Duration = emission1Duration,
         _emission2Duration = emission2Duration,
         super();
 
-  // Factory constructor to generate a random ID if one is not provided
   factory Device({
     String? id,
     required String deviceName,
     required String connectedQueName,
     Duration? emission1Duration,
     Duration? emission2Duration,
-    bool? isBleConnected, // Updated constructor
-    Map<String, List<String>>? bluetoothServiceCharacteristics, // Make it optional
+    bool? isBleConnected,
+    bool? isPeriodicEmissionEnabled = false, // Include the new parameter with default value
+    Map<String, List<String>>? bluetoothServiceCharacteristics,
   }) {
-    // If no ID is provided, generate a random one
     final generatedId = id ?? _generateRandomId();
     return Device._(
       id: generatedId,
@@ -64,12 +63,12 @@ class Device extends ChangeNotifier {
       connectedQueName: connectedQueName,
       emission1Duration: emission1Duration ?? defaultEmissionDuration,
       emission2Duration: emission2Duration ?? defaultEmissionDuration,
-      isBleConnected: isBleConnected ?? false, // Assign default value
-      bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? {}, // Assign empty map as default
+      isBleConnected: isBleConnected ?? false,
+      isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? false, // Assign default value
+      bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? {},
     );
   }
 
-  // Method to generate a random ID
   static String _generateRandomId() {
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
     final random = Random();
@@ -82,20 +81,16 @@ class Device extends ChangeNotifier {
     );
   }
 
-  // Method to get a specific characteristic UUID by service UUID
   String? getCharacteristicUUID(String serviceUUID) {
     final characteristics = bluetoothServiceCharacteristics[serviceUUID];
     if (characteristics != null) {
       if (characteristics.isNotEmpty) {
-        // Return the first characteristic UUID associated with the service UUID
         return characteristics.first;
       } else {
-        // If characteristics list is empty
         print("No characteristic UUIDs found for service UUID: $serviceUUID");
         return null;
       }
     } else {
-      // If service UUID is not found
       print("Service UUID not found: $serviceUUID");
       return null;
     }
@@ -108,6 +103,7 @@ class Device extends ChangeNotifier {
     Duration? emission1Duration,
     Duration? emission2Duration,
     bool? isBleConnected,
+    bool? isPeriodicEmissionEnabled, // Include the new parameter
     Map<String, List<String>>? bluetoothServiceCharacteristics,
   }) =>
       Device(
@@ -117,6 +113,7 @@ class Device extends ChangeNotifier {
         emission1Duration: emission1Duration ?? this.emission1Duration,
         emission2Duration: emission2Duration ?? this.emission2Duration,
         isBleConnected: isBleConnected ?? this.isBleConnected,
+        isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? this.isPeriodicEmissionEnabled, // Assign default value
         bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? this.bluetoothServiceCharacteristics,
       );
 
@@ -126,7 +123,8 @@ class Device extends ChangeNotifier {
     'connectedQueueName': connectedQueName,
     'emission1Duration': emission1Duration.inSeconds,
     'emission2Duration': emission2Duration.inSeconds,
-    'isBleConnected': isBleConnected, // Include isBleConnected in JSON serialization
+    'isBleConnected': isBleConnected,
+    'isPeriodicEmissionEnabled': isPeriodicEmissionEnabled, // Include the new parameter
     'bluetoothServiceCharacteristics': bluetoothServiceCharacteristics,
   };
 }

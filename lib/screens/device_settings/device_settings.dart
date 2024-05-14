@@ -15,6 +15,14 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  late bool _isPeriodicEmissionEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isPeriodicEmissionEnabled = widget.device.isPeriodicEmissionEnabled;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,8 +34,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ListTile(
             title: Text('Scent one duration'),
             trailing: Icon(
-                Icons.air,
-                color: Colors.lightBlue.shade400,
+              Icons.air,
+              color: Colors.lightBlue.shade400,
             ), // Changed to timer icon
             onTap: () {
               _showDurationPickerDialog(context, 'scent one', (device, duration) {
@@ -40,13 +48,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ListTile(
             title: Text('Scent two duration'),
             trailing: Icon(
-                Icons.air,
-                color: Colors.green.shade500,
+              Icons.air,
+              color: Colors.green.shade500,
             ), // Changed to timer icon
             onTap: () {
               _showDurationPickerDialog(context, 'scent two', (device, duration) {
                 device.emission2Duration = duration;
                 print('Updated emission2Duration: ${device.emission2Duration}');
+              });
+            },
+          ),
+          Divider(),
+          ListTile(
+            title: Text('Periodic emissions'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Switch(
+                  value: _isPeriodicEmissionEnabled,
+                  onChanged: (value) {
+                    setState(() {
+                      _isPeriodicEmissionEnabled = value;
+                    });
+                  },
+                ),
+                Icon(
+                  Icons.timer,
+                  color: _isPeriodicEmissionEnabled ? Colors.blue : Colors.grey,
+                ),
+              ],
+            ),
+          ),
+          Divider(),
+          ListTile(
+            title: Text('Periodic emission interval'),
+            trailing: Icon(
+              Icons.timer,
+              color: Colors.grey,
+            ), // Changed to timer icon
+            onTap: () {
+              _showDurationPickerDialog(context, 'scent one', (device, duration) {
+                device.emission1Duration = duration;
+                print('Updated emission1Duration: ${device.emission1Duration}');
               });
             },
           ),
