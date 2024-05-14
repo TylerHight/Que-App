@@ -46,6 +46,10 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     }
   }
 
+  List<BluetoothDevice> getDevicesWithNames() {
+    return nearbyDevices.where((device) => device.name.isNotEmpty).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -73,7 +77,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                     selectedDevice = device;
                   });
                 },
-                items: nearbyDevices
+                items: getDevicesWithNames()
                     .map((device) => DropdownMenuItem(
                   value: device,
                   child: Text(device.name),

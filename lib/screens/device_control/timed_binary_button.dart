@@ -85,7 +85,6 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
         if (_secondsLeft > 0) {
           setState(() {
             _secondsLeft--;
-            print('Time remaining: $_secondsLeft seconds');
           });
         } else {
           if (isLightOn) {
@@ -105,7 +104,6 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
       if (_secondsLeft > 0) {
         setState(() {
           _secondsLeft--;
-          print('Time remaining: $_secondsLeft seconds');
         });
       } else {
         if (isLightOn) {
