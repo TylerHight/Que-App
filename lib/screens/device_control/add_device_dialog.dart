@@ -21,6 +21,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   List<BluetoothDevice> nearbyDevices = [];
   BluetoothDevice? selectedDevice;
   final _nameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>(); // Add form key for validation
 
   @override
   void initState() {
@@ -50,40 +51,49 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     return AlertDialog(
       title: Text('Add Device'),
       content: SingleChildScrollView(
-        child: ListBody(
-          children: <Widget>[
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
-            ),
-            DropdownButtonFormField<BluetoothDevice>(
-              decoration: InputDecoration(labelText: 'Select Que'),
-              value: selectedDevice,
-              onChanged: (BluetoothDevice? device) {
-                setState(() {
-                  selectedDevice = device;
-                });
-              },
-              items: nearbyDevices
-                  .map((device) => DropdownMenuItem(
-                value: device,
-                child: Text(device.name),
-              ))
-                  .toList(),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 5, // Adjust the width as needed
-              child: ElevatedButton(
-                onPressed: _startScan,
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all(
-                      Size(0, 40)), // Adjust the height as needed
-                ),
-                child: Text('Rescan'),
+        child: Form(
+          key: _formKey, // Assign the form key
+          child: ListBody(
+            children: <Widget>[
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a name';
+                  }
+                  return null;
+                },
               ),
-            ),
-          ],
+              DropdownButtonFormField<BluetoothDevice>(
+                decoration: InputDecoration(labelText: 'Select Que'),
+                value: selectedDevice,
+                onChanged: (BluetoothDevice? device) {
+                  setState(() {
+                    selectedDevice = device;
+                  });
+                },
+                items: nearbyDevices
+                    .map((device) => DropdownMenuItem(
+                  value: device,
+                  child: Text(device.name),
+                ))
+                    .toList(),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 5, // Adjust the width as needed
+                child: ElevatedButton(
+                  onPressed: _startScan,
+                  style: ButtonStyle(
+                    minimumSize: MaterialStateProperty.all(
+                        Size(0, 40)), // Adjust the height as needed
+                  ),
+                  child: Text('Rescan'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       actions: <Widget>[
@@ -96,7 +106,9 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
         TextButton(
           child: Text('Add'),
           onPressed: () {
-            _addDevice();
+            if (_formKey.currentState!.validate()) {
+              _addDevice();
+            }
           },
         ),
       ],
