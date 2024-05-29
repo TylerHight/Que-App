@@ -53,7 +53,7 @@ class Device extends ChangeNotifier {
     Duration? emission1Duration,
     Duration? emission2Duration,
     bool? isBleConnected,
-    bool? isPeriodicEmissionEnabled = false, // Include the new parameter with default value
+    bool? isPeriodicEmissionEnabled = false , // Include the new parameter with default value
     Map<String, List<String>>? bluetoothServiceCharacteristics,
   }) {
     final generatedId = id ?? _generateRandomId();

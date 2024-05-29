@@ -17,7 +17,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Que Control',
+          'Control',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.blue,
