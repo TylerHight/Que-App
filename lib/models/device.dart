@@ -6,7 +6,7 @@ class Device extends ChangeNotifier {
   final String id;
   final String deviceName;
   final String connectedQueName;
-  static const Duration defaultEmissionDuration = const Duration(seconds: 20);
+  static const Duration defaultEmissionDuration = const Duration(seconds: 10);
   Duration _emission1Duration;
   Duration _emission2Duration;
   bool _isPeriodicEmissionEnabled; // Changed to private
