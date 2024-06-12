@@ -16,11 +16,13 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late bool _isPeriodicEmissionEnabled;
+  late bool _isPeriodicEmissionEnabled2;
 
   @override
   void initState() {
     super.initState();
     _isPeriodicEmissionEnabled = widget.device.isPeriodicEmissionEnabled;
+    _isPeriodicEmissionEnabled2 = widget.device.isPeriodicEmissionEnabled2;
   }
 
   @override
@@ -60,7 +62,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           Divider(),
           ListTile(
-            title: Text('Periodic emissions'),
+            title: Text('Periodic emissions for scent one'),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -76,6 +78,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Icon(
                   Icons.timer,
                   color: _isPeriodicEmissionEnabled ? Colors.blue : Colors.grey,
+                ),
+              ],
+            ),
+          ),
+          Divider(),
+          ListTile(
+            title: Text('Periodic emissions for scent two'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Switch(
+                  value: _isPeriodicEmissionEnabled2,
+                  onChanged: (value) {
+                    setState(() {
+                      _isPeriodicEmissionEnabled2 = value;
+                    });
+                    widget.device.isPeriodicEmissionEnabled = value;
+                  },
+                ),
+                Icon(
+                  Icons.timer,
+                  color: _isPeriodicEmissionEnabled2 ? Colors.blue : Colors.grey,
                 ),
               ],
             ),

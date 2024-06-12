@@ -9,9 +9,9 @@ class Device extends ChangeNotifier {
   static const Duration defaultEmissionDuration = const Duration(seconds: 20);
   Duration _emission1Duration;
   Duration _emission2Duration;
+  bool _isPeriodicEmissionEnabled; // Changed to private
+  bool _isPeriodicEmissionEnabled2; // Changed to private
   bool isBleConnected;
-  bool _isPeriodicEmissionEnabled; // Changed to a private field with getter and setter
-  final bool isPeriodicEmissionEnabled2;
 
   final String serviceUUID = "0000180a-0000-1000-8000-00805f9b34fb";
   final String controlCharacteristicUUID = "00002a57-0000-1000-8000-00805f9b34fb";
@@ -40,19 +40,26 @@ class Device extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool get isPeriodicEmissionEnabled2 => _isPeriodicEmissionEnabled2;
+  set isPeriodicEmissionEnabled2(bool value) {
+    _isPeriodicEmissionEnabled2 = value;
+    notifyListeners();
+  }
+
   Device._({
     required this.id,
     required this.deviceName,
     required this.connectedQueName,
     required Duration emission1Duration,
     required Duration emission2Duration,
-    required this.isBleConnected,
     required bool isPeriodicEmissionEnabled,
-    required this.isPeriodicEmissionEnabled2,
+    required bool isPeriodicEmissionEnabled2,
+    required this.isBleConnected,
     required this.bluetoothServiceCharacteristics,
   })  : _emission1Duration = emission1Duration,
         _emission2Duration = emission2Duration,
         _isPeriodicEmissionEnabled = isPeriodicEmissionEnabled,
+        _isPeriodicEmissionEnabled2 = isPeriodicEmissionEnabled2,
         super();
 
   factory Device({
@@ -62,8 +69,8 @@ class Device extends ChangeNotifier {
     Duration? emission1Duration,
     Duration? emission2Duration,
     bool? isBleConnected,
-    bool? isPeriodicEmissionEnabled = true,
-    bool? isPeriodicEmissionEnabled2 = true,
+    bool? isPeriodicEmissionEnabled = false,
+    bool? isPeriodicEmissionEnabled2 = false,
     Map<String, List<String>>? bluetoothServiceCharacteristics,
   }) {
     final generatedId = id ?? _generateRandomId();
@@ -74,8 +81,8 @@ class Device extends ChangeNotifier {
       emission1Duration: emission1Duration ?? defaultEmissionDuration,
       emission2Duration: emission2Duration ?? defaultEmissionDuration,
       isBleConnected: isBleConnected ?? false,
-      isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? true,
-      isPeriodicEmissionEnabled2: isPeriodicEmissionEnabled2 ?? true,
+      isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? false,
+      isPeriodicEmissionEnabled2: isPeriodicEmissionEnabled2 ?? false,
       bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? {},
     );
   }
@@ -125,7 +132,7 @@ class Device extends ChangeNotifier {
         emission1Duration: emission1Duration ?? this.emission1Duration,
         emission2Duration: emission2Duration ?? this.emission2Duration,
         isBleConnected: isBleConnected ?? this.isBleConnected,
-        isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? this._isPeriodicEmissionEnabled,
+        isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? this.isPeriodicEmissionEnabled,
         isPeriodicEmissionEnabled2: isPeriodicEmissionEnabled2 ?? this.isPeriodicEmissionEnabled2,
         bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? this.bluetoothServiceCharacteristics,
       );
