@@ -6,11 +6,12 @@ class Device extends ChangeNotifier {
   final String id;
   final String deviceName;
   final String connectedQueName;
-  static const Duration defaultEmissionDuration = const Duration(seconds: 40);
+  static const Duration defaultEmissionDuration = const Duration(seconds: 20);
   Duration _emission1Duration;
   Duration _emission2Duration;
   bool isBleConnected;
   final bool isPeriodicEmissionEnabled; // New parameter
+  final bool isPeriodicEmissionEnabled2;
 
   final String serviceUUID = "0000180a-0000-1000-8000-00805f9b34fb";
   final String controlCharacteristicUUID = "00002a57-0000-1000-8000-00805f9b34fb";
@@ -41,6 +42,7 @@ class Device extends ChangeNotifier {
     required Duration emission2Duration,
     required this.isBleConnected,
     required this.isPeriodicEmissionEnabled, // Include the new parameter
+    required this.isPeriodicEmissionEnabled2,
     required this.bluetoothServiceCharacteristics,
   })  : _emission1Duration = emission1Duration,
         _emission2Duration = emission2Duration,
@@ -53,7 +55,8 @@ class Device extends ChangeNotifier {
     Duration? emission1Duration,
     Duration? emission2Duration,
     bool? isBleConnected,
-    bool? isPeriodicEmissionEnabled = false , // Include the new parameter with default value
+    bool? isPeriodicEmissionEnabled = true , // Include the new parameter with default value
+    bool? isPeriodicEmissionEnabled2 = true,
     Map<String, List<String>>? bluetoothServiceCharacteristics,
   }) {
     final generatedId = id ?? _generateRandomId();
@@ -64,7 +67,8 @@ class Device extends ChangeNotifier {
       emission1Duration: emission1Duration ?? defaultEmissionDuration,
       emission2Duration: emission2Duration ?? defaultEmissionDuration,
       isBleConnected: isBleConnected ?? false,
-      isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? false, // Assign default value
+      isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? true, // Assign default value
+      isPeriodicEmissionEnabled2: isPeriodicEmissionEnabled2 ?? true,
       bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? {},
     );
   }
@@ -104,6 +108,7 @@ class Device extends ChangeNotifier {
     Duration? emission2Duration,
     bool? isBleConnected,
     bool? isPeriodicEmissionEnabled, // Include the new parameter
+    bool? isPeriodicEmissionEnabled2,
     Map<String, List<String>>? bluetoothServiceCharacteristics,
   }) =>
       Device(
@@ -114,6 +119,7 @@ class Device extends ChangeNotifier {
         emission2Duration: emission2Duration ?? this.emission2Duration,
         isBleConnected: isBleConnected ?? this.isBleConnected,
         isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? this.isPeriodicEmissionEnabled, // Assign default value
+        isPeriodicEmissionEnabled2: isPeriodicEmissionEnabled ?? this.isPeriodicEmissionEnabled2,
         bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? this.bluetoothServiceCharacteristics,
       );
 
@@ -125,6 +131,7 @@ class Device extends ChangeNotifier {
     'emission2Duration': emission2Duration.inSeconds,
     'isBleConnected': isBleConnected,
     'isPeriodicEmissionEnabled': isPeriodicEmissionEnabled, // Include the new parameter
+    'isPeriodicEmissionEnabled2': isPeriodicEmissionEnabled2,
     'bluetoothServiceCharacteristics': bluetoothServiceCharacteristics,
   };
 }
