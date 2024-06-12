@@ -15,7 +15,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  late bool _isPeriodicEmissionEnabled = false;
+  late bool _isPeriodicEmissionEnabled;
 
   @override
   void initState() {
@@ -36,7 +36,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             trailing: Icon(
               Icons.air,
               color: Colors.lightBlue.shade400,
-            ), // Changed to timer icon
+            ),
             onTap: () {
               _showDurationPickerDialog(context, 'scent one', (device, duration) {
                 device.emission1Duration = duration;
@@ -50,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             trailing: Icon(
               Icons.air,
               color: Colors.green.shade500,
-            ), // Changed to timer icon
+            ),
             onTap: () {
               _showDurationPickerDialog(context, 'scent two', (device, duration) {
                 device.emission2Duration = duration;
@@ -70,6 +70,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     setState(() {
                       _isPeriodicEmissionEnabled = value;
                     });
+                    widget.device.isPeriodicEmissionEnabled = value;
                   },
                 ),
                 Icon(
@@ -85,9 +86,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             trailing: Icon(
               Icons.timer,
               color: Colors.grey,
-            ), // Changed to timer icon
+            ),
             onTap: () {
-              _showDurationPickerDialog(context, 'scent one', (device, duration) {
+              _showDurationPickerDialog(context, 'periodic emission interval', (device, duration) {
                 device.emission1Duration = duration;
                 print('Updated emission1Duration: ${device.emission1Duration}');
               });
@@ -98,26 +99,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: Text('Connect to Que'),
             trailing: Icon(
               Icons.bluetooth,
-              color: Colors.blue, // Set icon color to blue
+              color: Colors.blue,
             ),
             onTap: () {
-              // Handle account settings
+              // Handle connection to Que
             },
           ),
           Divider(),
           ListTile(
             title: Text(
               'Delete',
-              style: TextStyle(color: Colors.red), // Set text color to red
+              style: TextStyle(color: Colors.red),
             ),
             trailing: Icon(
               Icons.delete,
-              color: Colors.red, // Set icon color to red
+              color: Colors.red,
             ),
-            onTap: _showDeleteDeviceDialog, // Show delete device dialog
+            onTap: _showDeleteDeviceDialog,
           ),
           Divider(),
-          // Add more settings here...
         ],
       ),
     );
@@ -131,10 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       },
     );
     if (selectedDuration != null) {
-      // Update the device with the selected duration
       propertyToUpdate(widget.device, selectedDuration);
-
-      // Print the updated duration along with the setting name
       print('Updated $title duration: $selectedDuration');
     }
   }
@@ -146,12 +143,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return DeleteDeviceDialog(
           deviceName: widget.device.deviceName,
           onDelete: () {
-            Provider.of<DeviceList>(context, listen: false).remove(widget.device); // Remove the device from the DeviceList
-            Navigator.pop(context); // Close the dialog
-            Navigator.pop(context); // Close the settings screen and return to the device control screen
+            Provider.of<DeviceList>(context, listen: false).remove(widget.device);
+            Navigator.pop(context);
+            Navigator.pop(context);
           },
         );
       },
     );
   }
 }
+

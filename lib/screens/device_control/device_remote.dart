@@ -60,9 +60,9 @@ class DeviceRemote extends StatelessWidget {
                           );
                         },
                         icon: Icon(
-                            Icons.settings,
-                            size: 28,
-                            color: Colors.grey.shade400
+                          Icons.settings,
+                          size: 28,
+                          color: Colors.grey.shade400,
                         ),
                       ),
                       IconButton(
@@ -81,11 +81,12 @@ class DeviceRemote extends StatelessWidget {
                                 },
                               );
                             },
-                          );                        },
+                          );
+                        },
                         icon: Icon(
-                            Icons.description,
-                            size: 28,
-                            color: Colors.grey.shade400
+                          Icons.description,
+                          size: 28,
+                          color: Colors.grey.shade400,
                         ),
                       ),
                     ],
