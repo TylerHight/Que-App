@@ -48,20 +48,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           Divider(),
           ListTile(
-            title: Text('Scent two duration'),
-            trailing: Icon(
-              Icons.air,
-              color: Colors.green.shade500,
-            ),
-            onTap: () {
-              _showDurationPickerDialog(context, 'scent two', (device, duration) {
-                device.emission2Duration = duration;
-                print('Updated emission2Duration: ${device.emission2Duration}');
-              });
-            },
-          ),
-          Divider(),
-          ListTile(
             title: Text('Periodic emissions for scent one'),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -81,6 +67,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
+          ),
+          ListTile(
+            title: Text('Periodic emission interval for scent one'),
+            trailing: Icon(
+              Icons.timer,
+              color: Colors.grey,
+            ),
+            onTap: () {
+              _showDurationPickerDialog(context, 'periodic emission interval for scent two', (device, duration) {
+                device.emission1Duration = duration;
+                print('Updated emission1Duration: ${device.emission1Duration}');
+              });
+            },
+          ),
+          Divider(),
+          ListTile(
+            title: Text('Scent two duration'),
+            trailing: Icon(
+              Icons.air,
+              color: Colors.green.shade500,
+            ),
+            onTap: () {
+              _showDurationPickerDialog(context, 'scent two', (device, duration) {
+                device.emission2Duration = duration;
+                print('Updated emission2Duration: ${device.emission2Duration}');
+              });
+            },
           ),
           Divider(),
           ListTile(
@@ -106,13 +119,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           Divider(),
           ListTile(
-            title: Text('Periodic emission interval'),
+            title: Text('Periodic emission interval for scent two'),
             trailing: Icon(
               Icons.timer,
               color: Colors.grey,
             ),
             onTap: () {
-              _showDurationPickerDialog(context, 'periodic emission interval', (device, duration) {
+              _showDurationPickerDialog(context, 'periodic emission interval for scent two', (device, duration) {
                 device.emission1Duration = duration;
                 print('Updated emission1Duration: ${device.emission1Duration}');
               });
