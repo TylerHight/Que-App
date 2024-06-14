@@ -53,7 +53,10 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Add Device'),
+      title: Text(
+        'Add Que',
+        style: TextStyle(color: Colors.black), // Set the title color to black
+      ),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey, // Assign the form key
@@ -118,6 +121,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
       ],
     );
   }
+
 
   void _addDevice() {
     final name = _nameController.text;
