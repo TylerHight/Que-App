@@ -26,7 +26,10 @@ class _AddNoteDialogState extends State<AddNoteDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Add Note'),
+      title: Text(
+        'Add Note',
+        style: TextStyle(color: Colors.black), // Set the title color to black
+      ),
       content: SingleChildScrollView(
         child: ListBody(
           children: <Widget>[

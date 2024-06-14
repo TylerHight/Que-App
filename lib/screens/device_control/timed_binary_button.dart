@@ -1,13 +1,5 @@
-/// timed_binary_button.dart
-
 import 'package:flutter/material.dart';
 import 'dart:async';
-
-// button that switches between two colors and
-// optionally automatically turns off after a
-// set duration
-
-//TODO: Make it disable-able (when not connected via ble)
 
 class TimedBinaryButton extends StatefulWidget {
   final Color? activeColor;
@@ -23,7 +15,8 @@ class TimedBinaryButton extends StatefulWidget {
   final Duration periodicEmissionTimerDuration;
   final bool periodicEmissionEnabled;
 
-  const TimedBinaryButton({super.key,
+  const TimedBinaryButton({
+    super.key,
     this.activeColor,
     this.inactiveColor = Colors.grey,
     required this.iconData,
@@ -42,14 +35,14 @@ class TimedBinaryButton extends StatefulWidget {
   _TimedBinaryButtonState createState() => _TimedBinaryButtonState();
 }
 
-class _TimedBinaryButtonState extends State<TimedBinaryButton>
-    with SingleTickerProviderStateMixin {
+class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTickerProviderStateMixin {
   bool isLightOn = false;
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   late Timer _autoTurnOffTimer;
   Timer? _periodicEmissionTimer; // Declare _periodicEmissionTimer as nullable
-  int _secondsLeft = 0; // Track the remaining seconds
+  int _secondsLeft = 0; // Track the remaining seconds for auto turn-off
+  int _periodicEmissionSecondsLeft = 0; // Track the remaining seconds for periodic emission
 
   @override
   void initState() {
@@ -81,23 +74,16 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
 
     if (widget.autoTurnOffEnabled) {
       _secondsLeft = widget.autoTurnOffDuration.inSeconds;
-      _autoTurnOffTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (_secondsLeft > 0) {
-          setState(() {
-            _secondsLeft--;
-          });
-        } else {
-          if (isLightOn) {
-            toggleLight();
-            widget.onPressedTurnOn?.call();
-          }
-          timer.cancel();
-        }
-      });
+      _autoTurnOffTimer = _startAutoTurnOffTimer();
       print('Auto Turn-Off Timer started');
     }
-  }
 
+    if (widget.periodicEmissionEnabled) {
+      _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
+      _periodicEmissionTimer = _startPeriodicEmissionTimer();
+      print('Periodic Emission Timer started');
+    }
+  }
 
   Timer _startAutoTurnOffTimer() {
     return Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -108,13 +94,29 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
       } else {
         if (isLightOn) {
           toggleLight();
-          widget.onPressedTurnOn?.call();
+          widget.onPressedTurnOff?.call();
         }
         timer.cancel();
       }
     });
   }
 
+  Timer _startPeriodicEmissionTimer() {
+    return Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_periodicEmissionSecondsLeft > 0) {
+        setState(() {
+          _periodicEmissionSecondsLeft--;
+        });
+      } else {
+        if (!isLightOn) {
+          toggleLight();
+          widget.onPressedTurnOn?.call();
+        }
+        _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
+        timer.cancel();
+      }
+    });
+  }
 
   void toggleLight() {
     setState(() {
@@ -130,20 +132,19 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
       } else {
         if (widget.autoTurnOffEnabled) {
           _secondsLeft = widget.autoTurnOffDuration.inSeconds;
-          // Initialize the timer before starting it
           _autoTurnOffTimer = _startAutoTurnOffTimer();
         }
 
         if (widget.periodicEmissionEnabled) {
-          // Cancel the existing periodic emission timer if it's active
-          _periodicEmissionTimer?.cancel();
+          _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
+          _periodicEmissionTimer = _startPeriodicEmissionTimer();
         }
         widget.onPressedTurnOn?.call(); // Call onPressedTurnOn immediately
       }
     });
 
     if (!isLightOn && widget.periodicEmissionEnabled) {
-      // Start the periodic emission timer when the button turns off
+      _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
       _startPeriodicEmissionTimer();
     }
 
@@ -151,21 +152,6 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
       print('Button turned on');
     }
   }
-
-
-  void _startPeriodicEmissionTimer() {
-    _periodicEmissionTimer = Timer.periodic(widget.periodicEmissionTimerDuration, (timer) {
-      // When the periodic emission timer reaches zero, light up the button
-      // and activate it for the specified autoTurnOffDuration
-      if (!isLightOn) {
-        toggleLight();
-        widget.onPressedTurnOn?.call();
-        print('Periodic Emission Triggered');
-      }
-    });
-    print('Periodic Emission Timer started');
-  }
-
 
   @override
   void dispose() {
@@ -217,6 +203,25 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton>
                 padding: const EdgeInsets.all(4),
                 child: Text(
                   '$_secondsLeft s',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          if (widget.periodicEmissionEnabled && !isLightOn)
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  shape: BoxShape.circle,
+                ),
+                padding: const EdgeInsets.all(4),
+                child: Text(
+                  '$_periodicEmissionSecondsLeft s',
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.white,
