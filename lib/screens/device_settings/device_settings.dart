@@ -32,130 +32,207 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: Text('${widget.device.deviceName} Settings'),
       ),
       body: ListView(
+        padding: const EdgeInsets.all(16.0), // Add padding to the entire ListView
         children: <Widget>[
-          ListTile(
-            title: Text('Scent one duration'),
-            trailing: Icon(
-              Icons.air,
-              color: Colors.lightBlue.shade400,
-            ),
-            onTap: () {
-              _showDurationPickerDialog(context, 'scent one', (device, duration) {
-                device.emission1Duration = duration;
-                print('Updated emission1Duration: ${device.emission1Duration}');
-              });
-            },
+          _buildSettingsGroup(
+            context,
+            'Scent One Settings',
+            [
+              _buildListTile(
+                context,
+                title: 'Set Release Duration',
+                icon: Icons.air,
+                iconColor: Colors.lightBlue.shade400,
+                onTap: () {
+                  _showDurationPickerDialog(context, 'Scent One Duration', (device, duration) {
+                    device.emission1Duration = duration;
+                    print('Updated emission1Duration: ${device.emission1Duration}');
+                  });
+                },
+              ),
+              Divider(),
+              _buildSwitchListTile(
+                context,
+                title: 'Periodic Emissions',
+                value: _isPeriodicEmissionEnabled,
+                iconColor: _isPeriodicEmissionEnabled ? Colors.blue : Colors.grey,
+                onChanged: (value) {
+                  setState(() {
+                    _isPeriodicEmissionEnabled = value;
+                  });
+                  widget.device.isPeriodicEmissionEnabled = value;
+                },
+              ),
+              Divider(),
+              _buildListTile(
+                context,
+                title: 'Set Release Interval',
+                icon: Icons.timer,
+                iconColor: _isPeriodicEmissionEnabled ? Colors.blue : Colors.grey,
+                onTap: () {
+                  _showDurationPickerDialog(context, 'Periodic Emission Interval for Scent One', (device, duration) {
+                    device.emission1Duration = duration;
+                    print('Updated emission1Duration: ${device.emission1Duration}');
+                  });
+                },
+              ),
+            ],
           ),
-          Divider(),
-          ListTile(
-            title: Text('Periodic emissions for scent one'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Switch(
-                  value: _isPeriodicEmissionEnabled,
-                  onChanged: (value) {
-                    setState(() {
-                      _isPeriodicEmissionEnabled = value;
-                    });
-                    widget.device.isPeriodicEmissionEnabled = value;
-                  },
-                ),
-                Icon(
-                  Icons.timer,
-                  color: _isPeriodicEmissionEnabled ? Colors.blue : Colors.grey,
-                ),
-              ],
-            ),
+          SizedBox(height: 8.0), // Reduce the space between cards
+          _buildSettingsGroup(
+            context,
+            'Scent Two Settings',
+            [
+              _buildListTile(
+                context,
+                title: 'Set Release Duration',
+                icon: Icons.air,
+                iconColor: Colors.green.shade500,
+                onTap: () {
+                  _showDurationPickerDialog(context, 'Scent Two Duration', (device, duration) {
+                    device.emission2Duration = duration;
+                    print('Updated emission2Duration: ${device.emission2Duration}');
+                  });
+                },
+              ),
+              Divider(),
+              _buildSwitchListTile(
+                context,
+                title: 'Periodic Emissions',
+                value: _isPeriodicEmissionEnabled2,
+                iconColor: _isPeriodicEmissionEnabled2 ? Colors.green.shade500 : Colors.grey,
+                onChanged: (value) {
+                  setState(() {
+                    _isPeriodicEmissionEnabled2 = value;
+                  });
+                  widget.device.isPeriodicEmissionEnabled2 = value;
+                },
+              ),
+              Divider(),
+              _buildListTile(
+                context,
+                title: 'Set Release Interval',
+                icon: Icons.timer,
+                iconColor: _isPeriodicEmissionEnabled2 ? Colors.green.shade500 : Colors.grey,
+                onTap: () {
+                  _showDurationPickerDialog(context, 'Periodic Emission Interval for Scent Two', (device, duration) {
+                    device.emission2Duration = duration;
+                    print('Updated emission2Duration: ${device.emission2Duration}');
+                  });
+                },
+              ),
+            ],
           ),
-          ListTile(
-            title: Text('Periodic emission interval for scent one'),
-            trailing: Icon(
-              Icons.timer,
-              color: Colors.grey,
-            ),
-            onTap: () {
-              _showDurationPickerDialog(context, 'periodic emission interval for scent two', (device, duration) {
-                device.emission1Duration = duration;
-                print('Updated emission1Duration: ${device.emission1Duration}');
-              });
-            },
+          SizedBox(height: 8.0), // Reduce the space between cards
+          _buildSettingsGroup(
+            context,
+            '',
+            [
+              _buildListTile(
+                context,
+                title: 'Connect to Que',
+                icon: Icons.bluetooth,
+                iconColor: Colors.blue,
+                onTap: () {
+                  // Handle connection to Que
+                },
+              ),
+              Divider(),
+              _buildListTile(
+                context,
+                title: 'Delete Device',
+                icon: Icons.delete,
+                iconColor: Colors.red,
+                onTap: _showDeleteDeviceDialog,
+                textColor: Colors.red,
+              ),
+            ],
           ),
-          Divider(),
-          ListTile(
-            title: Text('Scent two duration'),
-            trailing: Icon(
-              Icons.air,
-              color: Colors.green.shade500,
-            ),
-            onTap: () {
-              _showDurationPickerDialog(context, 'scent two', (device, duration) {
-                device.emission2Duration = duration;
-                print('Updated emission2Duration: ${device.emission2Duration}');
-              });
-            },
-          ),
-          Divider(),
-          ListTile(
-            title: Text('Periodic emissions for scent two'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Switch(
-                  value: _isPeriodicEmissionEnabled2,
-                  onChanged: (value) {
-                    setState(() {
-                      _isPeriodicEmissionEnabled2 = value;
-                    });
-                    widget.device.isPeriodicEmissionEnabled = value;
-                  },
-                ),
-                Icon(
-                  Icons.timer,
-                  color: _isPeriodicEmissionEnabled2 ? Colors.blue : Colors.grey,
-                ),
-              ],
-            ),
-          ),
-          Divider(),
-          ListTile(
-            title: Text('Periodic emission interval for scent two'),
-            trailing: Icon(
-              Icons.timer,
-              color: Colors.grey,
-            ),
-            onTap: () {
-              _showDurationPickerDialog(context, 'periodic emission interval for scent two', (device, duration) {
-                device.emission1Duration = duration;
-                print('Updated emission1Duration: ${device.emission1Duration}');
-              });
-            },
-          ),
-          Divider(),
-          ListTile(
-            title: Text('Connect to Que'),
-            trailing: Icon(
-              Icons.bluetooth,
-              color: Colors.blue,
-            ),
-            onTap: () {
-              // Handle connection to Que
-            },
-          ),
-          Divider(),
-          ListTile(
-            title: Text(
-              'Delete',
-              style: TextStyle(color: Colors.red),
-            ),
-            trailing: Icon(
-              Icons.delete,
-              color: Colors.red,
-            ),
-            onTap: _showDeleteDeviceDialog,
-          ),
-          Divider(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsGroup(BuildContext context, String title, List<Widget> children) {
+    return Card(
+      elevation: 4.0,
+      margin: EdgeInsets.symmetric(vertical: 4.0), // Reduce vertical margin between cards
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0), // Curved corners
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (title.isNotEmpty)
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 18, // Increased font size
+                  color: Colors.grey.shade500, // Grey color for titles
+                ),
+              ),
+            if (title.isNotEmpty) SizedBox(height: 8.0),
+            ...children,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildListTile(BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Color iconColor,
+    required void Function() onTap,
+    Color? textColor,
+  }) {
+    return ListTile(
+      leading: Container(
+        padding: EdgeInsets.only(right: 8.0), // Adjust this value as needed
+        child: Icon(
+          icon,
+          color: iconColor,
+        ),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 15, // Increased font size
+          color: textColor ?? Colors.black,
+          fontWeight: FontWeight.w400, // Slightly less than bold
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildSwitchListTile(BuildContext context, {
+    required String title,
+    required bool value,
+    required Color iconColor,
+    required void Function(bool) onChanged,
+  }) {
+    return ListTile(
+      leading: Container(
+        padding: EdgeInsets.only(right: 8.0), // Adjust this value as needed
+        child: Icon(
+          Icons.timer,
+          color: iconColor,
+        ),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 15, // Increased font size
+          fontWeight: FontWeight.w400, // Slightly less than bold
+        ),
+      ),
+      trailing: Switch(
+        value: value,
+        onChanged: onChanged,
+        activeColor: iconColor, // Set activeColor to match iconColor
       ),
     );
   }
@@ -189,4 +266,3 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 }
-
