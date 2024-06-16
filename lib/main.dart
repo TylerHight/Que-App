@@ -28,8 +28,9 @@ class MyApp extends StatelessWidget {
           ),
           textTheme: TextTheme(headline6: TextStyle(color: Colors.white)), // Set text color to white
           bottomNavigationBarTheme: BottomNavigationBarThemeData(
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.grey[400], // Set unselected item color to white
+            backgroundColor: Colors.white, // Set the background color to white
+            selectedItemColor: Colors.blue, // Set the selected item color to blue
+            unselectedItemColor: Colors.grey, // Set the unselected item color to grey
           ),
         ),
         initialRoute: '/', // Define initial route
@@ -66,7 +67,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.blue, // Set the background color to blue
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.settings_remote),

@@ -11,24 +11,43 @@ class NotesScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Notes',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w500, // Slightly reduce the font weight
+          ),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.white, // Set the AppBar background color to white
+        iconTheme: IconThemeData(color: Colors.black), // Set the color of icons in AppBar
+        elevation: 0.0, // Remove the shadow/depth of the AppBar
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AddNoteDialog(
-                    onNoteAdded: (Note newNote) {
-
-                    },
-                  );
-                },
-              );
-            },
+          Padding(
+            padding: const EdgeInsets.only(right: 10.0), // Add padding to the right
+            child: Container(
+              width: 35.0, // Slightly reduce the size of the circle
+              height: 35.0,
+              decoration: BoxDecoration(
+                color: Colors.blue, // Blue background
+                shape: BoxShape.circle, // Circle shape
+              ),
+              child: Center(
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: Icon(Icons.add, color: Colors.white), // White "add" icon
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AddNoteDialog(
+                          onNoteAdded: (Note newNote) {
+                            Provider.of<NotesList>(context, listen: false).add(newNote);
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
           ),
         ],
       ),

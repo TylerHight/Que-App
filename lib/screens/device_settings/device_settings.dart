@@ -29,126 +29,136 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.device.deviceName} Settings'),
+        title: Text(
+          '${widget.device.deviceName} Settings',
+          style: TextStyle(color: Colors.black), // Set title text color to black
+        ),
+        backgroundColor: Colors.white, // Set the AppBar background color
+        elevation: 0, // Remove elevation to match ListView items
+        iconTheme: IconThemeData(color: Colors.black), // Set the color of icons in AppBar
+        centerTitle: true, // Center align the title
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0), // Add padding to the entire ListView
-        children: <Widget>[
-          _buildSettingsGroup(
-            context,
-            'Scent One Settings',
-            [
-              _buildListTile(
-                context,
-                title: 'Set Release Duration',
-                icon: Icons.air,
-                iconColor: Colors.lightBlue.shade400,
-                onTap: () {
-                  _showDurationPickerDialog(context, 'Scent One Duration', (device, duration) {
-                    device.emission1Duration = duration;
-                    print('Updated emission1Duration: ${device.emission1Duration}');
-                  });
-                },
-              ),
-              Divider(),
-              _buildSwitchListTile(
-                context,
-                title: 'Periodic Emissions',
-                value: _isPeriodicEmissionEnabled,
-                iconColor: _isPeriodicEmissionEnabled ? Colors.blue : Colors.grey,
-                onChanged: (value) {
-                  setState(() {
-                    _isPeriodicEmissionEnabled = value;
-                  });
-                  widget.device.isPeriodicEmissionEnabled = value;
-                },
-              ),
-              Divider(),
-              _buildListTile(
-                context,
-                title: 'Set Release Interval',
-                icon: Icons.timer,
-                iconColor: _isPeriodicEmissionEnabled ? Colors.blue : Colors.grey,
-                onTap: () {
-                  _showDurationPickerDialog(context, 'Periodic Emission Interval for Scent One', (device, duration) {
-                    device.emission1Duration = duration;
-                    print('Updated emission1Duration: ${device.emission1Duration}');
-                  });
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: 8.0), // Reduce the space between cards
-          _buildSettingsGroup(
-            context,
-            'Scent Two Settings',
-            [
-              _buildListTile(
-                context,
-                title: 'Set Release Duration',
-                icon: Icons.air,
-                iconColor: Colors.green.shade500,
-                onTap: () {
-                  _showDurationPickerDialog(context, 'Scent Two Duration', (device, duration) {
-                    device.emission2Duration = duration;
-                    print('Updated emission2Duration: ${device.emission2Duration}');
-                  });
-                },
-              ),
-              Divider(),
-              _buildSwitchListTile(
-                context,
-                title: 'Periodic Emissions',
-                value: _isPeriodicEmissionEnabled2,
-                iconColor: _isPeriodicEmissionEnabled2 ? Colors.green.shade500 : Colors.grey,
-                onChanged: (value) {
-                  setState(() {
-                    _isPeriodicEmissionEnabled2 = value;
-                  });
-                  widget.device.isPeriodicEmissionEnabled2 = value;
-                },
-              ),
-              Divider(),
-              _buildListTile(
-                context,
-                title: 'Set Release Interval',
-                icon: Icons.timer,
-                iconColor: _isPeriodicEmissionEnabled2 ? Colors.green.shade500 : Colors.grey,
-                onTap: () {
-                  _showDurationPickerDialog(context, 'Periodic Emission Interval for Scent Two', (device, duration) {
-                    device.emission2Duration = duration;
-                    print('Updated emission2Duration: ${device.emission2Duration}');
-                  });
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: 8.0), // Reduce the space between cards
-          _buildSettingsGroup(
-            context,
-            '',
-            [
-              _buildListTile(
-                context,
-                title: 'Connect to Que',
-                icon: Icons.bluetooth,
-                iconColor: Colors.blue,
-                onTap: () {
-                  // Handle connection to Que
-                },
-              ),
-              Divider(),
-              _buildListTile(
-                context,
-                title: 'Delete Device',
-                icon: Icons.delete,
-                iconColor: Colors.red,
-                onTap: _showDeleteDeviceDialog,
-                textColor: Colors.red,
-              ),
-            ],
-          ),
-        ],
+      body: Container(
+        color: Colors.white, // Set the background color of the body (ListView items)
+        child: ListView(
+          padding: const EdgeInsets.all(16.0), // Add padding to the entire ListView
+          children: <Widget>[
+            _buildSettingsGroup(
+              context,
+              'Scent One Settings',
+              [
+                _buildListTile(
+                  context,
+                  title: 'Set Release Duration',
+                  icon: Icons.air,
+                  iconColor: Colors.lightBlue.shade400,
+                  onTap: () {
+                    _showDurationPickerDialog(context, 'Scent One Duration', (device, duration) {
+                      device.emission1Duration = duration;
+                      print('Updated emission1Duration: ${device.emission1Duration}');
+                    });
+                  },
+                ),
+                Divider(),
+                _buildSwitchListTile(
+                  context,
+                  title: 'Periodic Emissions',
+                  value: _isPeriodicEmissionEnabled,
+                  iconColor: _isPeriodicEmissionEnabled ? Colors.blue : Colors.grey,
+                  onChanged: (value) {
+                    setState(() {
+                      _isPeriodicEmissionEnabled = value;
+                    });
+                    widget.device.isPeriodicEmissionEnabled = value;
+                  },
+                ),
+                Divider(),
+                _buildListTile(
+                  context,
+                  title: 'Set Release Interval',
+                  icon: Icons.timer,
+                  iconColor: _isPeriodicEmissionEnabled ? Colors.blue : Colors.grey,
+                  onTap: () {
+                    _showDurationPickerDialog(context, 'Periodic Emission Interval for Scent One', (device, duration) {
+                      device.emission1Duration = duration;
+                      print('Updated emission1Duration: ${device.emission1Duration}');
+                    });
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: 8.0), // Reduce the space between cards
+            _buildSettingsGroup(
+              context,
+              'Scent Two Settings',
+              [
+                _buildListTile(
+                  context,
+                  title: 'Set Release Duration',
+                  icon: Icons.air,
+                  iconColor: Colors.green.shade500,
+                  onTap: () {
+                    _showDurationPickerDialog(context, 'Scent Two Duration', (device, duration) {
+                      device.emission2Duration = duration;
+                      print('Updated emission2Duration: ${device.emission2Duration}');
+                    });
+                  },
+                ),
+                Divider(),
+                _buildSwitchListTile(
+                  context,
+                  title: 'Periodic Emissions',
+                  value: _isPeriodicEmissionEnabled2,
+                  iconColor: _isPeriodicEmissionEnabled2 ? Colors.green.shade500 : Colors.grey,
+                  onChanged: (value) {
+                    setState(() {
+                      _isPeriodicEmissionEnabled2 = value;
+                    });
+                    widget.device.isPeriodicEmissionEnabled2 = value;
+                  },
+                ),
+                Divider(),
+                _buildListTile(
+                  context,
+                  title: 'Set Release Interval',
+                  icon: Icons.timer,
+                  iconColor: _isPeriodicEmissionEnabled2 ? Colors.green.shade500 : Colors.grey,
+                  onTap: () {
+                    _showDurationPickerDialog(context, 'Periodic Emission Interval for Scent Two', (device, duration) {
+                      device.emission2Duration = duration;
+                      print('Updated emission2Duration: ${device.emission2Duration}');
+                    });
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: 8.0), // Reduce the space between cards
+            _buildSettingsGroup(
+              context,
+              '',
+              [
+                _buildListTile(
+                  context,
+                  title: 'Connect to Que',
+                  icon: Icons.bluetooth,
+                  iconColor: Colors.blue,
+                  onTap: () {
+                    // Handle connection to Que
+                  },
+                ),
+                Divider(),
+                _buildListTile(
+                  context,
+                  title: 'Delete Device',
+                  icon: Icons.delete,
+                  iconColor: Colors.red,
+                  onTap: _showDeleteDeviceDialog,
+                  textColor: Colors.red,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

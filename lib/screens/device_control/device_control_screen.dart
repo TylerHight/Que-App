@@ -18,43 +18,65 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
       appBar: AppBar(
         title: Text(
           'Control',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black, // Set title text color to black
+          fontWeight: FontWeight.w500,
+          )
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.white, // Set the AppBar background color to white
+        iconTheme: IconThemeData(color: Colors.black), // Set the color of icons in AppBar
+        elevation: 0.0, // Remove the shadow/depth of the AppBar
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () async {
-              final result = await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AddDeviceDialog(
-                    onDeviceAdded: (Device newDevice) {
-                      Provider.of<DeviceList>(context, listen: false).add(newDevice);
-                    },
-                  );
-                },
-              );
-            },
+          Padding(
+            padding: const EdgeInsets.only(right: 14.0), // Add padding to the right
+            child: Container(
+              width: 35.0, // Slightly reduce the size of the circle
+              height: 35.0,
+              decoration: BoxDecoration(
+                color: Colors.blue, // Blue background
+                shape: BoxShape.circle, // Circle shape
+              ),
+              child: Center( // Center the child within the container
+                child: IconButton(
+                  padding: EdgeInsets.zero, // Remove default padding from IconButton
+                  icon: Icon(Icons.add, color: Colors.white), // White "add" icon
+                  onPressed: () async {
+                    final result = await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AddDeviceDialog(
+                          onDeviceAdded: (Device newDevice) {
+                            Provider.of<DeviceList>(context, listen: false).add(newDevice);
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: Provider.of<DeviceList>(context).devices.length,
-        itemBuilder: (context, index) {
-          final device = Provider.of<DeviceList>(context).devices[index];
-          return Container(
-            margin: const EdgeInsets.only(top: 5.0),
-            child: ChangeNotifierProvider.value(
-              value: device,
-              child: DeviceRemote(
-                device: device,
-                bleService: BleService(),
+      body: Container(
+        color: Colors.white, // Ensure ListView background color is white
+        child: ListView.builder(
+          itemCount: Provider.of<DeviceList>(context).devices.length,
+          itemBuilder: (context, index) {
+            final device = Provider.of<DeviceList>(context).devices[index];
+            return Container(
+              margin: const EdgeInsets.only(top: 5.0),
+              child: ChangeNotifierProvider.value(
+                value: device,
+                child: DeviceRemote(
+                  device: device,
+                  bleService: BleService(),
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
 }
+
