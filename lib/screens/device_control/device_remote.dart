@@ -99,7 +99,7 @@ class DeviceRemote extends StatelessWidget {
                   return TimedBinaryButton(
                     key: UniqueKey(), // Add a unique key to force rebuild
                     periodicEmissionEnabled: device.isPeriodicEmissionEnabled,
-                    periodicEmissionTimerDuration: Duration(seconds: 3),
+                    periodicEmissionTimerDuration: device.releaseInterval1,
                     activeColor: Colors.lightBlue.shade400,
                     inactiveColor: Colors.lightBlue.shade100,
                     iconData: Icons.air,
@@ -122,7 +122,7 @@ class DeviceRemote extends StatelessWidget {
                   return TimedBinaryButton(
                     key: UniqueKey(), // Add a unique key to force rebuild
                     periodicEmissionEnabled: device.isPeriodicEmissionEnabled2,
-                    periodicEmissionTimerDuration: Duration(seconds: 3),
+                    periodicEmissionTimerDuration: device.releaseInterval2,
                     activeColor: Colors.green.shade500,
                     inactiveColor: Colors.green.shade100,
                     iconData: Icons.air,
