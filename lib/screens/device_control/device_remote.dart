@@ -35,7 +35,7 @@ class DeviceRemote extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Icon(
                   device.isBleConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
-                  color: device.isBleConnected ? Colors.blue : Colors.orange.shade200,
+                  color: device.isBleConnected ? Colors.blue : Colors.grey.shade400,
                 ),
               ),
               Column(
@@ -62,7 +62,7 @@ class DeviceRemote extends StatelessWidget {
                         icon: Icon(
                           Icons.settings,
                           size: 28,
-                          color: Colors.blue.shade100,
+                          color: Colors.grey.shade400,
                         ),
                       ),
                       IconButton(
@@ -86,7 +86,7 @@ class DeviceRemote extends StatelessWidget {
                         icon: Icon(
                           Icons.description,
                           size: 28,
-                          color: Colors.blue.shade100,
+                          color: Colors.grey.shade400,
                         ),
                       ),
                     ],
@@ -101,7 +101,7 @@ class DeviceRemote extends StatelessWidget {
                     periodicEmissionEnabled: device.isPeriodicEmissionEnabled,
                     periodicEmissionTimerDuration: Duration(seconds: 3),
                     activeColor: Colors.lightBlue.shade400,
-                    inactiveColor: Colors.grey.shade300,
+                    inactiveColor: Colors.lightBlue.shade100,
                     iconData: Icons.air,
                     buttonSize: 55.0,
                     iconSize: 40.0,
@@ -124,7 +124,7 @@ class DeviceRemote extends StatelessWidget {
                     periodicEmissionEnabled: device.isPeriodicEmissionEnabled2,
                     periodicEmissionTimerDuration: Duration(seconds: 3),
                     activeColor: Colors.green.shade500,
-                    inactiveColor: Colors.grey.shade300,
+                    inactiveColor: Colors.green.shade100,
                     iconData: Icons.air,
                     buttonSize: 55.0,
                     iconSize: 40.0,

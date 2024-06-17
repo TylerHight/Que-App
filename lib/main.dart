@@ -79,6 +79,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
+        iconSize: 29.0, // Set the size of the icons
+        selectedLabelStyle: TextStyle(fontSize: 15.0), // Set the size of the selected text
+        unselectedLabelStyle: TextStyle(fontSize: 13.0), // Set the size of the unselected text
       ),
     );
   }

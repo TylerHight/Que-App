@@ -64,10 +64,11 @@ class NotesScreen extends StatelessWidget {
             );
           } else {
             // If there are notes, display them using ListView.builder
+            final reversedNotes = notesList.notes.reversed.toList();
             return ListView.builder(
-              itemCount: notesList.notes.length,
+              itemCount: reversedNotes.length,
               itemBuilder: (context, index) {
-                final note = notesList.notes[index];
+                final note = reversedNotes[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0), // Add vertical padding
                   child: ListTile(
