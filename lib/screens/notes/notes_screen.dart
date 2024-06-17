@@ -39,7 +39,7 @@ class NotesScreen extends StatelessWidget {
                       builder: (BuildContext context) {
                         return AddNoteDialog(
                           onNoteAdded: (Note newNote) {
-                            Provider.of<NotesList>(context, listen: false).add(newNote);
+                            // Do nothing here, as the note is already added in AddNoteDialog
                           },
                         );
                       },
