@@ -35,7 +35,7 @@ class DeviceRemote extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Icon(
                   device.isBleConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
-                  color: device.isBleConnected ? Colors.blue : Colors.grey,
+                  color: device.isBleConnected ? Colors.blue : Colors.orange.shade200,
                 ),
               ),
               Column(
@@ -45,7 +45,7 @@ class DeviceRemote extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 11.0),
                     child: Text(
                       device.deviceName,
-                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20.0),
+                      style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 19.0),
                     ),
                   ),
                   const SizedBox(height: 0),
@@ -62,7 +62,7 @@ class DeviceRemote extends StatelessWidget {
                         icon: Icon(
                           Icons.settings,
                           size: 28,
-                          color: Colors.grey.shade400,
+                          color: Colors.blue.shade100,
                         ),
                       ),
                       IconButton(
@@ -86,7 +86,7 @@ class DeviceRemote extends StatelessWidget {
                         icon: Icon(
                           Icons.description,
                           size: 28,
-                          color: Colors.grey.shade400,
+                          color: Colors.blue.shade100,
                         ),
                       ),
                     ],
