@@ -51,16 +51,24 @@ class _NotesScreenState extends State<NotesScreen> {
         elevation: 0.0, // Remove the shadow/depth of the AppBar
         actions: <Widget>[
           if (_isSelectionMode)
-            IconButton(
-              icon: Icon(Icons.delete, color: Colors.black),
-              onPressed: _selectedNotes.isEmpty ? null : _deleteSelectedNotes,
+            Transform.scale(
+              scale: 1.2, // Increase the size of the delete icon
+              child: IconButton(
+                icon: Icon(Icons.delete, color: Colors.red),
+                onPressed: _selectedNotes.isEmpty ? null : _deleteSelectedNotes,
+                padding: EdgeInsets.symmetric(horizontal: 5.0), // Reduce padding around the trash icon
+              ),
             ),
-          Checkbox(
-            value: _isSelectionMode,
-            onChanged: (value) {
-              _toggleSelectionMode();
-            },
+          Transform.scale(
+            scale: 1.3, // Increase the size of the Checkbox
+            child: Checkbox(
+              value: _isSelectionMode,
+              onChanged: (value) {
+                _toggleSelectionMode();
+              },
+            ),
           ),
+          SizedBox(width: 9.0), // Adjust spacing between the Checkbox and the Add Icon
           Padding(
             padding: const EdgeInsets.only(right: 10.0), // Add padding to the right
             child: Container(
@@ -133,15 +141,18 @@ class _NotesScreenState extends State<NotesScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Device: ${note.device?.deviceName ?? "N/A"}'),
-                        Text('Created on: ${note.creationDate.toLocal().toString().split('.')[0]}'),
+                        Text('${note.creationDate.toLocal().toString().split('.')[0]}'),
                       ],
                     ),
                     trailing: _isSelectionMode
-                        ? Checkbox(
-                      value: _selectedNotes.contains(note),
-                      onChanged: (value) {
-                        _toggleNoteSelection(note);
-                      },
+                        ? Transform.scale(
+                      scale: 1.2, // Slightly increase the size of the selection checkboxes
+                      child: Checkbox(
+                        value: _selectedNotes.contains(note),
+                        onChanged: (value) {
+                          _toggleNoteSelection(note);
+                        },
+                      ),
                     )
                         : null,
                   ),
