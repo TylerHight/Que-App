@@ -20,7 +20,7 @@ class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        'Set ${widget.title} duration',
+        'Set ${widget.title}',
           style: TextStyle(color: Colors.black),
       ),
       content: Column(

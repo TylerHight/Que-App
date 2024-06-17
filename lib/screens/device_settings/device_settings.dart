@@ -53,7 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.air,
                   iconColor: Colors.lightBlue.shade400,
                   onTap: () {
-                    _showDurationPickerDialog(context, 'Scent One Duration', (device, duration) {
+                    _showDurationPickerDialog(context, 'duration for scent one', (device, duration) {
                       device.emission1Duration = duration;
                       print('Updated emission1Duration: ${device.emission1Duration}');
                     });
@@ -79,7 +79,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.timer,
                   iconColor: _isPeriodicEmissionEnabled ? Colors.blue : Colors.grey,
                   onTap: () {
-                    _showDurationPickerDialog(context, 'Periodic Emission Interval for Scent One', (device, duration) {
+                    _showDurationPickerDialog(context, 'release interval for scent one', (device, duration) {
                       device.emission1Duration = duration;
                       print('Updated emission1Duration: ${device.emission1Duration}');
                     });
@@ -98,7 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.air,
                   iconColor: Colors.green.shade500,
                   onTap: () {
-                    _showDurationPickerDialog(context, 'Scent Two Duration', (device, duration) {
+                    _showDurationPickerDialog(context, 'duration for scent two', (device, duration) {
                       device.emission2Duration = duration;
                       print('Updated emission2Duration: ${device.emission2Duration}');
                     });
@@ -124,7 +124,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.timer,
                   iconColor: _isPeriodicEmissionEnabled2 ? Colors.green.shade500 : Colors.grey,
                   onTap: () {
-                    _showDurationPickerDialog(context, 'Periodic Emission Interval for Scent Two', (device, duration) {
+                    _showDurationPickerDialog(context, 'release interval for scent two', (device, duration) {
                       device.emission2Duration = duration;
                       print('Updated emission2Duration: ${device.emission2Duration}');
                     });

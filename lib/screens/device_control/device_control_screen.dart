@@ -20,7 +20,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
           'Control',
           style: TextStyle(
             color: Colors.black, // Set title text color to black
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w400,
           ),
         ),
         backgroundColor: Colors.white, // Set the AppBar background color to white
