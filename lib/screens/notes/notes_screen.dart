@@ -43,7 +43,7 @@ class _NotesScreenState extends State<NotesScreen> {
           'Notes',
           style: TextStyle(
             color: Colors.black,
-            fontWeight: FontWeight.w500, // Slightly reduce the font weight
+            fontWeight: FontWeight.w400, // Decrease the font weight
           ),
         ),
         backgroundColor: Colors.white, // Set the AppBar background color to white
@@ -70,7 +70,7 @@ class _NotesScreenState extends State<NotesScreen> {
           ),
           SizedBox(width: 9.0), // Adjust spacing between the Checkbox and the Add Icon
           Padding(
-            padding: const EdgeInsets.only(right: 10.0), // Add padding to the right
+            padding: const EdgeInsets.only(right: 14.0), // Add padding to the right
             child: Container(
               width: 35.0, // Slightly reduce the size of the circle
               height: 35.0,
@@ -104,11 +104,15 @@ class _NotesScreenState extends State<NotesScreen> {
         builder: (context, notesList, _) {
           // Check if there are notes in the list
           if (notesList.notes.isEmpty) {
-            // If no notes, display a message
+            // If no notes, display a message with padding
             return Center(
-              child: Text(
-                'No notes available',
-                style: TextStyle(fontSize: 18),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0), // Horizontal padding added
+                child: Text(
+                  'No notes yet. Tap the "+" button to add a note or use the note icon on each device.',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300), // Decrease the font weight
+                  textAlign: TextAlign.center,
+                ),
               ),
             );
           } else {

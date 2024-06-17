@@ -18,9 +18,10 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
       appBar: AppBar(
         title: Text(
           'Control',
-          style: TextStyle(color: Colors.black, // Set title text color to black
-          fontWeight: FontWeight.w500,
-          )
+          style: TextStyle(
+            color: Colors.black, // Set title text color to black
+            fontWeight: FontWeight.w500,
+          ),
         ),
         backgroundColor: Colors.white, // Set the AppBar background color to white
         iconTheme: IconThemeData(color: Colors.black), // Set the color of icons in AppBar
@@ -57,26 +58,39 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
           ),
         ],
       ),
-      body: Container(
-        color: Colors.white, // Ensure ListView background color is white
-        child: ListView.builder(
-          itemCount: Provider.of<DeviceList>(context).devices.length,
-          itemBuilder: (context, index) {
-            final device = Provider.of<DeviceList>(context).devices[index];
-            return Container(
-              margin: const EdgeInsets.only(top: 5.0),
-              child: ChangeNotifierProvider.value(
-                value: device,
-                child: DeviceRemote(
-                  device: device,
-                  bleService: BleService(),
-                ),
+      body: Consumer<DeviceList>(
+        builder: (context, deviceList, _) {
+          if (deviceList.devices.isEmpty) {
+            return Center(
+              child: Text(
+                'No devices yet. Tap the "+" button to add a device.',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                textAlign: TextAlign.center,
               ),
             );
-          },
-        ),
+          } else {
+            return Container(
+              color: Colors.white, // Ensure ListView background color is white
+              child: ListView.builder(
+                itemCount: deviceList.devices.length,
+                itemBuilder: (context, index) {
+                  final device = deviceList.devices[index];
+                  return Container(
+                    margin: const EdgeInsets.only(top: 5.0),
+                    child: ChangeNotifierProvider.value(
+                      value: device,
+                      child: DeviceRemote(
+                        device: device,
+                        bleService: BleService(),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          }
+        },
       ),
     );
   }
 }
-

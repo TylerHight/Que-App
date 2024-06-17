@@ -73,13 +73,13 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Control',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.note),
+            icon: Icon(Icons.edit_note),
             label: 'Notes',
           ),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        iconSize: 29.0, // Set the size of the icons
+        iconSize: 30.0, // Set the size of the icons
         selectedLabelStyle: TextStyle(fontSize: 15.0), // Set the size of the selected text
         unselectedLabelStyle: TextStyle(fontSize: 13.0), // Set the size of the unselected text
       ),

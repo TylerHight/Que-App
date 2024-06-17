@@ -84,7 +84,7 @@ class DeviceRemote extends StatelessWidget {
                           );
                         },
                         icon: Icon(
-                          Icons.description,
+                          Icons.note_add,
                           size: 28,
                           color: Colors.grey.shade400,
                         ),
