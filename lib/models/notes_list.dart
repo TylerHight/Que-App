@@ -15,4 +15,9 @@ class NotesList extends ChangeNotifier {
     _notes.remove(note);
     notifyListeners();
   }
+
+  void removeMultiple(List<Note> notes) {
+    _notes.removeWhere((note) => notes.contains(note));
+    notifyListeners();
+  }
 }

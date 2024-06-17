@@ -4,7 +4,37 @@ import 'package:que_app/models/note.dart';
 import 'package:que_app/models/notes_list.dart';
 import '../device_control/add_note_dialog.dart';
 
-class NotesScreen extends StatelessWidget {
+class NotesScreen extends StatefulWidget {
+  @override
+  _NotesScreenState createState() => _NotesScreenState();
+}
+
+class _NotesScreenState extends State<NotesScreen> {
+  bool _isSelectionMode = false;
+  Set<Note> _selectedNotes = {};
+
+  void _toggleSelectionMode() {
+    setState(() {
+      _isSelectionMode = !_isSelectionMode;
+      _selectedNotes.clear();
+    });
+  }
+
+  void _deleteSelectedNotes() {
+    Provider.of<NotesList>(context, listen: false).removeMultiple(_selectedNotes.toList());
+    _toggleSelectionMode();
+  }
+
+  void _toggleNoteSelection(Note note) {
+    setState(() {
+      if (_selectedNotes.contains(note)) {
+        _selectedNotes.remove(note);
+      } else {
+        _selectedNotes.add(note);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,6 +50,17 @@ class NotesScreen extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.black), // Set the color of icons in AppBar
         elevation: 0.0, // Remove the shadow/depth of the AppBar
         actions: <Widget>[
+          if (_isSelectionMode)
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.black),
+              onPressed: _selectedNotes.isEmpty ? null : _deleteSelectedNotes,
+            ),
+          Checkbox(
+            value: _isSelectionMode,
+            onChanged: (value) {
+              _toggleSelectionMode();
+            },
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 10.0), // Add padding to the right
             child: Container(
@@ -72,6 +113,17 @@ class NotesScreen extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0), // Add vertical padding
                   child: ListTile(
+                    onLongPress: () {
+                      if (!_isSelectionMode) {
+                        _toggleSelectionMode();
+                      }
+                      _toggleNoteSelection(note);
+                    },
+                    onTap: () {
+                      if (_isSelectionMode) {
+                        _toggleNoteSelection(note);
+                      }
+                    },
                     title: Text(
                       note.content,
                       maxLines: 2,
@@ -84,6 +136,14 @@ class NotesScreen extends StatelessWidget {
                         Text('Created on: ${note.creationDate.toLocal().toString().split('.')[0]}'),
                       ],
                     ),
+                    trailing: _isSelectionMode
+                        ? Checkbox(
+                      value: _selectedNotes.contains(note),
+                      onChanged: (value) {
+                        _toggleNoteSelection(note);
+                      },
+                    )
+                        : null,
                   ),
                 );
               },
