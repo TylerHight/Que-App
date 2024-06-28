@@ -31,7 +31,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: Text(
           '${widget.device.deviceName} Settings',
-          style: TextStyle(color: Colors.black), // Set title text color to black
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w400,
+          ), // Set title text color to black
         ),
         backgroundColor: Colors.white, // Set the AppBar background color
         elevation: 0, // Remove elevation to match ListView items
