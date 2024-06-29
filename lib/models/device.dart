@@ -24,6 +24,8 @@ class Device extends ChangeNotifier {
 
   final Map<String, List<String>> bluetoothServiceCharacteristics;
 
+  int _heartrateThreshold;  // New variable
+
   Duration get emission1Duration => _emission1Duration;
   set emission1Duration(Duration value) {
     _emission1Duration = value;
@@ -60,6 +62,12 @@ class Device extends ChangeNotifier {
     notifyListeners();
   }
 
+  int get heartrateThreshold => _heartrateThreshold;  // New getter
+  set heartrateThreshold(int value) {
+    _heartrateThreshold = value;
+    notifyListeners();
+  }
+
   Device._({
     required this.id,
     required this.deviceName,
@@ -70,14 +78,18 @@ class Device extends ChangeNotifier {
     required Duration releaseInterval2,  // New parameter
     required bool isPeriodicEmissionEnabled,
     required bool isPeriodicEmissionEnabled2,
-    required this.isBleConnected,
-    required this.bluetoothServiceCharacteristics,
+    required bool isBleConnected,
+    required Map<String, List<String>> bluetoothServiceCharacteristics,
+    required int heartrateThreshold,  // New parameter
   })  : _emission1Duration = emission1Duration,
         _emission2Duration = emission2Duration,
         _releaseInterval1 = releaseInterval1,  // Initialize new variable
         _releaseInterval2 = releaseInterval2,  // Initialize new variable
         _isPeriodicEmissionEnabled = isPeriodicEmissionEnabled,
         _isPeriodicEmissionEnabled2 = isPeriodicEmissionEnabled2,
+        _heartrateThreshold = heartrateThreshold,  // Initialize new variable
+        isBleConnected = isBleConnected,
+        bluetoothServiceCharacteristics = bluetoothServiceCharacteristics,
         super();
 
   factory Device({
@@ -92,6 +104,7 @@ class Device extends ChangeNotifier {
     bool? isPeriodicEmissionEnabled = false,
     bool? isPeriodicEmissionEnabled2 = false,
     Map<String, List<String>>? bluetoothServiceCharacteristics,
+    int heartrateThreshold = 90,  // New parameter with default value
   }) {
     final generatedId = id ?? _generateRandomId();
     return Device._(
@@ -106,6 +119,7 @@ class Device extends ChangeNotifier {
       isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? false,
       isPeriodicEmissionEnabled2: isPeriodicEmissionEnabled2 ?? false,
       bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? {},
+      heartrateThreshold: heartrateThreshold,  // Initialize new variable
     );
   }
 
@@ -148,6 +162,7 @@ class Device extends ChangeNotifier {
     bool? isPeriodicEmissionEnabled,
     bool? isPeriodicEmissionEnabled2,
     Map<String, List<String>>? bluetoothServiceCharacteristics,
+    int? heartrateThreshold,  // New parameter
   }) =>
       Device(
         id: id ?? this.id,
@@ -161,6 +176,7 @@ class Device extends ChangeNotifier {
         isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? this.isPeriodicEmissionEnabled,
         isPeriodicEmissionEnabled2: isPeriodicEmissionEnabled2 ?? this.isPeriodicEmissionEnabled2,
         bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? this.bluetoothServiceCharacteristics,
+        heartrateThreshold: heartrateThreshold ?? this.heartrateThreshold,  // Copy new variable
       );
 
   Map<String, dynamic> toJson() => {
@@ -174,6 +190,7 @@ class Device extends ChangeNotifier {
     'isBleConnected': isBleConnected,
     'isPeriodicEmissionEnabled': isPeriodicEmissionEnabled,
     'isPeriodicEmissionEnabled2': isPeriodicEmissionEnabled2,
+    'heartrateThreshold': heartrateThreshold,  // Include new variable
     'bluetoothServiceCharacteristics': bluetoothServiceCharacteristics,
   };
 }

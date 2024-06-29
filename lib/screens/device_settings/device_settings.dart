@@ -4,6 +4,7 @@ import 'duration_selection_dialog.dart';
 import 'delete_device_dialog.dart'; // Import the DeleteDeviceDialog
 import 'package:provider/provider.dart';
 import 'package:que_app/models/device_list.dart';
+import 'heart_rate_threshold_dialog.dart';  // Add this import statement
 
 class SettingsScreen extends StatefulWidget {
   final Device device;
@@ -138,6 +139,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SizedBox(height: 8.0), // Reduce the space between cards
             _buildSettingsGroup(
               context,
+              'Heart Rate Settings',  // New group title
+              [
+                _buildListTile(
+                  context,
+                  title: 'Connect to heart rate monitor',
+                  icon: Icons.favorite,
+                  iconColor: Colors.red,
+                  onTap: () {
+                    // Handle connection to heart rate monitor
+                  },
+                ),
+                Divider(),
+                _buildListTile(
+                  context,
+                  title: 'Set heart rate threshold',
+                  icon: Icons.favorite_border,
+                  iconColor: Colors.red,
+                  onTap: () {
+                    _showHeartRateThresholdDialog(context, 'Set heart rate threshold', (device, threshold) {
+                      device.heartrateThreshold = threshold;
+                      print('Updated heartrateThreshold: ${device.heartrateThreshold}');
+                    });
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: 8.0), // Reduce the space between cards
+            _buildSettingsGroup(
+              context,
               '',
               [
                 _buildListTile(
@@ -260,6 +290,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (selectedDuration != null) {
       propertyToUpdate(widget.device, selectedDuration);
       print('Updated $title duration: $selectedDuration');
+    }
+  }
+
+  void _showHeartRateThresholdDialog(BuildContext context, String title, void Function(Device, int) propertyToUpdate) async {
+    final selectedThreshold = await showDialog<int>(
+      context: context,
+      builder: (BuildContext context) {
+        // Implement the HeartRateThresholdDialog as needed
+        return HeartRateThresholdDialog(title: title);
+      },
+    );
+    if (selectedThreshold != null) {
+      propertyToUpdate(widget.device, selectedThreshold);
+      print('Updated $title: $selectedThreshold');
     }
   }
 
