@@ -61,6 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         context,
                         'scent one duration',
                         Icons.air,  // Pass the icon here
+                        Colors.lightBlue.shade400,  // Pass the icon color here
                             (device, duration) {
                           device.emission1Duration = duration;
                           print('Updated emission1Duration: ${device.emission1Duration}');
@@ -92,6 +93,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         context,
                         'scent one interval',
                         Icons.timer,  // Pass the icon here
+                        Colors.blue,  // Pass the icon color here
                             (device, duration) {
                           device.releaseInterval1 = duration;
                           print('Updated releaseInterval1: ${device.releaseInterval1}');
@@ -116,6 +118,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         context,
                         'scent two duration',
                         Icons.air,  // Pass the icon here
+                        Colors.green.shade500,  // Pass the icon color here
                             (device, duration) {
                           device.emission2Duration = duration;
                           print('Updated emission2Duration: ${device.emission2Duration}');
@@ -147,6 +150,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         context,
                         'scent two interval',
                         Icons.timer,  // Pass the icon here
+                        Colors.green.shade500,  // Pass the icon color here
                             (device, duration) {
                           device.releaseInterval2 = duration;
                           print('Updated releaseInterval2: ${device.releaseInterval2}');
@@ -305,11 +309,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showDurationPickerDialog(BuildContext context, String title, IconData icon, void Function(Device, Duration) propertyToUpdate) async {
+  void _showDurationPickerDialog(BuildContext context, String title, IconData icon, Color iconColor, void Function(Device, Duration) propertyToUpdate) async {
     final selectedDuration = await showDialog<Duration>(
       context: context,
       builder: (BuildContext context) {
-        return DurationSelectionDialog(title: title, icon: icon);
+        return DurationSelectionDialog(
+          title: title,
+          icon: icon,
+          iconColor: iconColor,
+        );
       },
     );
     if (selectedDuration != null) {
