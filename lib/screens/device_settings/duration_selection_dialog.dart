@@ -21,7 +21,7 @@ class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
     return AlertDialog(
       title: Text(
         'Set ${widget.title}',
-          style: TextStyle(color: Colors.black),
+          style: const TextStyle(color: Colors.black),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,

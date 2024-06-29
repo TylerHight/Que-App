@@ -144,8 +144,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _buildListTile(
                   context,
                   title: 'Connect to heart rate monitor',
-                  icon: Icons.favorite,
-                  iconColor: Colors.red,
+                  icon: Icons.bluetooth,
+                  iconColor: Colors.blue,
                   onTap: () {
                     // Handle connection to heart rate monitor
                   },
@@ -154,13 +154,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _buildListTile(
                   context,
                   title: 'Set heart rate threshold',
-                  icon: Icons.favorite_border,
+                  icon: Icons.favorite,
                   iconColor: Colors.red,
                   onTap: () {
-                    _showHeartRateThresholdDialog(context, 'Set heart rate threshold', (device, threshold) {
-                      device.heartrateThreshold = threshold;
-                      print('Updated heartrateThreshold: ${device.heartrateThreshold}');
-                    });
+                    _showHeartRateThresholdDialog(
+                      context,
+                      'Set heart rate threshold',
+                      widget.device.heartrateThreshold, // Pass the current threshold
+                          (device, threshold) {
+                        device.heartrateThreshold = threshold;
+                        print('Updated heartrateThreshold: ${device.heartrateThreshold}');
+                      },
+                    );
                   },
                 ),
               ],
@@ -293,12 +298,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _showHeartRateThresholdDialog(BuildContext context, String title, void Function(Device, int) propertyToUpdate) async {
+  void _showHeartRateThresholdDialog(BuildContext context, String title, int currentThreshold, void Function(Device, int) propertyToUpdate) async {
     final selectedThreshold = await showDialog<int>(
       context: context,
       builder: (BuildContext context) {
         // Implement the HeartRateThresholdDialog as needed
-        return HeartRateThresholdDialog(title: title);
+        return HeartRateThresholdDialog(
+          title: title,
+          currentThreshold: currentThreshold,
+        );
       },
     );
     if (selectedThreshold != null) {
