@@ -34,17 +34,24 @@ class _HeartRateThresholdDialogState extends State<HeartRateThresholdDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(height: 8.0),
-          Slider(
-            value: _selectedThreshold.toDouble(), // Convert to double for slider
-            min: 30.0,
-            max: 200.0,
-            divisions: 170,
-            label: _selectedThreshold.round().toString(),
-            onChanged: (value) {
-              setState(() {
-                _selectedThreshold = value.round(); // Round to integer
-              });
-            },
+          Row(
+            children: [
+              Icon(Icons.favorite, color: Colors.red), // Favorite icon
+              Expanded(
+                child: Slider(
+                  value: _selectedThreshold.toDouble(), // Convert to double for slider
+                  min: 30.0,
+                  max: 200.0,
+                  divisions: 170,
+                  label: _selectedThreshold.round().toString(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedThreshold = value.round(); // Round to integer
+                    });
+                  },
+                ),
+              ),
+            ],
           ),
           Text('Threshold: ${_selectedThreshold.round()} BPM'),
         ],

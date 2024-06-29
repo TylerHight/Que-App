@@ -173,7 +173,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             SizedBox(height: 8.0), // Reduce the space between cards
             _buildSettingsGroup(
               context,
-              '',
+              'Device',
               [
                 _buildListTile(
                   context,
