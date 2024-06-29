@@ -57,7 +57,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.air,
                   iconColor: Colors.lightBlue.shade400,
                   onTap: () {
-                    _showDurationPickerDialog(context, 'duration for scent one', (device, duration) {
+                    _showDurationPickerDialog(context, 'scent one duration', (device, duration) {
                       device.emission1Duration = duration;
                       print('Updated emission1Duration: ${device.emission1Duration}');
                     });
@@ -102,7 +102,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.air,
                   iconColor: Colors.green.shade500,
                   onTap: () {
-                    _showDurationPickerDialog(context, 'duration for scent two', (device, duration) {
+                    _showDurationPickerDialog(context, 'scent two duration', (device, duration) {
                       device.emission2Duration = duration;
                       print('Updated emission2Duration: ${device.emission2Duration}');
                     });
