@@ -1,3 +1,5 @@
+// settings_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:que_app/models/device.dart';
 import 'duration_selection_dialog.dart';
@@ -58,14 +60,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   iconColor: Colors.lightBlue.shade400,
                   onTap: () {
                     _showDurationPickerDialog(
-                        context,
-                        'scent one duration',
-                        Icons.air,  // Pass the icon here
-                        Colors.lightBlue.shade400,  // Pass the icon color here
-                            (device, duration) {
-                          device.emission1Duration = duration;
-                          print('Updated emission1Duration: ${device.emission1Duration}');
-                        }
+                      context,
+                      'scent one duration',
+                      widget.device.emission1Duration,
+                          (device, duration) {
+                        device.emission1Duration = duration;
+                        print('Updated emission1Duration: ${device.emission1Duration}');
+                      },
                     );
                   },
                 ),
@@ -90,14 +91,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   iconColor: _isPeriodicEmissionEnabled ? Colors.blue : Colors.grey,
                   onTap: () {
                     _showDurationPickerDialog(
-                        context,
-                        'scent one interval',
-                        Icons.timer,  // Pass the icon here
-                        Colors.blue,  // Pass the icon color here
-                            (device, duration) {
-                          device.releaseInterval1 = duration;
-                          print('Updated releaseInterval1: ${device.releaseInterval1}');
-                        }
+                      context,
+                      'scent one interval',
+                      widget.device.releaseInterval1,
+                          (device, duration) {
+                        device.releaseInterval1 = duration;
+                        print('Updated releaseInterval1: ${device.releaseInterval1}');
+                      },
                     );
                   },
                 ),
@@ -115,14 +115,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   iconColor: Colors.green.shade500,
                   onTap: () {
                     _showDurationPickerDialog(
-                        context,
-                        'scent two duration',
-                        Icons.air,  // Pass the icon here
-                        Colors.green.shade500,  // Pass the icon color here
-                            (device, duration) {
-                          device.emission2Duration = duration;
-                          print('Updated emission2Duration: ${device.emission2Duration}');
-                        }
+                      context,
+                      'scent two duration',
+                      widget.device.emission2Duration,
+                          (device, duration) {
+                        device.emission2Duration = duration;
+                        print('Updated emission2Duration: ${device.emission2Duration}');
+                      },
                     );
                   },
                 ),
@@ -147,14 +146,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   iconColor: _isPeriodicEmissionEnabled2 ? Colors.green.shade500 : Colors.grey,
                   onTap: () {
                     _showDurationPickerDialog(
-                        context,
-                        'scent two interval',
-                        Icons.timer,  // Pass the icon here
-                        Colors.green.shade500,  // Pass the icon color here
-                            (device, duration) {
-                          device.releaseInterval2 = duration;
-                          print('Updated releaseInterval2: ${device.releaseInterval2}');
-                        }
+                      context,
+                      'scent two interval',
+                      widget.device.releaseInterval2,
+                          (device, duration) {
+                        device.releaseInterval2 = duration;
+                        print('Updated releaseInterval2: ${device.releaseInterval2}');
+                      },
                     );
                   },
                 ),
@@ -309,14 +307,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showDurationPickerDialog(BuildContext context, String title, IconData icon, Color iconColor, void Function(Device, Duration) propertyToUpdate) async {
+  void _showDurationPickerDialog(BuildContext context, String title, Duration currentDuration, void Function(Device, Duration) propertyToUpdate) async {
     final selectedDuration = await showDialog<Duration>(
       context: context,
       builder: (BuildContext context) {
         return DurationSelectionDialog(
           title: title,
-          icon: icon,
-          iconColor: iconColor,
+          icon: Icons.timer, // Set an appropriate icon
+          iconColor: Colors.blue, // Set an appropriate icon color
+          durationSeconds: currentDuration, // Pass the current duration
         );
       },
     );

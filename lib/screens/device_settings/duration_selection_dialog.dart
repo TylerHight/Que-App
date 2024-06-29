@@ -6,12 +6,14 @@ class DurationSelectionDialog extends StatefulWidget {
   final String title;
   final IconData icon;
   final Color iconColor;
+  final Duration durationSeconds;
 
   const DurationSelectionDialog({
     Key? key,
     required this.title,
     required this.icon,
     required this.iconColor,
+    required this.durationSeconds,
   }) : super(key: key);
 
   @override
@@ -19,9 +21,17 @@ class DurationSelectionDialog extends StatefulWidget {
 }
 
 class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
-  int _hours = 0;
-  int _minutes = 0;
-  int _seconds = 0;
+  late int _hours;
+  late int _minutes;
+  late int _seconds;
+
+  @override
+  void initState() {
+    super.initState();
+    _hours = widget.durationSeconds.inHours;
+    _minutes = widget.durationSeconds.inMinutes % 60;
+    _seconds = widget.durationSeconds.inSeconds % 60;
+  }
 
   @override
   Widget build(BuildContext context) {
