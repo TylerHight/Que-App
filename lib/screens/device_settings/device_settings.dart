@@ -57,10 +57,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.air,
                   iconColor: Colors.lightBlue.shade400,
                   onTap: () {
-                    _showDurationPickerDialog(context, 'scent one duration', (device, duration) {
-                      device.emission1Duration = duration;
-                      print('Updated emission1Duration: ${device.emission1Duration}');
-                    });
+                    _showDurationPickerDialog(
+                        context,
+                        'scent one duration',
+                        Icons.air,  // Pass the icon here
+                            (device, duration) {
+                          device.emission1Duration = duration;
+                          print('Updated emission1Duration: ${device.emission1Duration}');
+                        }
+                    );
                   },
                 ),
                 Divider(),
@@ -83,10 +88,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.timer,
                   iconColor: _isPeriodicEmissionEnabled ? Colors.blue : Colors.grey,
                   onTap: () {
-                    _showDurationPickerDialog(context, 'release interval for scent one', (device, duration) {
-                      device.releaseInterval1 = duration;
-                      print('Updated releaseInterval1: ${device.releaseInterval1}');
-                    });
+                    _showDurationPickerDialog(
+                        context,
+                        'scent one interval',
+                        Icons.timer,  // Pass the icon here
+                            (device, duration) {
+                          device.releaseInterval1 = duration;
+                          print('Updated releaseInterval1: ${device.releaseInterval1}');
+                        }
+                    );
                   },
                 ),
               ],
@@ -102,10 +112,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.air,
                   iconColor: Colors.green.shade500,
                   onTap: () {
-                    _showDurationPickerDialog(context, 'scent two duration', (device, duration) {
-                      device.emission2Duration = duration;
-                      print('Updated emission2Duration: ${device.emission2Duration}');
-                    });
+                    _showDurationPickerDialog(
+                        context,
+                        'scent two duration',
+                        Icons.air,  // Pass the icon here
+                            (device, duration) {
+                          device.emission2Duration = duration;
+                          print('Updated emission2Duration: ${device.emission2Duration}');
+                        }
+                    );
                   },
                 ),
                 Divider(),
@@ -128,10 +143,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.timer,
                   iconColor: _isPeriodicEmissionEnabled2 ? Colors.green.shade500 : Colors.grey,
                   onTap: () {
-                    _showDurationPickerDialog(context, 'release interval for scent two', (device, duration) {
-                      device.releaseInterval2 = duration;
-                      print('Updated releaseInterval2: ${device.releaseInterval2}');
-                    });
+                    _showDurationPickerDialog(
+                        context,
+                        'scent two interval',
+                        Icons.timer,  // Pass the icon here
+                            (device, duration) {
+                          device.releaseInterval2 = duration;
+                          print('Updated releaseInterval2: ${device.releaseInterval2}');
+                        }
+                    );
                   },
                 ),
               ],
@@ -285,11 +305,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showDurationPickerDialog(BuildContext context, String title, void Function(Device, Duration) propertyToUpdate) async {
+  void _showDurationPickerDialog(BuildContext context, String title, IconData icon, void Function(Device, Duration) propertyToUpdate) async {
     final selectedDuration = await showDialog<Duration>(
       context: context,
       builder: (BuildContext context) {
-        return DurationSelectionDialog(title: title);
+        return DurationSelectionDialog(title: title, icon: icon);
       },
     );
     if (selectedDuration != null) {

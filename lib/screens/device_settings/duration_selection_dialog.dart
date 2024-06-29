@@ -1,11 +1,10 @@
-/// duration_selection_dialog.dart
-
 import 'package:flutter/material.dart';
 
 class DurationSelectionDialog extends StatefulWidget {
   final String title;
+  final IconData? icon; // Optional icon parameter
 
-  const DurationSelectionDialog({Key? key, required this.title}) : super(key: key);
+  const DurationSelectionDialog({Key? key, required this.title, this.icon}) : super(key: key);
 
   @override
   _DurationSelectionDialogState createState() => _DurationSelectionDialogState();
@@ -19,9 +18,21 @@ class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        'Set ${widget.title}',
-          style: const TextStyle(color: Colors.black),
+      title: Row(
+        children: [
+          if (widget.icon != null)
+            Padding(
+              padding: EdgeInsets.only(right: 8.0),
+              child: Icon(
+                widget.icon,
+                color: Colors.black,
+              ),
+            ),
+          Text(
+            'Set ${widget.title}',
+            style: const TextStyle(color: Colors.black),
+          ),
+        ],
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -47,7 +58,6 @@ class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
       ],
     );
   }
-
 
   Widget _buildDurationField(String label, int value, void Function(int) onChanged) {
     return Row(
