@@ -28,9 +28,10 @@ class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
   @override
   void initState() {
     super.initState();
+    // Initialize sliders based on durationSeconds
     _hours = widget.durationSeconds.inHours;
-    _minutes = widget.durationSeconds.inMinutes % 60;
-    _seconds = widget.durationSeconds.inSeconds % 60;
+    _minutes = (widget.durationSeconds.inMinutes % 60).toInt();
+    _seconds = (widget.durationSeconds.inSeconds % 60).toInt();
   }
 
   @override
