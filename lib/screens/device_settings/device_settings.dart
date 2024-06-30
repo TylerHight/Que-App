@@ -70,7 +70,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     );
                   },
                 ),
-                Divider(),
                 _buildSwitchListTile(
                   context,
                   title: 'Periodic Emissions',
@@ -83,7 +82,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     widget.device.isPeriodicEmissionEnabled = value;
                   },
                 ),
-                Divider(),
                 _buildListTile(
                   context,
                   title: 'Set Release Interval',
@@ -125,7 +123,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     );
                   },
                 ),
-                Divider(),
                 _buildSwitchListTile(
                   context,
                   title: 'Periodic Emissions',
@@ -138,7 +135,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     widget.device.isPeriodicEmissionEnabled2 = value;
                   },
                 ),
-                Divider(),
                 _buildListTile(
                   context,
                   title: 'Set Release Interval',
@@ -172,7 +168,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     // Handle connection to heart rate monitor
                   },
                 ),
-                Divider(),
                 _buildListTile(
                   context,
                   title: 'Set heart rate threshold',
@@ -206,7 +201,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     // Handle connection to Que
                   },
                 ),
-                Divider(),
                 _buildListTile(
                   context,
                   title: 'Delete Device',
