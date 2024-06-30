@@ -16,7 +16,7 @@ class TimedBinaryButton extends StatefulWidget {
   final bool periodicEmissionEnabled;
 
   const TimedBinaryButton({
-    super.key,
+    Key? key,
     this.activeColor,
     this.inactiveColor = Colors.grey,
     required this.iconData,
@@ -29,7 +29,7 @@ class TimedBinaryButton extends StatefulWidget {
     this.autoTurnOffEnabled = false,
     required this.periodicEmissionTimerDuration,
     this.periodicEmissionEnabled = false,
-  });
+  }) : super(key: key);
 
   @override
   _TimedBinaryButtonState createState() => _TimedBinaryButtonState();
@@ -91,6 +91,14 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
         setState(() {
           _secondsLeft--;
         });
+        // Convert to minutes if over 59 seconds
+        if (_secondsLeft > 59) {
+          int minutes = _secondsLeft ~/ 60;
+          int seconds = _secondsLeft % 60;
+          print('Auto Turn-Off: $minutes m $seconds s');
+        } else {
+          print('Auto Turn-Off: $_secondsLeft s');
+        }
       } else {
         if (isLightOn) {
           toggleLight();
@@ -107,6 +115,14 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
         setState(() {
           _periodicEmissionSecondsLeft--;
         });
+        // Convert to minutes if over 59 seconds
+        if (_periodicEmissionSecondsLeft > 59) {
+          int minutes = _periodicEmissionSecondsLeft ~/ 60;
+          int seconds = _periodicEmissionSecondsLeft % 60;
+          print('Periodic Emission: $minutes m $seconds s');
+        } else {
+          print('Periodic Emission: $_periodicEmissionSecondsLeft s');
+        }
       } else {
         if (!isLightOn) {
           toggleLight();
@@ -202,7 +218,7 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
                 ),
                 padding: const EdgeInsets.all(4),
                 child: Text(
-                  '$_secondsLeft s',
+                  _formatTime(_secondsLeft),
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.white,
@@ -221,7 +237,7 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
                 ),
                 padding: const EdgeInsets.all(4),
                 child: Text(
-                  '$_periodicEmissionSecondsLeft s',
+                  _formatTime(_periodicEmissionSecondsLeft),
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.white,
@@ -232,5 +248,22 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
         ],
       ),
     );
+  }
+
+  String _formatTime(int seconds) {
+    if (seconds >= 3600) {
+      // More than or equal to 1 hour
+      int hours = seconds ~/ 3600;
+      int remainingMinutes = (seconds % 3600) ~/ 60;
+      return '$hours h';
+    } else if (seconds >= 60) {
+      // More than or equal to 1 minute
+      int minutes = seconds ~/ 60;
+      int remainingSeconds = seconds % 60;
+      return '$minutes m';
+    } else {
+      // Less than 1 minute
+      return '$seconds s';
+    }
   }
 }
