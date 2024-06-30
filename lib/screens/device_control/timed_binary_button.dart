@@ -255,15 +255,15 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
       // More than or equal to 1 hour
       int hours = seconds ~/ 3600;
       int remainingMinutes = (seconds % 3600) ~/ 60;
-      return '$hours h';
+      return '$hours' 'h';
     } else if (seconds >= 60) {
       // More than or equal to 1 minute
       int minutes = seconds ~/ 60;
       int remainingSeconds = seconds % 60;
-      return '$minutes m';
+      return '$minutes' 'm';
     } else {
       // Less than 1 minute
-      return '$seconds s';
+      return '$seconds' 's';
     }
   }
 }
