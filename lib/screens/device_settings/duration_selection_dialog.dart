@@ -50,9 +50,9 @@ class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildDurationField('Hours', _hours, (value) => _hours = value),
-          _buildDurationField('Minutes', _minutes, (value) => _minutes = value),
-          _buildDurationField('Seconds', _seconds, (value) => _seconds = value),
+          _buildDurationField('Hr', _hours, (value) => _hours = value),
+          _buildDurationField('Min', _minutes, (value) => _minutes = value),
+          _buildDurationField('Sec', _seconds, (value) => _seconds = value),
         ],
       ),
       actions: [
