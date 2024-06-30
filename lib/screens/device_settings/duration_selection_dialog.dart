@@ -1,6 +1,5 @@
-// duration_selection_dialog.dart
-
 import 'package:flutter/material.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 class DurationSelectionDialog extends StatefulWidget {
   final String title;
@@ -28,7 +27,7 @@ class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
   @override
   void initState() {
     super.initState();
-    // Initialize sliders based on durationSeconds
+    // Initialize pickers based on durationSeconds
     _hours = widget.durationSeconds.inHours;
     _minutes = (widget.durationSeconds.inMinutes % 60).toInt();
     _seconds = (widget.durationSeconds.inSeconds % 60).toInt();
@@ -47,12 +46,13 @@ class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
           ),
         ],
       ),
-      content: Column(
+      content: Row(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildDurationField('Hr', _hours, (value) => _hours = value),
-          _buildDurationField('Min', _minutes, (value) => _minutes = value),
-          _buildDurationField('Sec', _seconds, (value) => _seconds = value),
+          Expanded(child: _buildNumberPicker('Hr', _hours, (value) => setState(() => _hours = value), 0, 23)),
+          Expanded(child: _buildNumberPicker('Min', _minutes, (value) => setState(() => _minutes = value), 0, 59)),
+          Expanded(child: _buildNumberPicker('Sec', _seconds, (value) => setState(() => _seconds = value), 0, 59)),
         ],
       ),
       actions: [
@@ -72,27 +72,17 @@ class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
     );
   }
 
-  Widget _buildDurationField(String label, int value, void Function(int) onChanged) {
-    return Row(
+  Widget _buildNumberPicker(String label, int currentValue, ValueChanged<int> onChanged, int minValue, int maxValue) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
-          width: 80,
-          child: Text(label),
+        Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
+        NumberPicker(
+          value: currentValue,
+          minValue: minValue,
+          maxValue: maxValue,
+          onChanged: onChanged,
         ),
-        Expanded(
-          child: Slider(
-            min: 0,
-            max: label == 'Hours' ? 24 : 59,
-            value: value.toDouble(),
-            onChanged: (newValue) {
-              setState(() {
-                value = newValue.toInt();
-                onChanged(value);
-              });
-            },
-          ),
-        ),
-        Text('$value'),
       ],
     );
   }

@@ -36,6 +36,7 @@ dependencies:
   flutter_blue: ^0.8.0
   permission_handler: ^10.2.0
   sqflite: ^2.0.0+4
+  numberpicker: ^2.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
