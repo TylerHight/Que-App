@@ -75,15 +75,22 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                 itemCount: deviceList.devices.length,
                 itemBuilder: (context, index) {
                   final device = deviceList.devices[index];
-                  return Container(
-                    margin: const EdgeInsets.only(top: 5.0),
-                    child: ChangeNotifierProvider.value(
-                      value: device,
-                      child: DeviceRemote(
-                        device: device,
-                        bleService: BleService(),
-                      ),
-                    ),
+                  return FutureBuilder<bool>(
+                    future: BleService().isConnected(),
+                    builder: (context, snapshot) {
+                      bool isConnected = snapshot.data ?? false;
+                      return Container(
+                        margin: const EdgeInsets.only(top: 5.0),
+                        child: ChangeNotifierProvider.value(
+                          value: device,
+                          child: DeviceRemote(
+                            device: device,
+                            bleService: BleService(),
+                            isConnected: isConnected,
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),

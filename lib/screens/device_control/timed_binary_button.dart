@@ -14,6 +14,7 @@ class TimedBinaryButton extends StatefulWidget {
   final bool autoTurnOffEnabled;
   final Duration periodicEmissionTimerDuration;
   final bool periodicEmissionEnabled;
+  final bool isConnected; // New parameter
 
   const TimedBinaryButton({
     Key? key,
@@ -29,6 +30,7 @@ class TimedBinaryButton extends StatefulWidget {
     this.autoTurnOffEnabled = false,
     required this.periodicEmissionTimerDuration,
     this.periodicEmissionEnabled = false,
+    required this.isConnected, // New parameter
   }) : super(key: key);
 
   @override
@@ -136,26 +138,28 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
 
   void toggleLight() {
     setState(() {
-      isLightOn = !isLightOn;
+      if (widget.isConnected) {
+        isLightOn = !isLightOn;
 
-      if (!isLightOn) {
-        // Reset the auto turn-off timer when the button is turned off
-        _secondsLeft = 0;
-        if (_autoTurnOffTimer.isActive) {
-          _autoTurnOffTimer.cancel();
-        }
-        widget.onPressedTurnOff?.call(); // Call onPressedTurnOff immediately
-      } else {
-        if (widget.autoTurnOffEnabled) {
-          _secondsLeft = widget.autoTurnOffDuration.inSeconds;
-          _autoTurnOffTimer = _startAutoTurnOffTimer();
-        }
+        if (!isLightOn) {
+          // Reset the auto turn-off timer when the button is turned off
+          _secondsLeft = 0;
+          if (_autoTurnOffTimer.isActive) {
+            _autoTurnOffTimer.cancel();
+          }
+          widget.onPressedTurnOff?.call(); // Call onPressedTurnOff immediately
+        } else {
+          if (widget.autoTurnOffEnabled) {
+            _secondsLeft = widget.autoTurnOffDuration.inSeconds;
+            _autoTurnOffTimer = _startAutoTurnOffTimer();
+          }
 
-        if (widget.periodicEmissionEnabled) {
-          _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
-          _periodicEmissionTimer = _startPeriodicEmissionTimer();
+          if (widget.periodicEmissionEnabled) {
+            _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
+            _periodicEmissionTimer = _startPeriodicEmissionTimer();
+          }
+          widget.onPressedTurnOn?.call(); // Call onPressedTurnOn immediately
         }
-        widget.onPressedTurnOn?.call(); // Call onPressedTurnOn immediately
       }
     });
 
@@ -196,7 +200,7 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
               height: widget.buttonSize,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isLightOn ? buttonColor : widget.inactiveColor,
+                color: widget.isConnected ? (isLightOn ? buttonColor : widget.inactiveColor) : Colors.grey.shade300,
               ),
               child: Center(
                 child: Icon(

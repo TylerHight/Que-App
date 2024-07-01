@@ -10,11 +10,13 @@ import 'package:que_app/models/note.dart';
 class DeviceRemote extends StatelessWidget {
   final Device device;
   final BleService bleService;
+  final bool isConnected; // New parameter
 
   const DeviceRemote({
     Key? key,
     required this.device,
     required this.bleService,
+    required this.isConnected, // New parameter
   }) : super(key: key);
 
   @override
@@ -34,8 +36,8 @@ class DeviceRemote extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Icon(
-                  device.isBleConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
-                  color: device.isBleConnected ? Colors.blue : Colors.grey.shade400,
+                  isConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
+                  color: isConnected ? Colors.blue : Colors.grey.shade400,
                 ),
               ),
               Column(
@@ -113,6 +115,7 @@ class DeviceRemote extends StatelessWidget {
                     onPressedTurnOff: () {
                       bleService.sendCommand(bleService.controlCharacteristic, 2);
                     },
+                    isConnected: isConnected, // Pass the isConnected parameter
                   );
                 },
               ),
@@ -136,6 +139,7 @@ class DeviceRemote extends StatelessWidget {
                     onPressedTurnOff: () {
                       bleService.sendCommand(bleService.controlCharacteristic, 4);
                     },
+                    isConnected: isConnected, // Pass the isConnected parameter
                   );
                 },
               ),

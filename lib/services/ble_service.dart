@@ -7,10 +7,12 @@ class BleService {
 
   BluetoothCharacteristic? controlCharacteristic;
   BluetoothCharacteristic? settingCharacteristic;
+  BluetoothDevice? _connectedDevice;
 
   Future<void> connectToDevice(BluetoothDevice device) async {
     try {
       await device.connect();
+      _connectedDevice = device;
       await discoverServicesAndCharacteristics(device);
     } catch (e) {
       // Consider adding logging here
@@ -37,6 +39,7 @@ class BleService {
   Future<void> disconnectFromDevice(BluetoothDevice device) async {
     try {
       await device.disconnect();
+      _connectedDevice = null;
     } catch (e) {
       // Consider adding logging here
       throw Exception("Error disconnecting from device: $e");
@@ -68,5 +71,19 @@ class BleService {
       // Consider adding logging here
       throw Exception("Error sending setting: $e");
     }
+  }
+
+  // Method to check if the device is connected
+  Future<bool> isConnected() async {
+    if (_connectedDevice == null) {
+      return false;
+    }
+    var state = await _connectedDevice!.state.first;
+    return state == BluetoothDeviceState.connected;
+  }
+
+  // Stream to monitor the connection state of the device
+  Stream<BluetoothDeviceState>? get connectionStateStream {
+    return _connectedDevice?.state;
   }
 }
