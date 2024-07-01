@@ -108,10 +108,10 @@ class DeviceRemote extends StatelessWidget {
                     autoTurnOffDuration: device.emission1Duration,
                     autoTurnOffEnabled: true,
                     onPressedTurnOn: () {
-                      bleService.sendCommand(device.controlCharacteristic, 1);
+                      bleService.sendCommand(bleService.controlCharacteristic, 1);
                     },
                     onPressedTurnOff: () {
-                      bleService.sendCommand(device.controlCharacteristic, 2);
+                      bleService.sendCommand(bleService.controlCharacteristic, 2);
                     },
                   );
                 },
@@ -131,10 +131,10 @@ class DeviceRemote extends StatelessWidget {
                     autoTurnOffDuration: device.emission2Duration,
                     autoTurnOffEnabled: true,
                     onPressedTurnOn: () {
-                      bleService.sendCommand(device.controlCharacteristic, 3);
+                      bleService.sendCommand(bleService.controlCharacteristic, 3);
                     },
                     onPressedTurnOff: () {
-                      bleService.sendCommand(device.controlCharacteristic, 4);
+                      bleService.sendCommand(bleService.controlCharacteristic, 4);
                     },
                   );
                 },

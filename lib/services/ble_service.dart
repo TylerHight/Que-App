@@ -11,22 +11,26 @@ class BleService {
   Future<void> connectToDevice(BluetoothDevice device) async {
     try {
       await device.connect();
-
-      List<BluetoothService> services = await device.discoverServices();
-      for (var service in services) {
-        if (service.uuid.toString() == serviceUUID) {
-          for (var characteristic in service.characteristics) {
-            if (characteristic.uuid.toString() == controlCharacteristicUUID) {
-              controlCharacteristic = characteristic;
-            } else if (characteristic.uuid.toString() == settingCharacteristicUUID) {
-              settingCharacteristic = characteristic;
-            }
-          }
-          break;
-        }
-      }
+      await discoverServicesAndCharacteristics(device);
     } catch (e) {
+      // Consider adding logging here
       throw Exception("Error connecting to device: $e");
+    }
+  }
+
+  Future<void> discoverServicesAndCharacteristics(BluetoothDevice device) async {
+    List<BluetoothService> services = await device.discoverServices();
+    for (var service in services) {
+      if (service.uuid.toString() == serviceUUID) {
+        for (var characteristic in service.characteristics) {
+          if (characteristic.uuid.toString() == controlCharacteristicUUID) {
+            controlCharacteristic = characteristic;
+          } else if (characteristic.uuid.toString() == settingCharacteristicUUID) {
+            settingCharacteristic = characteristic;
+          }
+        }
+        break;
+      }
     }
   }
 
@@ -34,6 +38,7 @@ class BleService {
     try {
       await device.disconnect();
     } catch (e) {
+      // Consider adding logging here
       throw Exception("Error disconnecting from device: $e");
     }
   }
@@ -46,6 +51,7 @@ class BleService {
         throw Exception("Characteristic is null");
       }
     } catch (e) {
+      // Consider adding logging here
       throw Exception("Error sending command: $e");
     }
   }
@@ -59,6 +65,7 @@ class BleService {
         throw Exception("Setting characteristic is null");
       }
     } catch (e) {
+      // Consider adding logging here
       throw Exception("Error sending setting: $e");
     }
   }
