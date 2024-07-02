@@ -5,7 +5,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 class Device extends ChangeNotifier {
   final String id;
   final String deviceName;
-  final String connectedQueName;
+  String connectedQueName;
   static const Duration defaultEmissionDuration = const Duration(seconds: 10);
   Duration _emission1Duration;
   Duration _emission2Duration;

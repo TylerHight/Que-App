@@ -8,8 +8,9 @@ import 'package:que_app/models/device_list.dart';
 
 class AddDeviceDialog extends StatefulWidget {
   final Function(Device) onDeviceAdded;
+  final bool includeNameField; // Add boolean parameter
 
-  AddDeviceDialog({required this.onDeviceAdded});
+  AddDeviceDialog({required this.onDeviceAdded, this.includeNameField = true}); // Provide default value
 
   @override
   _AddDeviceDialogState createState() => _AddDeviceDialogState();
@@ -21,7 +22,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   List<BluetoothDevice> nearbyDevices = [];
   BluetoothDevice? selectedDevice;
   final _nameController = TextEditingController();
-  final _formKey = GlobalKey<FormState>(); // Add form key for validation
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -55,23 +56,24 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     return AlertDialog(
       title: Text(
         'Add Que',
-        style: TextStyle(color: Colors.black), // Set the title color to black
+        style: TextStyle(color: Colors.black),
       ),
       content: SingleChildScrollView(
         child: Form(
-          key: _formKey, // Assign the form key
+          key: _formKey,
           child: ListBody(
             children: <Widget>[
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a name';
-                  }
-                  return null;
-                },
-              ),
+              if (widget.includeNameField) // Conditionally include name field
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(labelText: 'Name'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a name';
+                    }
+                    return null;
+                  },
+                ),
               DropdownButtonFormField<BluetoothDevice>(
                 decoration: InputDecoration(labelText: 'Select Que'),
                 value: selectedDevice,
@@ -93,8 +95,8 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                 child: ElevatedButton(
                   onPressed: _startScan,
                   style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all(
-                        Size(0, 40)), // Adjust the height as needed
+                    minimumSize:
+                    MaterialStateProperty.all(Size(0, 40)), // Adjust the height as needed
                   ),
                   child: Text('Rescan'),
                 ),
@@ -122,22 +124,18 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     );
   }
 
-
   void _addDevice() {
     final name = _nameController.text;
     final connectedQueName = selectedDevice != null ? selectedDevice!.name : 'none';
 
-    // Access the DeviceList provider
     final deviceList = Provider.of<DeviceList>(context, listen: false);
 
-    // Create a new Device instance with the provided information
     final newDevice = Device(
-      id: UniqueKey().toString(), // Generate a unique id for the new device
+      id: UniqueKey().toString(),
       deviceName: name,
       connectedQueName: connectedQueName,
     );
 
-    // Set isBleConnected to true for the selected device and false for all other devices
     if (newDevice.connectedQueName != "none") {
       for (final device in deviceList.devices) {
         device.isBleConnected = false;
@@ -145,10 +143,8 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
       newDevice.isBleConnected = true;
     }
 
-    // Add the new device to the DeviceList
     deviceList.add(newDevice);
 
-    // Close the dialog
     Navigator.of(context).pop();
   }
 }

@@ -1,12 +1,12 @@
-// settings_screen.dart
-
 import 'package:flutter/material.dart';
-import 'package:que_app/models/device.dart';
-import 'duration_selection_dialog.dart';
-import 'delete_device_dialog.dart'; // Import the DeleteDeviceDialog
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:provider/provider.dart';
+import 'package:que_app/models/device.dart';
 import 'package:que_app/models/device_list.dart';
-import 'heart_rate_threshold_dialog.dart';  // Add this import statement
+import 'package:que_app/screens/device_control/add_device_dialog.dart';
+
+import 'duration_selection_dialog.dart';
+import 'heart_rate_threshold_dialog.dart';
 
 class SettingsScreen extends StatefulWidget {
   final Device device;
@@ -37,22 +37,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w400,
-          ), // Set title text color to black
+          ),
         ),
-        backgroundColor: Colors.white, // Set the AppBar background color
-        elevation: 0, // Remove elevation to match ListView items
-        iconTheme: IconThemeData(color: Colors.black), // Set the color of icons in AppBar
-        centerTitle: true, // Center align the title
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+        centerTitle: true,
       ),
       body: Container(
-        color: Colors.white, // Set the background color of the body (ListView items)
+        color: Colors.white,
         child: ListView(
-          padding: const EdgeInsets.all(16.0), // Add padding to the entire ListView
+          padding: const EdgeInsets.all(16.0),
           children: <Widget>[
             _buildSettingsGroup(
               context,
               'Scent One Settings',
               [
+                _buildListTile(
+                  context,
+                  title: 'Connect to Que',
+                  icon: Icons.bluetooth,
+                  iconColor: Colors.blue,
+                  onTap: () {
+                    _showBluetoothDeviceListDialog(context);
+                  },
+                ),
                 _buildListTile(
                   context,
                   title: 'Set Release Duration',
@@ -101,7 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 8.0), // Reduce the space between cards
+            SizedBox(height: 8.0),
             _buildSettingsGroup(
               context,
               'Scent Two Settings',
@@ -154,10 +163,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 8.0), // Reduce the space between cards
+            SizedBox(height: 8.0),
             _buildSettingsGroup(
               context,
-              'Heart Rate Settings',  // New group title
+              'Heart Rate Settings',
               [
                 _buildListTile(
                   context,
@@ -177,7 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _showHeartRateThresholdDialog(
                       context,
                       'Set heart rate threshold',
-                      widget.device.heartrateThreshold, // Pass the current threshold
+                      widget.device.heartrateThreshold,
                           (device, threshold) {
                         device.heartrateThreshold = threshold;
                         print('Updated heartrateThreshold: ${device.heartrateThreshold}');
@@ -187,7 +196,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 8.0), // Reduce the space between cards
+            SizedBox(height: 8.0),
             _buildSettingsGroup(
               context,
               'Device',
@@ -198,7 +207,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.bluetooth,
                   iconColor: Colors.blue,
                   onTap: () {
-                    // Handle connection to Que
+                    _showBluetoothDeviceListDialog(context);
                   },
                 ),
                 _buildListTile(
@@ -220,9 +229,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildSettingsGroup(BuildContext context, String title, List<Widget> children) {
     return Card(
       elevation: 4.0,
-      margin: EdgeInsets.symmetric(vertical: 4.0), // Reduce vertical margin between cards
+      margin: EdgeInsets.symmetric(vertical: 4.0),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0), // Curved corners
+        borderRadius: BorderRadius.circular(12.0),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -233,8 +242,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 18, // Increased font size
-                  color: Colors.grey.shade500, // Grey color for titles
+                  fontSize: 18,
+                  color: Colors.grey.shade500,
                 ),
               ),
             if (title.isNotEmpty) SizedBox(height: 8.0),
@@ -245,16 +254,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildListTile(BuildContext context, {
-    required String title,
-    required IconData icon,
-    required Color iconColor,
-    required void Function() onTap,
-    Color? textColor,
-  }) {
+  Widget _buildListTile(BuildContext context,
+      {required String title,
+        required IconData icon,
+        required Color iconColor,
+        required void Function() onTap,
+        Color? textColor}) {
     return ListTile(
       leading: Container(
-        padding: EdgeInsets.only(right: 8.0), // Adjust this value as needed
+        padding: EdgeInsets.only(right: 8.0),
         child: Icon(
           icon,
           color: iconColor,
@@ -263,24 +271,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: Text(
         title,
         style: TextStyle(
-          fontSize: 15, // Increased font size
+          fontSize: 15,
           color: textColor ?? Colors.black,
-          fontWeight: FontWeight.w400, // Slightly less than bold
+          fontWeight: FontWeight.w400,
         ),
       ),
       onTap: onTap,
     );
   }
 
-  Widget _buildSwitchListTile(BuildContext context, {
-    required String title,
-    required bool value,
-    required Color iconColor,
-    required void Function(bool) onChanged,
-  }) {
+  Widget _buildSwitchListTile(BuildContext context,
+      {required String title,
+        required bool value,
+        required Color iconColor,
+        required void Function(bool) onChanged}) {
     return ListTile(
       leading: Container(
-        padding: EdgeInsets.only(right: 8.0), // Adjust this value as needed
+        padding: EdgeInsets.only(right: 8.0),
         child: Icon(
           Icons.timer,
           color: iconColor,
@@ -289,27 +296,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: Text(
         title,
         style: TextStyle(
-          fontSize: 15, // Increased font size
-          fontWeight: FontWeight.w400, // Slightly less than bold
+          fontSize: 15,
+          fontWeight: FontWeight.w400,
         ),
       ),
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: iconColor, // Set activeColor to match iconColor
+        activeColor: iconColor,
       ),
     );
   }
 
-  void _showDurationPickerDialog(BuildContext context, String title, Duration currentDuration, void Function(Device, Duration) propertyToUpdate) async {
+  void _showDurationPickerDialog(BuildContext context, String title,
+      Duration currentDuration, void Function(Device, Duration) propertyToUpdate) async {
     final selectedDuration = await showDialog<Duration>(
       context: context,
       builder: (BuildContext context) {
         return DurationSelectionDialog(
           title: title,
-          icon: Icons.timer, // Set an appropriate icon
-          iconColor: Colors.blue, // Set an appropriate icon color
-          durationSeconds: currentDuration, // Pass the current duration
+          icon: Icons.timer,
+          iconColor: Colors.blue,
+          durationSeconds: currentDuration,
         );
       },
     );
@@ -319,11 +327,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _showHeartRateThresholdDialog(BuildContext context, String title, int currentThreshold, void Function(Device, int) propertyToUpdate) async {
+  void _showHeartRateThresholdDialog(BuildContext context, String title,
+      int currentThreshold, void Function(Device, int) propertyToUpdate) async {
     final selectedThreshold = await showDialog<int>(
       context: context,
       builder: (BuildContext context) {
-        // Implement the HeartRateThresholdDialog as needed
         return HeartRateThresholdDialog(
           title: title,
           currentThreshold: currentThreshold,
@@ -332,23 +340,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
     if (selectedThreshold != null) {
       propertyToUpdate(widget.device, selectedThreshold);
-      print('Updated $title: $selectedThreshold');
+      print('Updated $title threshold: $selectedThreshold');
     }
   }
 
+  void _showBluetoothDeviceListDialog(BuildContext context) async {
+    // Simulate selecting a Bluetooth device (replace with your actual logic)
+    // For demonstration purposes, assume the first device in a list
+    List<BluetoothDevice> devices = []; // Replace with your list of Bluetooth devices
+    BluetoothDevice? selectedDevice = devices.isNotEmpty ? devices.first : null;
+
+    // If a device is selected, connect to it and show the AddDeviceDialog
+    if (selectedDevice != null) {
+      _connectToDevice(selectedDevice);
+
+      // Show AddDeviceDialog immediately after selecting a device
+      final result = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AddDeviceDialog(
+            onDeviceAdded: (Device newDevice) {
+              Provider.of<DeviceList>(context, listen: false).add(newDevice);
+            },
+          );
+        },
+      );
+
+      // Handle the result if needed
+      if (result != null) {
+        print('AddDeviceDialog result: $result');
+      }
+    } else {
+      // If no devices are available, you can handle this case (optional)
+      print('No devices available');
+    }
+  }
+
+  void _connectToDevice(device) {
+    // Implement your logic to connect to the Bluetooth device here
+    print('Connecting to device: ${device.deviceName}');
+    // Example: BleService.connectToDevice(device);
+  }
+
   void _showDeleteDeviceDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return DeleteDeviceDialog(
-          deviceName: widget.device.deviceName,
-          onDelete: () {
-            Provider.of<DeviceList>(context, listen: false).remove(widget.device);
-            Navigator.pop(context);
-            Navigator.pop(context);
-          },
-        );
-      },
-    );
+    // Implement your logic to show delete device dialog here
+    print('Delete device dialog');
   }
 }
