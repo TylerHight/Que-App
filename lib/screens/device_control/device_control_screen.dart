@@ -19,27 +19,27 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
         title: Text(
           'Control',
           style: TextStyle(
-            color: Colors.black, // Set title text color to black
+            color: Colors.black,
             fontWeight: FontWeight.w400,
           ),
         ),
-        backgroundColor: Colors.white, // Set the AppBar background color to white
-        iconTheme: IconThemeData(color: Colors.black), // Set the color of icons in AppBar
-        elevation: 0.0, // Remove the shadow/depth of the AppBar
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(color: Colors.black),
+        elevation: 0.0,
         actions: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(right: 14.0), // Add padding to the right
+            padding: const EdgeInsets.only(right: 14.0),
             child: Container(
-              width: 35.0, // Slightly reduce the size of the circle
+              width: 35.0,
               height: 35.0,
               decoration: BoxDecoration(
-                color: Colors.blue, // Blue background
-                shape: BoxShape.circle, // Circle shape
+                color: Colors.blue,
+                shape: BoxShape.circle,
               ),
-              child: Center( // Center the child within the container
+              child: Center(
                 child: IconButton(
-                  padding: EdgeInsets.zero, // Remove default padding from IconButton
-                  icon: Icon(Icons.add, color: Colors.white), // White "add" icon
+                  padding: EdgeInsets.zero,
+                  icon: Icon(Icons.add, color: Colors.white),
                   onPressed: () async {
                     final result = await showDialog(
                       context: context,
@@ -70,7 +70,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
             );
           } else {
             return Container(
-              color: Colors.white, // Ensure ListView background color is white
+              color: Colors.white,
               child: ListView.builder(
                 itemCount: deviceList.devices.length,
                 itemBuilder: (context, index) {
@@ -78,22 +78,23 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                   final bleService = BleService(); // Create a new BleService instance for each device
 
                   return FutureBuilder<bool>(
-                      future: bleService.isConnected(),
-                      builder: (context, snapshot) {
-                        final isConnected = snapshot.data ?? false;
+                    future: bleService.isConnected(),
+                    builder: (context, snapshot) {
+                      final isConnected = snapshot.data ?? false;
+                      print("Device: ${device.deviceName}, isConnected: $isConnected");
 
-                        return Container(
-                          margin: const EdgeInsets.only(top: 5.0),
-                          child: ChangeNotifierProvider.value(
-                            value: device,
-                            child: DeviceRemote(
-                              device: device,
-                              bleService: bleService,
-                              isConnected: isConnected,
-                            ),
+                      return Container(
+                        margin: const EdgeInsets.only(top: 5.0),
+                        child: ChangeNotifierProvider.value(
+                          value: device,
+                          child: DeviceRemote(
+                            device: device,
+                            bleService: bleService,
+                            isConnected: isConnected,
                           ),
-                        );
-                      }
+                        ),
+                      );
+                    },
                   );
                 },
               ),

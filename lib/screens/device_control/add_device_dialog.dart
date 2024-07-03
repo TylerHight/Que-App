@@ -27,7 +27,6 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   @override
   void initState() {
     super.initState();
-    print('AddDeviceDialog: initState called');
     bleService = BleService();
     bleUtils = BleUtils();
     _startScan();
@@ -35,16 +34,13 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
 
   @override
   void dispose() {
-    print('AddDeviceDialog: dispose called');
     _nameController.dispose();
     super.dispose();
   }
 
   Future<void> _startScan() async {
-    print('AddDeviceDialog: _startScan called');
     try {
       nearbyDevices = await bleUtils.startScan();
-      print('AddDeviceDialog: Scanning complete, devices found: ${nearbyDevices.length}');
       setState(() {});
     } catch (e) {
       print("Error scanning for nearby devices: $e");
@@ -52,13 +48,11 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   }
 
   List<BluetoothDevice> getDevicesWithNames() {
-    print('AddDeviceDialog: getDevicesWithNames called');
     return nearbyDevices.where((device) => device.name.isNotEmpty).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    print('AddDeviceDialog: build called');
     return AlertDialog(
       title: Text(
         'Add Que',
@@ -87,7 +81,6 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                   setState(() {
                     selectedDevice = device;
                   });
-                  print('AddDeviceDialog: Device selected: ${device?.name}');
                 },
                 items: getDevicesWithNames()
                     .map((device) => DropdownMenuItem(
@@ -101,7 +94,6 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                 width: 5,
                 child: ElevatedButton(
                   onPressed: () {
-                    print('AddDeviceDialog: Rescan button pressed');
                     _startScan();
                   },
                   style: ButtonStyle(
@@ -118,16 +110,14 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
         TextButton(
           child: Text('Cancel'),
           onPressed: () {
-            print('AddDeviceDialog: Cancel button pressed');
             Navigator.of(context).pop();
           },
         ),
         TextButton(
           child: Text('Add'),
-          onPressed: () {
-            print('AddDeviceDialog: Add button pressed');
+          onPressed: () async {
             if (_formKey.currentState!.validate()) {
-              _addDevice();
+              await _addDevice();
             }
           },
         ),
@@ -135,12 +125,9 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     );
   }
 
-  void _addDevice() async {
-    print('AddDeviceDialog: _addDevice called');
+  Future<void> _addDevice() async {
     final name = _nameController.text;
     final connectedQueName = selectedDevice != null ? selectedDevice!.name : 'none';
-
-    print('AddDeviceDialog: Device name: $name, Connected Que Name: $connectedQueName');
 
     final deviceList = Provider.of<DeviceList>(context, listen: false);
 
@@ -157,17 +144,10 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
       newDevice.isBleConnected = true;
 
       // Connect to the selected Bluetooth device
-      try {
-        await bleService.connectToDevice(selectedDevice!);
-        print('AddDeviceDialog: Connected to device: ${selectedDevice!.name}');
-      } catch (e) {
-        print('Error connecting to device: $e');
-      }
+      await bleService.connectToDevice(selectedDevice!);
     }
 
-    print('AddDeviceDialog: Adding new device: ${newDevice.deviceName} with connected Que: ${newDevice.connectedQueName}');
     deviceList.add(newDevice);
-
     Navigator.of(context).pop();
   }
 }

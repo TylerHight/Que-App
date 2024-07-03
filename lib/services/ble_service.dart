@@ -16,7 +16,6 @@ class BleService {
       _connectedDevice = device;
       await discoverServicesAndCharacteristics(device);
     } catch (e) {
-      // Consider adding logging here
       throw Exception("Error connecting to device: $e");
     }
   }
@@ -24,23 +23,13 @@ class BleService {
   Future<void> discoverServicesAndCharacteristics(BluetoothDevice device) async {
     print("Discovering services...");
     List<BluetoothService> services = await device.discoverServices();
-    print("Available services on ${device.name}:");
     for (var service in services) {
-      print("- Service UUID: ${service.uuid}");
       if (service.uuid.toString() == serviceUUID) {
-        print("Target service found.");
-        print("Searching for matching characteristic(s) in service...");
         for (var characteristic in service.characteristics) {
-          print("Found characteristic UUIDs: $characteristic.uuid");
           if (characteristic.uuid.toString() == controlCharacteristicUUID) {
-            print("Control characteristic found: ${characteristic.uuid}");
             controlCharacteristic = characteristic;
           } else if (characteristic.uuid.toString() == settingCharacteristicUUID) {
-            print("Setting characteristic found: ${characteristic.uuid}");
             settingCharacteristic = characteristic;
-          }
-          else {
-            print("UUIDs did not match");
           }
         }
         break;
@@ -53,7 +42,6 @@ class BleService {
       await device.disconnect();
       _connectedDevice = null;
     } catch (e) {
-      // Consider adding logging here
       throw Exception("Error disconnecting from device: $e");
     }
   }
@@ -66,7 +54,6 @@ class BleService {
         throw Exception("Characteristic is null");
       }
     } catch (e) {
-      // Consider adding logging here
       throw Exception("Error sending command: $e");
     }
   }
@@ -80,12 +67,10 @@ class BleService {
         throw Exception("Setting characteristic is null");
       }
     } catch (e) {
-      // Consider adding logging here
       throw Exception("Error sending setting: $e");
     }
   }
 
-  // Method to check if the device is connected
   Future<bool> isConnected() async {
     if (_connectedDevice == null) {
       return false;
@@ -94,7 +79,6 @@ class BleService {
     return state == BluetoothDeviceState.connected;
   }
 
-  // Stream to monitor the connection state of the device
   Stream<BluetoothDeviceState>? get connectionStateStream {
     return _connectedDevice?.state;
   }
