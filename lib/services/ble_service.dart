@@ -11,6 +11,7 @@ class BleService {
 
   Future<void> connectToDevice(BluetoothDevice device) async {
     try {
+      print('Connecting to device: ${device.name}');
       await device.connect();
       _connectedDevice = device;
       await discoverServicesAndCharacteristics(device);
@@ -21,14 +22,25 @@ class BleService {
   }
 
   Future<void> discoverServicesAndCharacteristics(BluetoothDevice device) async {
+    print("Discovering services...");
     List<BluetoothService> services = await device.discoverServices();
+    print("Available services on ${device.name}:");
     for (var service in services) {
+      print("- Service UUID: ${service.uuid}");
       if (service.uuid.toString() == serviceUUID) {
+        print("Target service found.");
+        print("Searching for matching characteristic(s) in service...");
         for (var characteristic in service.characteristics) {
+          print("Found characteristic UUIDs: $characteristic.uuid");
           if (characteristic.uuid.toString() == controlCharacteristicUUID) {
+            print("Control characteristic found: ${characteristic.uuid}");
             controlCharacteristic = characteristic;
           } else if (characteristic.uuid.toString() == settingCharacteristicUUID) {
+            print("Setting characteristic found: ${characteristic.uuid}");
             settingCharacteristic = characteristic;
+          }
+          else {
+            print("UUIDs did not match");
           }
         }
         break;

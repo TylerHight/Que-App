@@ -8,9 +8,9 @@ import 'package:que_app/models/device_list.dart';
 
 class AddDeviceDialog extends StatefulWidget {
   final Function(Device) onDeviceAdded;
-  final bool includeNameField; // Add boolean parameter
+  final bool includeNameField;
 
-  AddDeviceDialog({required this.onDeviceAdded, this.includeNameField = true}); // Provide default value
+  AddDeviceDialog({required this.onDeviceAdded, this.includeNameField = true});
 
   @override
   _AddDeviceDialogState createState() => _AddDeviceDialogState();
@@ -27,6 +27,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   @override
   void initState() {
     super.initState();
+    print('AddDeviceDialog: initState called');
     bleService = BleService();
     bleUtils = BleUtils();
     _startScan();
@@ -34,13 +35,16 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
 
   @override
   void dispose() {
+    print('AddDeviceDialog: dispose called');
     _nameController.dispose();
     super.dispose();
   }
 
   Future<void> _startScan() async {
+    print('AddDeviceDialog: _startScan called');
     try {
       nearbyDevices = await bleUtils.startScan();
+      print('AddDeviceDialog: Scanning complete, devices found: ${nearbyDevices.length}');
       setState(() {});
     } catch (e) {
       print("Error scanning for nearby devices: $e");
@@ -48,11 +52,13 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   }
 
   List<BluetoothDevice> getDevicesWithNames() {
+    print('AddDeviceDialog: getDevicesWithNames called');
     return nearbyDevices.where((device) => device.name.isNotEmpty).toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    print('AddDeviceDialog: build called');
     return AlertDialog(
       title: Text(
         'Add Que',
@@ -63,7 +69,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
           key: _formKey,
           child: ListBody(
             children: <Widget>[
-              if (widget.includeNameField) // Conditionally include name field
+              if (widget.includeNameField)
                 TextFormField(
                   controller: _nameController,
                   decoration: InputDecoration(labelText: 'Name'),
@@ -81,6 +87,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                   setState(() {
                     selectedDevice = device;
                   });
+                  print('AddDeviceDialog: Device selected: ${device?.name}');
                 },
                 items: getDevicesWithNames()
                     .map((device) => DropdownMenuItem(
@@ -91,12 +98,14 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
               ),
               const SizedBox(height: 10),
               SizedBox(
-                width: 5, // Adjust the width as needed
+                width: 5,
                 child: ElevatedButton(
-                  onPressed: _startScan,
+                  onPressed: () {
+                    print('AddDeviceDialog: Rescan button pressed');
+                    _startScan();
+                  },
                   style: ButtonStyle(
-                    minimumSize:
-                    MaterialStateProperty.all(Size(0, 40)), // Adjust the height as needed
+                    minimumSize: MaterialStateProperty.all(Size(0, 40)),
                   ),
                   child: Text('Rescan'),
                 ),
@@ -109,12 +118,14 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
         TextButton(
           child: Text('Cancel'),
           onPressed: () {
+            print('AddDeviceDialog: Cancel button pressed');
             Navigator.of(context).pop();
           },
         ),
         TextButton(
           child: Text('Add'),
           onPressed: () {
+            print('AddDeviceDialog: Add button pressed');
             if (_formKey.currentState!.validate()) {
               _addDevice();
             }
@@ -124,9 +135,12 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     );
   }
 
-  void _addDevice() {
+  void _addDevice() async {
+    print('AddDeviceDialog: _addDevice called');
     final name = _nameController.text;
     final connectedQueName = selectedDevice != null ? selectedDevice!.name : 'none';
+
+    print('AddDeviceDialog: Device name: $name, Connected Que Name: $connectedQueName');
 
     final deviceList = Provider.of<DeviceList>(context, listen: false);
 
@@ -141,8 +155,17 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
         device.isBleConnected = false;
       }
       newDevice.isBleConnected = true;
+
+      // Connect to the selected Bluetooth device
+      try {
+        await bleService.connectToDevice(selectedDevice!);
+        print('AddDeviceDialog: Connected to device: ${selectedDevice!.name}');
+      } catch (e) {
+        print('Error connecting to device: $e');
+      }
     }
 
+    print('AddDeviceDialog: Adding new device: ${newDevice.deviceName} with connected Que: ${newDevice.connectedQueName}');
     deviceList.add(newDevice);
 
     Navigator.of(context).pop();
