@@ -15,7 +15,7 @@ class DeleteDeviceDialog extends StatelessWidget {
     return AlertDialog(
       title: Text(
         'Delete Device',
-        style: TextStyle(color: Colors.red), // Set the text color to black
+        style: TextStyle(color: Colors.red), // Set the text color to red
       ),
       content: Text('Are you sure you want to delete $deviceName?'),
       actions: <Widget>[

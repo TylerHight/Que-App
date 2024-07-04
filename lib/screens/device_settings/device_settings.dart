@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:que_app/models/device.dart';
 import 'package:que_app/models/device_list.dart';
 import 'package:que_app/screens/device_control/add_device_dialog.dart';
-
+import 'package:que_app/screens/device_settings/delete_device_dialog.dart';
 import 'duration_selection_dialog.dart';
 import 'heart_rate_threshold_dialog.dart';
 
@@ -374,7 +374,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showDeleteDeviceDialog() {
-    // Implement your logic to show delete device dialog here
-    print('Delete device dialog');
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return DeleteDeviceDialog(
+          deviceName: widget.device.deviceName,
+          onDelete: () {
+            // Perform the deletion logic
+            Provider.of<DeviceList>(context, listen: false).remove(widget.device);
+            Navigator.of(context).pop(); // Close the dialog
+            Navigator.of(context).pop(); // Close the settings screen
+          },
+        );
+      },
+    );
   }
+
 }

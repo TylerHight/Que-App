@@ -1,5 +1,3 @@
-/// device_list.dart
-
 import 'package:flutter/foundation.dart';
 import 'device.dart';
 
@@ -17,4 +15,12 @@ class DeviceList extends ChangeNotifier {
     _devices.remove(device);
     notifyListeners();
   }
+
+  // Helper method to find a device by ID
+  //Device? findById(String id) {
+  //  // Use null-aware operators to handle null return from orElse
+  //  return _devices.firstWhere((device) => device.id == id, orElse: () => null);
+  //}
+
+// Additional methods for functionality such as saving to storage, etc., can be added here
 }
