@@ -90,7 +90,6 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                           child: DeviceRemote(
                             device: device,
                             bleService: bleService,
-                            isConnected: isConnected,
                           ),
                         ),
                       );

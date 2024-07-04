@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:que_app/services/ble_service.dart';
 
 class Device extends ChangeNotifier {
   final String id;
@@ -13,8 +13,9 @@ class Device extends ChangeNotifier {
   Duration _releaseInterval2;
   bool _isPeriodicEmissionEnabled;
   bool _isPeriodicEmissionEnabled2;
-  bool isBleConnected;
+  bool _isBleConnected;
   int _heartrateThreshold;
+  final BleService bleService;
 
   final Map<String, List<String>> bluetoothServiceCharacteristics;
 
@@ -61,6 +62,12 @@ class Device extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool get isBleConnected => _isBleConnected;
+  set isBleConnected(bool value) {
+    _isBleConnected = value;
+    notifyListeners();
+  }
+
   Device._({
     required this.id,
     required this.deviceName,
@@ -74,14 +81,15 @@ class Device extends ChangeNotifier {
     required bool isBleConnected,
     required Map<String, List<String>> bluetoothServiceCharacteristics,
     required int heartrateThreshold,
+    required this.bleService,
   })  : _emission1Duration = emission1Duration,
         _emission2Duration = emission2Duration,
         _releaseInterval1 = releaseInterval1,
         _releaseInterval2 = releaseInterval2,
         _isPeriodicEmissionEnabled = isPeriodicEmissionEnabled,
         _isPeriodicEmissionEnabled2 = isPeriodicEmissionEnabled2,
+        _isBleConnected = isBleConnected,
         _heartrateThreshold = heartrateThreshold,
-        isBleConnected = isBleConnected,
         bluetoothServiceCharacteristics = bluetoothServiceCharacteristics,
         super();
 
@@ -100,6 +108,7 @@ class Device extends ChangeNotifier {
     int heartrateThreshold = 90,
   }) {
     final generatedId = id ?? _generateRandomId();
+    final bleService = BleService();
     return Device._(
       id: generatedId,
       deviceName: deviceName,
@@ -113,6 +122,7 @@ class Device extends ChangeNotifier {
       isPeriodicEmissionEnabled2: isPeriodicEmissionEnabled2 ?? false,
       bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? {},
       heartrateThreshold: heartrateThreshold,
+      bleService: bleService,
     );
   }
 
@@ -151,6 +161,7 @@ class Device extends ChangeNotifier {
     bool? isPeriodicEmissionEnabled2,
     Map<String, List<String>>? bluetoothServiceCharacteristics,
     int? heartrateThreshold,
+    BleService? bleService,
   }) =>
       Device(
         id: id ?? this.id,
@@ -165,6 +176,7 @@ class Device extends ChangeNotifier {
         isPeriodicEmissionEnabled2: isPeriodicEmissionEnabled2 ?? this.isPeriodicEmissionEnabled2,
         bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? this.bluetoothServiceCharacteristics,
         heartrateThreshold: heartrateThreshold ?? this.heartrateThreshold,
+        bleService: bleService ?? this.bleService,
       );
 
   Map<String, dynamic> toJson() => {
@@ -181,4 +193,59 @@ class Device extends ChangeNotifier {
     'heartrateThreshold': heartrateThreshold,
     'bluetoothServiceCharacteristics': bluetoothServiceCharacteristics,
   };
+
+  Future<void> updateBleConnectionStatus(bool isConnected) async {
+    isBleConnected = isConnected;
+    notifyListeners();
+  }
+
+  Future<void> connectToBleDevice() async {
+    try {
+      // Example usage, adjust as per your implementation
+      // await bleService.connectToDevice(_connectedDevice!);
+      isBleConnected = true;
+    } catch (e) {
+      print('Error connecting to BLE device: $e');
+      throw Exception('Failed to connect to BLE device');
+    }
+  }
+
+  Future<void> disconnectFromBleDevice() async {
+    try {
+      // Example usage, adjust as per your implementation
+      // await bleService.disconnectFromDevice(_connectedDevice!);
+      isBleConnected = false;
+    } catch (e) {
+      print('Error disconnecting from BLE device: $e');
+      throw Exception('Failed to disconnect from BLE device');
+    }
+  }
+
+  Future<void> sendCommandToDevice(int command) async {
+    try {
+      // Example usage, adjust as per your implementation
+      // await bleService.sendCommand(bleService.controlCharacteristic, command);
+    } catch (e) {
+      print('Error sending command to BLE device: $e');
+      throw Exception('Failed to send command to BLE device');
+    }
+  }
+
+  Future<void> sendSettingToDevice(int parameter, int value) async {
+    try {
+      // Example usage, adjust as per your implementation
+      // await bleService.sendSetting(parameter, value);
+    } catch (e) {
+      print('Error sending setting to BLE device: $e');
+      throw Exception('Failed to send setting to BLE device');
+    }
+  }
+
+  Stream<bool> get bleConnectionStatusStream => bleService.connectionStatusStream;
+
+  @override
+  void dispose() {
+    bleService.dispose();
+    super.dispose();
+  }
 }

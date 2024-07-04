@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_blue/flutter_blue.dart';
 
 class BleService {
@@ -8,6 +10,12 @@ class BleService {
   BluetoothCharacteristic? controlCharacteristic;
   BluetoothCharacteristic? settingCharacteristic;
   BluetoothDevice? _connectedDevice;
+  StreamSubscription<BluetoothDeviceState>? _connectionSubscription;
+
+  // A stream controller to broadcast connection status updates
+  final _connectionStatusController = StreamController<bool>.broadcast();
+
+  Stream<bool> get connectionStatusStream => _connectionStatusController.stream;
 
   Future<void> connectToDevice(BluetoothDevice device) async {
     try {
@@ -15,6 +23,14 @@ class BleService {
       await device.connect();
       _connectedDevice = device;
       await discoverServicesAndCharacteristics(device);
+
+      // Listen to connection state changes
+      _connectionSubscription = _connectedDevice!.state.listen((state) {
+        _connectionStatusController.add(state == BluetoothDeviceState.connected);
+      });
+
+      // Emit initial connection status
+      _connectionStatusController.add(true);
     } catch (e) {
       throw Exception("Error connecting to device: $e");
     }
@@ -41,6 +57,8 @@ class BleService {
     try {
       await device.disconnect();
       _connectedDevice = null;
+      _connectionSubscription?.cancel();
+      _connectionStatusController.add(false);
     } catch (e) {
       throw Exception("Error disconnecting from device: $e");
     }
@@ -81,5 +99,10 @@ class BleService {
 
   Stream<BluetoothDeviceState>? get connectionStateStream {
     return _connectedDevice?.state;
+  }
+
+  void dispose() {
+    _connectionSubscription?.cancel();
+    _connectionStatusController.close();
   }
 }

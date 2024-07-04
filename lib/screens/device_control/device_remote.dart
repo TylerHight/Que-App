@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:que_app/screens/device_settings/device_settings.dart'; // Import the SettingsScreen widget
@@ -7,17 +9,39 @@ import 'package:que_app/services/ble_service.dart'; // Import the BleService cla
 import 'add_note_dialog.dart';
 import 'package:que_app/models/note.dart';
 
-class DeviceRemote extends StatelessWidget {
+class DeviceRemote extends StatefulWidget {
   final Device device;
   final BleService bleService;
-  final bool isConnected; // New parameter
 
   const DeviceRemote({
     Key? key,
     required this.device,
     required this.bleService,
-    required this.isConnected, // New parameter
   }) : super(key: key);
+
+  @override
+  _DeviceRemoteState createState() => _DeviceRemoteState();
+}
+
+class _DeviceRemoteState extends State<DeviceRemote> {
+  late StreamSubscription<bool> _connectionSubscription;
+  bool isConnected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _connectionSubscription = widget.bleService.connectionStatusStream.listen((status) {
+      setState(() {
+        isConnected = status;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _connectionSubscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +70,7 @@ class DeviceRemote extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(left: 11.0),
                     child: Text(
-                      device.deviceName,
+                      widget.device.deviceName,
                       style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 19.0),
                     ),
                   ),
@@ -58,7 +82,7 @@ class DeviceRemote extends StatelessWidget {
                           // Open settings screen when settings icon button is tapped
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => SettingsScreen(device: device)),
+                            MaterialPageRoute(builder: (context) => SettingsScreen(device: widget.device)),
                           );
                         },
                         icon: Icon(
@@ -78,7 +102,7 @@ class DeviceRemote extends StatelessWidget {
                                     onNoteAdded: (Note newNote) {
                                       // Callback logic here
                                     },
-                                    device: device, // Pass the device object
+                                    device: widget.device, // Pass the device object
                                   );
                                 },
                               );
@@ -110,10 +134,10 @@ class DeviceRemote extends StatelessWidget {
                     autoTurnOffDuration: device.emission1Duration,
                     autoTurnOffEnabled: true,
                     onPressedTurnOn: () {
-                      bleService.sendCommand(bleService.controlCharacteristic, 1);
+                      widget.bleService.sendCommand(widget.bleService.controlCharacteristic, 1);
                     },
                     onPressedTurnOff: () {
-                      bleService.sendCommand(bleService.controlCharacteristic, 2);
+                      widget.bleService.sendCommand(widget.bleService.controlCharacteristic, 2);
                     },
                     isConnected: isConnected, // Pass the isConnected parameter
                   );
@@ -134,10 +158,10 @@ class DeviceRemote extends StatelessWidget {
                     autoTurnOffDuration: device.emission2Duration,
                     autoTurnOffEnabled: true,
                     onPressedTurnOn: () {
-                      bleService.sendCommand(bleService.controlCharacteristic, 3);
+                      widget.bleService.sendCommand(widget.bleService.controlCharacteristic, 3);
                     },
                     onPressedTurnOff: () {
-                      bleService.sendCommand(bleService.controlCharacteristic, 4);
+                      widget.bleService.sendCommand(widget.bleService.controlCharacteristic, 4);
                     },
                     isConnected: isConnected, // Pass the isConnected parameter
                   );
