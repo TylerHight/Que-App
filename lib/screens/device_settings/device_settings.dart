@@ -55,15 +55,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               [
                 _buildListTile(
                   context,
-                  title: 'Connect to Que',
-                  icon: Icons.bluetooth,
-                  iconColor: Colors.blue,
-                  onTap: () {
-                    _showBluetoothDeviceListDialog(context);
-                  },
-                ),
-                _buildListTile(
-                  context,
                   title: 'Set Release Duration',
                   icon: Icons.air,
                   iconColor: Colors.lightBlue.shade400,

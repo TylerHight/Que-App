@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter_blue/flutter_blue.dart';
 
 class BleService {
@@ -26,7 +25,8 @@ class BleService {
 
       // Listen to connection state changes
       _connectionSubscription = _connectedDevice!.state.listen((state) {
-        _connectionStatusController.add(state == BluetoothDeviceState.connected);
+        bool isConnected = state == BluetoothDeviceState.connected;
+        _connectionStatusController.add(isConnected);
       });
 
       // Emit initial connection status
@@ -99,6 +99,11 @@ class BleService {
 
   Stream<BluetoothDeviceState>? get connectionStateStream {
     return _connectedDevice?.state;
+  }
+
+  Future<bool> areAnyDevicesConnected() async {
+    List<BluetoothDevice> connectedDevices = await FlutterBlue.instance.connectedDevices;
+    return connectedDevices.isNotEmpty;
   }
 
   void dispose() {

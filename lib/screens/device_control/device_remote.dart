@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:que_app/screens/device_settings/device_settings.dart'; // Import the SettingsScreen widget
@@ -33,6 +32,7 @@ class _DeviceRemoteState extends State<DeviceRemote> {
     _connectionSubscription = widget.bleService.connectionStatusStream.listen((status) {
       setState(() {
         isConnected = status;
+        widget.device.isBleConnected = status; // Update isBleConnected in the Device model
       });
     });
   }
@@ -45,84 +45,84 @@ class _DeviceRemoteState extends State<DeviceRemote> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 0.0),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        elevation: 4.0,
-        child: Padding(
-          padding: const EdgeInsets.all(6.0),
-          child: Row(
-            children: [
-              // Bluetooth Icon indicating connection status
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Icon(
-                  isConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
-                  color: isConnected ? Colors.blue : Colors.grey.shade400,
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return Consumer<Device>(
+      builder: (context, device, _) {
+        return Padding(
+          padding: const EdgeInsets.only(top: 0.0),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            elevation: 4.0,
+            child: Padding(
+              padding: const EdgeInsets.all(6.0),
+              child: Row(
                 children: [
+                  // Bluetooth Icon indicating connection status
                   Padding(
-                    padding: const EdgeInsets.only(left: 11.0),
-                    child: Text(
-                      widget.device.deviceName,
-                      style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 19.0),
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Icon(
+                      device.isBleConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
+                      color: device.isBleConnected ? Colors.blue : Colors.grey.shade400,
                     ),
                   ),
-                  const SizedBox(height: 0),
-                  Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      IconButton(
-                        onPressed: () {
-                          // Open settings screen when settings icon button is tapped
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => SettingsScreen(device: widget.device)),
-                          );
-                        },
-                        icon: Icon(
-                          Icons.settings,
-                          size: 28,
-                          color: Colors.grey.shade400,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 11.0),
+                        child: Text(
+                          device.deviceName,
+                          style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 19.0),
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Builder(
-                                builder: (context) {
-                                  return AddNoteDialog(
-                                    onNoteAdded: (Note newNote) {
-                                      // Callback logic here
+                      const SizedBox(height: 0),
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              // Open settings screen when settings icon button is tapped
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => SettingsScreen(device: device)),
+                              );
+                            },
+                            icon: Icon(
+                              Icons.settings,
+                              size: 28,
+                              color: Colors.grey.shade400,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Builder(
+                                    builder: (context) {
+                                      return AddNoteDialog(
+                                        onNoteAdded: (Note newNote) {
+                                          // Callback logic here
+                                        },
+                                        device: device, // Pass the device object
+                                      );
                                     },
-                                    device: widget.device, // Pass the device object
                                   );
                                 },
                               );
                             },
-                          );
-                        },
-                        icon: Icon(
-                          Icons.note_add,
-                          size: 28,
-                          color: Colors.grey.shade400,
-                        ),
+                            icon: Icon(
+                              Icons.note_add,
+                              size: 28,
+                              color: Colors.grey.shade400,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-              Spacer(), // Add spacer to push emission buttons to the right
-              Consumer<Device>(
-                builder: (context, device, _) {
-                  return TimedBinaryButton(
+                  Spacer(), // Add spacer to push emission buttons to the right
+                  TimedBinaryButton(
                     key: UniqueKey(), // Add a unique key to force rebuild
                     periodicEmissionEnabled: device.isPeriodicEmissionEnabled,
                     periodicEmissionTimerDuration: device.releaseInterval1,
@@ -139,14 +139,10 @@ class _DeviceRemoteState extends State<DeviceRemote> {
                     onPressedTurnOff: () {
                       widget.bleService.sendCommand(widget.bleService.controlCharacteristic, 2);
                     },
-                    isConnected: isConnected, // Pass the isConnected parameter
-                  );
-                },
-              ),
-              SizedBox(width: 8), // Add spacing between emission buttons
-              Consumer<Device>(
-                builder: (context, device, _) {
-                  return TimedBinaryButton(
+                    isConnected: device.isBleConnected, // Pass the isConnected parameter
+                  ),
+                  SizedBox(width: 8), // Add spacing between emission buttons
+                  TimedBinaryButton(
                     key: UniqueKey(), // Add a unique key to force rebuild
                     periodicEmissionEnabled: device.isPeriodicEmissionEnabled2,
                     periodicEmissionTimerDuration: device.releaseInterval2,
@@ -163,14 +159,14 @@ class _DeviceRemoteState extends State<DeviceRemote> {
                     onPressedTurnOff: () {
                       widget.bleService.sendCommand(widget.bleService.controlCharacteristic, 4);
                     },
-                    isConnected: isConnected, // Pass the isConnected parameter
-                  );
-                },
+                    isConnected: device.isBleConnected, // Pass the isConnected parameter
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

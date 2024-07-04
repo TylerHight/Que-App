@@ -161,7 +161,6 @@ class Device extends ChangeNotifier {
     bool? isPeriodicEmissionEnabled2,
     Map<String, List<String>>? bluetoothServiceCharacteristics,
     int? heartrateThreshold,
-    BleService? bleService,
   }) =>
       Device(
         id: id ?? this.id,
@@ -176,7 +175,6 @@ class Device extends ChangeNotifier {
         isPeriodicEmissionEnabled2: isPeriodicEmissionEnabled2 ?? this.isPeriodicEmissionEnabled2,
         bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? this.bluetoothServiceCharacteristics,
         heartrateThreshold: heartrateThreshold ?? this.heartrateThreshold,
-        bleService: bleService ?? this.bleService,
       );
 
   Map<String, dynamic> toJson() => {
@@ -201,8 +199,6 @@ class Device extends ChangeNotifier {
 
   Future<void> connectToBleDevice() async {
     try {
-      // Example usage, adjust as per your implementation
-      // await bleService.connectToDevice(_connectedDevice!);
       isBleConnected = true;
     } catch (e) {
       print('Error connecting to BLE device: $e');
@@ -212,8 +208,6 @@ class Device extends ChangeNotifier {
 
   Future<void> disconnectFromBleDevice() async {
     try {
-      // Example usage, adjust as per your implementation
-      // await bleService.disconnectFromDevice(_connectedDevice!);
       isBleConnected = false;
     } catch (e) {
       print('Error disconnecting from BLE device: $e');
@@ -223,8 +217,6 @@ class Device extends ChangeNotifier {
 
   Future<void> sendCommandToDevice(int command) async {
     try {
-      // Example usage, adjust as per your implementation
-      // await bleService.sendCommand(bleService.controlCharacteristic, command);
     } catch (e) {
       print('Error sending command to BLE device: $e');
       throw Exception('Failed to send command to BLE device');
@@ -233,8 +225,6 @@ class Device extends ChangeNotifier {
 
   Future<void> sendSettingToDevice(int parameter, int value) async {
     try {
-      // Example usage, adjust as per your implementation
-      // await bleService.sendSetting(parameter, value);
     } catch (e) {
       print('Error sending setting to BLE device: $e');
       throw Exception('Failed to send setting to BLE device');
