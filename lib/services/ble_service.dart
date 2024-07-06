@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter_blue/flutter_blue.dart';
 
+import '../models/device.dart';
+
 class BleService {
   final String serviceUUID = "0000180a-0000-1000-8000-00805f9b34fb";
   final String controlCharacteristicUUID = "00002a57-0000-1000-8000-00805f9b34fb";
@@ -61,6 +63,18 @@ class BleService {
       _connectionStatusController.add(false);
     } catch (e) {
       throw Exception("Error disconnecting from device: $e");
+    }
+  }
+
+  Future<void> deleteDevice(Device device) async {
+    try {
+      // Add the actual logic to delete the device here.
+      print('Deleting device: ${device.deviceName}');
+      // Simulate a delay for deletion process
+      await Future.delayed(Duration(seconds: 2));
+    } catch (e) {
+      print('Error deleting device: $e');
+      throw Exception('Failed to delete device');
     }
   }
 

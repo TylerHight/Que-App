@@ -374,20 +374,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showDeleteDeviceDialog() {
-    showDialog(
+    showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return DeleteDeviceDialog(
-          deviceName: widget.device.deviceName,
-          onDelete: () {
-            // Perform the deletion logic
-            Provider.of<DeviceList>(context, listen: false).remove(widget.device);
-            Navigator.of(context).pop(); // Close the dialog
-            Navigator.of(context).pop(); // Close the settings screen
-          },
+          device: widget.device,
         );
       },
-    );
+    ).then((result) {
+      if (result == true) {
+        // Perform additional actions after deletion if necessary
+        print('Device deletion confirmed');
+        Provider.of<DeviceList>(context, listen: false).remove(widget.device);
+        Navigator.of(context).pop(); // Close the settings screen
+      } else {
+        print('Device deletion canceled');
+      }
+    });
   }
+
 
 }
