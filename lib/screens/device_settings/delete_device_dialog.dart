@@ -20,7 +20,10 @@ class DeleteDeviceDialog extends StatelessWidget {
             print('Cancel button pressed');
             Navigator.of(context).pop(false);
           },
-          child: Text('Cancel'),
+          child: Text(
+            'Cancel',
+            style: TextStyle(color: Colors.blue), // Customize cancel button color
+          ),
         ),
         TextButton(
           onPressed: () async {
@@ -29,7 +32,10 @@ class DeleteDeviceDialog extends StatelessWidget {
             print('Device deleted');
             Navigator.of(context).pop(true);
           },
-          child: Text('Delete'),
+          child: Text(
+            'Delete',
+            style: TextStyle(color: Colors.red), // Make delete button text red
+          ),
         ),
       ],
     );
