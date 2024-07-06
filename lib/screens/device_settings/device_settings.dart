@@ -62,6 +62,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _showDurationPickerDialog(
                       context,
                       'scent one duration',
+                      Icons.air,
+                      Colors.lightBlue.shade400,
                       widget.device.emission1Duration,
                           (device, duration) {
                         device.emission1Duration = duration;
@@ -91,6 +93,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _showDurationPickerDialog(
                       context,
                       'scent one interval',
+                      Icons.timer,
+                      Colors.blue,
                       widget.device.releaseInterval1,
                           (device, duration) {
                         device.releaseInterval1 = duration;
@@ -115,6 +119,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _showDurationPickerDialog(
                       context,
                       'scent two duration',
+                      Icons.air,
+                      Colors.green.shade500,
                       widget.device.emission2Duration,
                           (device, duration) {
                         device.emission2Duration = duration;
@@ -144,6 +150,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _showDurationPickerDialog(
                       context,
                       'scent two interval',
+                      Icons.timer,
+                      Colors.green.shade500,
                       widget.device.releaseInterval2,
                           (device, duration) {
                         device.releaseInterval2 = duration;
@@ -300,14 +308,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showDurationPickerDialog(BuildContext context, String title,
-      Duration currentDuration, void Function(Device, Duration) propertyToUpdate) async {
+      IconData icon, Color iconColor, Duration currentDuration,
+      void Function(Device, Duration) propertyToUpdate) async {
     final selectedDuration = await showDialog<Duration>(
       context: context,
       builder: (BuildContext context) {
         return DurationSelectionDialog(
           title: title,
-          icon: Icons.timer,
-          iconColor: Colors.blue,
+          icon: icon,
+          iconColor: iconColor,
           durationSeconds: currentDuration,
         );
       },
