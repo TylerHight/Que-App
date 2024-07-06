@@ -1,6 +1,3 @@
-/// ble_test.dart
-/// A test app for BLE functionality
-
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -92,6 +89,16 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         connected = true;
       });
+
+      // Monitor connection state changes
+      device.state.listen((BluetoothDeviceState newState) {
+        if (newState == BluetoothDeviceState.disconnected) {
+          setState(() {
+            connected = false;
+          });
+        }
+      });
+
     } catch (e) {
       print("Error connecting to device: $e");
     }
@@ -157,182 +164,175 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Arduino Nano BLE Control'),
+        actions: [
+          Icon(
+            connected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
+            color: connected ? Colors.green : Colors.red,
+          ),
+          SizedBox(width: 16), // Adjust as needed for spacing
+        ],
       ),
       body: Center(
-        child: Column(
+        child: connected
+            ? Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            connected
-                ? ElevatedButton(
+            ElevatedButton(
               onPressed: () {
                 sendCommand(0);
               },
               child: Text('Turn fan1 on'),
-            )
-                : SizedBox(),
-            connected
-                ? Column(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    sendCommand(1);
-                  },
-                  child: Text('Turn fan1 off'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    sendCommand(2);
-                  },
-                  child: Text('Turn fan2 On'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    sendCommand(3);
-                  },
-                  child: Text('Turn fan2 off'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Set fan1 duration'),
-                        content: TextFormField(
-                          controller: _fan1DurationController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'Enter seconds',
-                          ),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Cancel'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              int seconds = int.tryParse(_fan1DurationController.text) ?? 0;
-                              sendSetting(4, seconds);
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Set'),
-                          ),
-                        ],
+            ),
+            ElevatedButton(
+              onPressed: () {
+                sendCommand(1);
+              },
+              child: Text('Turn fan1 off'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                sendCommand(2);
+              },
+              child: Text('Turn fan2 On'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                sendCommand(3);
+              },
+              child: Text('Turn fan2 off'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Set fan1 duration'),
+                    content: TextFormField(
+                      controller: _fan1DurationController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Enter seconds',
                       ),
-                    );
-                  },
-                  child: Text('Set fan1 duration'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Set fan2 duration'),
-                        content: TextFormField(
-                          controller: _fan1DurationController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'Enter seconds',
-                          ),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Cancel'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              int seconds = int.tryParse(_fan1DurationController.text) ?? 0;
-                              sendSetting(5, seconds); // Use 5 as the first parameter
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Set'),
-                          ),
-                        ],
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancel'),
                       ),
-                    );
-                  },
-                  child: Text('Set fan2 duration'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text('Set emission interval'),
-                        content: TextFormField(
-                          controller: _fan1DurationController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            labelText: 'Enter seconds',
-                          ),
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Cancel'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              int seconds = int.tryParse(_fan1DurationController.text) ?? 0;
-                              sendSetting(6, seconds); // Use 6 as the first parameter
-                              Navigator.of(context).pop();
-                            },
-                            child: Text('Set'),
-                          ),
-                        ],
+                      ElevatedButton(
+                        onPressed: () {
+                          int seconds = int.tryParse(_fan1DurationController.text) ?? 0;
+                          sendSetting(4, seconds);
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Set'),
                       ),
-                    );
-                  },
-                  child: Text('Set emission interval'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    sendCommand(7);
-                  },
-                  child: Text('Turn on periodic emissions'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    sendCommand(8);
-                  },
-                  child: Text('Turn off periodic emissions'),
-                ),
-              ],
-            )
-                : SizedBox(),
+                    ],
+                  ),
+                );
+              },
+              child: Text('Set fan1 duration'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Set fan2 duration'),
+                    content: TextFormField(
+                      controller: _fan1DurationController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Enter seconds',
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancel'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          int seconds = int.tryParse(_fan1DurationController.text) ?? 0;
+                          sendSetting(5, seconds); // Use 5 as the first parameter
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Set'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: Text('Set fan2 duration'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Set emission interval'),
+                    content: TextFormField(
+                      controller: _fan1DurationController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Enter seconds',
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancel'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          int seconds = int.tryParse(_fan1DurationController.text) ?? 0;
+                          sendSetting(6, seconds); // Use 6 as the first parameter
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Set'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: Text('Set emission interval'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                sendCommand(7);
+              },
+              child: Text('Turn on periodic emissions'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                sendCommand(8);
+              },
+              child: Text('Turn off periodic emissions'),
+            ),
             SizedBox(height: 20),
-            connected
-                ? FloatingActionButton(
+            FloatingActionButton(
               onPressed: _disconnectFromDevice,
               tooltip: 'Disconnect',
               child: Icon(Icons.bluetooth_disabled),
-            )
-                : SizedBox(),
-            SizedBox(height: 20),
-            connected
-                ? SizedBox()
-                : Expanded(
-              child: ListView.builder(
-                itemCount: devices.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text(devices[index].name),
-                    onTap: () {
-                      _connectToDevice(devices[index]);
-                    },
-                  );
-                },
-              ),
             ),
           ],
+        )
+            : ListView.builder(
+          itemCount: devices.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              title: Text(devices[index].name),
+              onTap: () {
+                _connectToDevice(devices[index]);
+              },
+            );
+          },
         ),
       ),
     );
