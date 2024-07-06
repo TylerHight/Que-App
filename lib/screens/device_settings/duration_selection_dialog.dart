@@ -58,15 +58,15 @@ class _DurationSelectionDialogState extends State<DurationSelectionDialog> {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop(Duration(hours: _hours, minutes: _minutes, seconds: _seconds));
-          },
-          child: Text('OK'),
-        ),
-        TextButton(
-          onPressed: () {
             Navigator.of(context).pop();
           },
           child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(Duration(hours: _hours, minutes: _minutes, seconds: _seconds));
+          },
+          child: Text('OK'),
         ),
       ],
     );
