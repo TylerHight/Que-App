@@ -28,7 +28,7 @@ class DeleteDeviceDialog extends StatelessWidget {
         TextButton(
           onPressed: () async {
             print('Delete button pressed');
-            await device.bleService.deleteDevice(device);
+            await device.delete();
             print('Device deleted');
             Navigator.of(context).pop(true);
           },

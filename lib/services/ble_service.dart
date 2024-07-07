@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter_blue/flutter_blue.dart';
-
 import '../models/device.dart';
 
 class BleService {
@@ -17,6 +16,8 @@ class BleService {
   final _connectionStatusController = StreamController<bool>.broadcast();
 
   Stream<bool> get connectionStatusStream => _connectionStatusController.stream;
+
+  BluetoothDevice? get connectedDevice => _connectedDevice;
 
   Future<void> connectToDevice(BluetoothDevice device) async {
     try {
@@ -62,32 +63,13 @@ class BleService {
       _connectedDevice = null;
       _connectionSubscription?.cancel();
       _connectionStatusController.add(false);
+
+      // Add any cleanup logic that was previously in deleteDevice here
+      print('Device disconnected and cleaned up');
     } catch (e) {
       throw Exception("Error disconnecting from device: $e");
     }
   }
-
-  Future<void> deleteDevice(Device device) async {
-    try {
-      print('Deleting device: ${device.deviceName}');
-      // First, disconnect the device
-      if (_connectedDevice != null) {
-        print("Found connected bluetooth device");
-        await disconnectFromDevice(_connectedDevice!);
-      }
-      else {
-        print("Did not find connected bluetooth device");
-      }
-
-      // Add the actual logic to delete the device here.
-      // Example: Remove the device from a list or a database
-      print('Device deleted: ${device.deviceName}');
-    } catch (e) {
-      print('Error deleting device: $e');
-      throw Exception('Failed to delete device');
-    }
-  }
-
 
   Future<void> sendCommand(BluetoothCharacteristic? characteristic, int command) async {
     try {

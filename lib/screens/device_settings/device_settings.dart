@@ -392,7 +392,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       },
     ).then((result) {
       if (result == true) {
-        // Perform additional actions after deletion if necessary
         print('Device deletion confirmed');
         Provider.of<DeviceList>(context, listen: false).remove(widget.device);
         Navigator.of(context).pop(); // Close the settings screen

@@ -16,11 +16,10 @@ class DeviceList extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Helper method to find a device by ID
-  //Device? findById(String id) {
-  //  // Use null-aware operators to handle null return from orElse
-  //  return _devices.firstWhere((device) => device.id == id, orElse: () => null);
-  //}
+  Future<void> removeDevice(Device device) async {
+    await device.delete();
+    remove(device);
+  }
 
 // Additional methods for functionality such as saving to storage, etc., can be added here
 }

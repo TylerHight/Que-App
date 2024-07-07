@@ -1,12 +1,13 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:que_app/services/ble_service.dart';
 
 class Device extends ChangeNotifier {
   final String id;
   final String deviceName;
   String connectedQueName;
-  static const Duration defaultEmissionDuration = const Duration(seconds: 10);
+  static const Duration defaultEmissionDuration = Duration(seconds: 10);
   Duration _emission1Duration;
   Duration _emission2Duration;
   Duration _releaseInterval1;
@@ -197,37 +198,16 @@ class Device extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> connectToBleDevice() async {
+  Future<void> delete() async {
     try {
-      isBleConnected = true;
+      // Add any specific cleanup logic for the device here if necessary
+      if (bleService.connectedDevice != null) {
+        await bleService.disconnectFromDevice(bleService.connectedDevice!);  // Pass the BluetoothDevice instance
+      }
+      print('Device deleted: $deviceName');
     } catch (e) {
-      print('Error connecting to BLE device: $e');
-      throw Exception('Failed to connect to BLE device');
-    }
-  }
-
-  Future<void> disconnectFromBleDevice() async {
-    try {
-      isBleConnected = false;
-    } catch (e) {
-      print('Error disconnecting from BLE device: $e');
-      throw Exception('Failed to disconnect from BLE device');
-    }
-  }
-
-  Future<void> sendCommandToDevice(int command) async {
-    try {
-    } catch (e) {
-      print('Error sending command to BLE device: $e');
-      throw Exception('Failed to send command to BLE device');
-    }
-  }
-
-  Future<void> sendSettingToDevice(int parameter, int value) async {
-    try {
-    } catch (e) {
-      print('Error sending setting to BLE device: $e');
-      throw Exception('Failed to send setting to BLE device');
+      print('Error deleting device: $e');
+      throw Exception('Failed to delete device');
     }
   }
 
