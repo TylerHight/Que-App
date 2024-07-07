@@ -58,16 +58,16 @@ class BleService {
 
   Future<void> disconnectFromDevice(BluetoothDevice device) async {
     try {
-      print("Awaiting device disconnect");
+      print("ble_service.dart: Awaiting device disconnect");
       await device.disconnect();
       _connectedDevice = null;
       _connectionSubscription?.cancel();
       _connectionStatusController.add(false);
 
       // Add any cleanup logic that was previously in deleteDevice here
-      print('Device disconnected and cleaned up');
+      print('ble_service.dart: Device disconnected and cleaned up');
     } catch (e) {
-      throw Exception("Error disconnecting from device: $e");
+      throw Exception("ble_service.dart: Error disconnecting from device: $e");
     }
   }
 

@@ -27,9 +27,9 @@ class DeleteDeviceDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () async {
-            print('Delete button pressed');
+            print('delete_device_dialog.dart: Delete button pressed');
             await device.delete();
-            print('Device deleted');
+            print('delete_device_dialog.dart: Device deleted');
             Navigator.of(context).pop(true);
           },
           child: Text(
