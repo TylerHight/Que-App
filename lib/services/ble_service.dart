@@ -21,9 +21,11 @@ class BleService {
 
   Future<void> connectToDevice(BluetoothDevice device) async {
     try {
-      print('Connecting to device: ${device.name}');
+      print('ble_service.dart: Connecting to device: ${device.name}');
       await device.connect();
       _connectedDevice = device;
+      print('ble_service.dart: connected to device: $_connectedDevice');
+      print('ble_service.dart: connected to device (getter): $connectedDevice');
       await discoverServicesAndCharacteristics(device);
 
       // Listen to connection state changes
@@ -56,10 +58,10 @@ class BleService {
     }
   }
 
-  Future<void> disconnectFromDevice(BluetoothDevice device) async {
+  Future<void> disconnectFromDevice() async {
     try {
       print("ble_service.dart: Awaiting device disconnect");
-      await device.disconnect();
+      await connectedDevice?.disconnect();
       _connectedDevice = null;
       _connectionSubscription?.cancel();
       _connectionStatusController.add(false);

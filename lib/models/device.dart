@@ -202,7 +202,10 @@ class Device extends ChangeNotifier {
     try {
       // Add any specific cleanup logic for the device here if necessary
       if (bleService.connectedDevice != null) {
-        await bleService.disconnectFromDevice(bleService.connectedDevice!);  // Pass the BluetoothDevice instance
+        await bleService.disconnectFromDevice();  // Pass the BluetoothDevice instance
+      }
+      else {
+        print('device.dart: bleService.connectedDevice is null');
       }
       print('device.dart: Device deleted: $deviceName');
     } catch (e) {
