@@ -57,6 +57,7 @@ class BleService {
 
   Future<void> disconnectFromDevice(BluetoothDevice device) async {
     try {
+      print("Awaiting device disconnect");
       await device.disconnect();
       _connectedDevice = null;
       _connectionSubscription?.cancel();
@@ -68,15 +69,25 @@ class BleService {
 
   Future<void> deleteDevice(Device device) async {
     try {
-      // Add the actual logic to delete the device here.
       print('Deleting device: ${device.deviceName}');
-      // Simulate a delay for deletion process
-      await Future.delayed(Duration(seconds: 2));
+      // First, disconnect the device
+      if (_connectedDevice != null) {
+        print("Found connected bluetooth device");
+        await disconnectFromDevice(_connectedDevice!);
+      }
+      else {
+        print("Did not find connected bluetooth device");
+      }
+
+      // Add the actual logic to delete the device here.
+      // Example: Remove the device from a list or a database
+      print('Device deleted: ${device.deviceName}');
     } catch (e) {
       print('Error deleting device: $e');
       throw Exception('Failed to delete device');
     }
   }
+
 
   Future<void> sendCommand(BluetoothCharacteristic? characteristic, int command) async {
     try {
