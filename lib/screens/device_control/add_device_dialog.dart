@@ -117,6 +117,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
           child: Text('Add'),
           onPressed: () async {
             if (_formKey.currentState!.validate()) {
+              print('add_device_dialog.dart: awaiting _addDevice()');
               await _addDevice();
             }
           },
@@ -138,12 +139,8 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     );
 
     if (newDevice.connectedQueName != "none") {
-      for (final device in deviceList.devices) {
-        device.isBleConnected = false;
-      }
-      newDevice.isBleConnected = true;
-
       // Connect to the selected Bluetooth device
+      print("add_device_dialog.dart")
       await bleService.connectToDevice(selectedDevice!);
     }
 
