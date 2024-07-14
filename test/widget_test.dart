@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:que_app/models/device.dart';
 import 'package:que_app/models/device_list.dart';
 import 'package:que_app/screens/device_control/device_control_screen.dart';
 import 'package:que_app/screens/device_control/device_remote.dart';
@@ -43,11 +42,6 @@ void main() {
 
   testWidgets('Render list of devices', (WidgetTester tester) async {
     // Create a list of devices
-    final devices = [
-      Device(id: '1', deviceName: 'Device 1', connectedQueName: 'Que 1', isBleConnected: false),
-      Device(id: '2', deviceName: 'Device 2', connectedQueName: 'Que 2', isBleConnected: false),
-      Device(id: '3', deviceName: 'Device 3', connectedQueName: 'Que 3', isBleConnected: false),
-    ];
 
     // Build the widget tree
     await tester.pumpWidget(

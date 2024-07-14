@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:que_app/models/device.dart';
 import 'package:que_app/models/note.dart';
-import 'package:que_app/models/device_settings_screen.dart';
+import 'package:que_app/models/device_settings.dart';
 
 class DatabaseService {
   static final DatabaseService instance = DatabaseService._init();

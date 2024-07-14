@@ -1,3 +1,5 @@
+// TODO: remove device settings from device.dart and put them here
+
 class DeviceSettings {
   final String id;
   final String deviceId;

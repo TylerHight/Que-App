@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_blue/flutter_blue.dart';
 import 'package:que_app/services/ble_service.dart';
 
 class Device extends ChangeNotifier {

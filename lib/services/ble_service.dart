@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter_blue/flutter_blue.dart';
-import '../models/device.dart';
 
 class BleService {
   final String serviceUUID = "0000180a-0000-1000-8000-00805f9b34fb";

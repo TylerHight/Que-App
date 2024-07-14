@@ -95,8 +95,6 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
         });
         // Convert to minutes if over 59 seconds
         if (_secondsLeft > 59) {
-          int minutes = _secondsLeft ~/ 60;
-          int seconds = _secondsLeft % 60;
           //print('Auto Turn-Off: $minutes m $seconds s');
         } else {
           //print('Auto Turn-Off: $_secondsLeft s');
