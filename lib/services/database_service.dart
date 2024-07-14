@@ -5,7 +5,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:que_app/models/device.dart';
 import 'package:que_app/models/note.dart';
-import 'package:que_app/models/device_settings.dart';
 
 class DatabaseService {
   static final DatabaseService instance = DatabaseService._init();
@@ -73,13 +72,6 @@ CREATE TABLE deviceSettings (
 
     final id = await db.insert('notes', note.toJson());
     return note.copy(id: id.toString());
-  }
-
-  Future<DeviceSettings> createDeviceSetting(DeviceSettings setting) async {
-    final db = await instance.database;
-
-    final id = await db.insert('deviceSettings', setting.toJson());
-    return setting.copy(id: id.toString());
   }
 
 // Add methods for read, update, and delete operations...
