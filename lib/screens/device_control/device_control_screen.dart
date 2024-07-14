@@ -83,13 +83,38 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                       final isConnected = snapshot.data ?? false;
                       print("Device: ${device.deviceName}, isConnected: $isConnected");
 
-                      return Container(
-                        margin: const EdgeInsets.only(top: 5.0),
-                        child: ChangeNotifierProvider.value(
-                          value: device,
-                          child: DeviceRemote(
-                            device: device,
-                            bleService: bleService,
+                      return GestureDetector(
+                        onTap: () {
+                          if (!isConnected) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Not connected'),
+                                  content: Text('The device is not connected.'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text('OK'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            // Handle the onTap when the device is connected, if needed
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 5.0),
+                          child: ChangeNotifierProvider.value(
+                            value: device,
+                            child: DeviceRemote(
+                              device: device,
+                              bleService: bleService,
+                            ),
                           ),
                         ),
                       );
