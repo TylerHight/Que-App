@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:que_app/models/device_list.dart';
+import '../../models/device.dart';
+import 'add_device_dialog.dart';
 import 'device_remote.dart';
 import 'package:que_app/services/ble_service.dart';
 
@@ -39,6 +41,16 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                   padding: EdgeInsets.zero,
                   icon: Icon(Icons.add, color: Colors.white),
                   onPressed: () async {
+                    final result = await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AddDeviceDialog(
+                          onDeviceAdded: (Device newDevice) {
+                            Provider.of<DeviceList>(context, listen: false).add(newDevice);
+                          },
+                        );
+                      },
+                    );
                   },
                 ),
               ),
