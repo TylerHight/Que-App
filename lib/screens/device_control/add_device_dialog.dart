@@ -140,7 +140,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
 
     if (newDevice.connectedQueName != "none") {
       // Connect to the selected Bluetooth device
-      print("add_device_dialog.dart")
+      print("add_device_dialog.dart");
       await bleService.connectToDevice(selectedDevice!);
     }
 

@@ -392,11 +392,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       },
     ).then((result) {
       if (result == true) {
-        print('device_settings.dart: Device deletion confirmed');
+        print('device_settings_screen.dart: Device deletion confirmed');
         Provider.of<DeviceList>(context, listen: false).remove(widget.device);
         Navigator.of(context).pop(); // Close the settings screen
       } else {
-        print('device_settings.dart: Device deletion canceled');
+        print('device_settings_screen.dart: Device deletion canceled');
       }
     });
   }

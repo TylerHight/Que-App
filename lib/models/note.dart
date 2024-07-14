@@ -1,5 +1,4 @@
-/// note.dart
-import 'package:que_app/models/device.dart';
+import 'device.dart';
 
 class Note {
   final String id;
@@ -7,7 +6,12 @@ class Note {
   final DateTime creationDate;
   Device? device;
 
-  Note({required this.id, required this.content, required this.creationDate, this.device});
+  Note({
+    required this.id,
+    required this.content,
+    required this.creationDate,
+    this.device,
+  });
 
   Note copy({
     String? id,
