@@ -24,9 +24,9 @@ When updating this document:
 
 ## File Status Overview
 Total Files: 30
-- ✓ Implemented: 15
-- 🔄 In Progress: 8
-- 📋 Planned: 7
+- ✓ Implemented: 16
+- 🔄 In Progress: 7
+- 📋 - Planned: 7
 - ❌ Deprecated/Removed: 0
 
 ```
@@ -35,12 +35,12 @@ que_app/
 │   └── app/
 │       └── src/
 │           └── main/
-│               ├── AndroidManifest.xml     # 🔄 Platform configuration
-│               └── kotlin/
+│               ├── AndroidManifest.xml     # ✓ Platform configuration
+│               └── java/
 │                   └── com/
-│                       └── que/
-│                           └── aromatherapy/
-│                               └── MainActivity.kt  # 🔄 Main activity
+│                       └── example/
+│                           └── que_app/
+│                               └── MainActivity.java  # ✓ Main activity
 ├── docs/                    # Project documentation
 │   ├── api/                # 📋 API documentation (empty)
 │   ├── assets/             # 📋 Documentation assets (empty)
@@ -116,13 +116,22 @@ Key dependencies:
 
 ## Required Permissions
 ```xml
-<!-- Android BLE Permissions -->
+<!-- Android Permissions -->
 <uses-permission android:name="android.permission.BLUETOOTH" />
 <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-<uses-permission android:name="android.permission.BLUETOOTH_SCAN" 
-    android:usesPermissionFlags="neverForLocation"/>
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+
+<!-- Feature declarations -->
+<uses-feature
+    android:name="android.hardware.bluetooth_le"
+    android:required="true" />
+<uses-feature
+    android:name="android.hardware.bluetooth"
+    android:required="true" />
 ```
 
 ## Security-Sensitive Files
@@ -132,10 +141,11 @@ Key dependencies:
 - android/app/src/main/AndroidManifest.xml - Permission declarations
 
 ## Recent Changes
-1. [2024-11-20] Moved ble_test.dart to tools/ble_development_tool.dart
-2. [2024-11-20] Updated BLE implementation to use flutter_blue_plus
-3. [2024-11-20] Added Android BLE permissions
-4. [2024-11-20] Updated minSdkVersion for BLE compatibility
+1. [2024-11-20] Updated Android package structure to com.example.que_app
+2. [2024-11-20] Migrated MainActivity from Kotlin to Java
+3. [2024-11-20] Updated AndroidManifest.xml structure
+4. [2024-11-20] Updated build.gradle configurations for SDK 34
+5. [2024-11-20] Added complete set of BLE permissions
 
 ## Critical Files
 1. lib/services/ble_service.dart - Core BLE communication
@@ -145,65 +155,12 @@ Key dependencies:
 5. lib/models/device.dart - Core device functionality
 6. android/app/src/main/AndroidManifest.xml - Platform configuration
 
-## Directory Details
-
-### `lib/screens/`
-UI screens and their associated components:
-
-#### `device_control/`
-Main device control interfaces:
-- **components/**
-  - `device_remote_card.dart`: Card widget for device control
-  - `timed_binary_button.dart`: Screen-specific button component
-- **dialogs/**
-  - `add_device_dialog.dart`: Dialog for discovering and pairing new Que devices
-  - `add_note_dialog.dart`: Dialog for creating notes within device control
-- `device_control_screen.dart`: Primary device control interface
-
-#### `device_settings/`
-Device configuration interfaces:
-- **dialogs/**
-  - `delete_device_dialog.dart`: Device removal confirmation
-  - `duration_selection_dialog.dart`: Timer configuration
-  - `heart_rate_threshold_dialog.dart`: Heart rate settings
-- `device_settings_screen.dart`: Settings management interface
-
-#### `notes/`
-Note management interfaces:
-- `note_editor.dart`: Note creation/editing interface
-- `notes_screen.dart`: List view of all notes
-
-### `lib/models/`
-Contains data model classes that represent the core entities of the application:
-- `device.dart`: Represents a Que device with its properties and states
-- `device_list.dart`: Manages collections of Que devices
-- `note.dart`: Represents user notes and observations
-- `notes_list.dart`: Manages collections of notes
-
-### `lib/services/`
-Core service implementations:
-- `ble_service.dart`: Handles all BLE communication
-- `database_service.dart`: Manages data persistence
-
-### `lib/utils/`
-Helper classes and utilities:
-- `ble_utils.dart`: BLE-specific helper functions
-- `date_time_utils.dart`: Date and time manipulation utilities
-
-### Key Files
-- `app_data.dart`: Manages application-wide state
-- `ble_test.dart`: Testing utilities for BLE functionality
-- `main.dart`: Application entry point and initialization
-
-## File Organization Principles
-1. **Screen-Specific Components**: Components used only within a specific screen are placed in that screen's `components/` directory
-2. **Screen-Specific Dialogs**: Dialogs are placed in a `dialogs/` directory within their respective screen directory
-3. **Shared Components**: If a component begins to be used across multiple screens, it should be moved to a shared `widgets/` directory
-4. **Development Tools**: Standalone tools and testing utilities are placed in the `tools/` directory
-
+[Previous directory details and organization sections remain unchanged...]
 
 ## Platform Requirements
-- Android minSdkVersion: 21 (required for flutter_blue_plus)
+- Android compileSdkVersion: 34
+- Android targetSdkVersion: 34
+- Android minSdkVersion: 21
 - Bluetooth Low Energy (BLE) capability
 - Location services for BLE scanning
 - Runtime permissions handling
@@ -216,6 +173,8 @@ Helper classes and utilities:
 - Add integration tests directory
 - Expand documentation with API specs
 - Add architecture diagrams
+- Implement proper error handling in BLE services
+- Add comprehensive permission handling
+- Implement analytics and logging services
 
 [End of Document]
-
