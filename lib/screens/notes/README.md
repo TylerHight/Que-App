@@ -1,1 +1,0 @@
-notes directory: Contains files related to note-taking functionality.
