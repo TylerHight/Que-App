@@ -1,5 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.que.aromatherapy">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Removed package attribute as it's defined by namespace in build.gradle -->
 
     <!-- Basic Bluetooth permissions -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
