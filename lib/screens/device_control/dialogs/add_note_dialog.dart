@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:que_app/models/note.dart';
 import 'package:que_app/models/notes_list.dart';
 import 'package:provider/provider.dart';
-import '../../models/device.dart';
+import '../../../models/device.dart';
 
 class AddNoteDialog extends StatefulWidget {
   final Function(Note) onNoteAdded;

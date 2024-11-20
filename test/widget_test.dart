@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:que_app/models/device_list.dart';
 import 'package:que_app/screens/device_control/device_control_screen.dart';
-import 'package:que_app/screens/device_control/device_remote.dart';
-import 'package:que_app/screens/device_control/add_device_dialog.dart';
+import 'package:que_app/screens/device_control/components/device_remote_card.dart';
+import 'package:que_app/screens/device_control/dialogs/add_device_dialog.dart';
 
 void main() {
   testWidgets('Add a new device', (WidgetTester tester) async {

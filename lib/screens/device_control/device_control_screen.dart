@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:que_app/models/device_list.dart';
 import '../../models/device.dart';
-import 'add_device_dialog.dart';
-import 'device_remote.dart';
+import 'dialogs/add_device_dialog.dart';
+import 'components/device_remote_card.dart';
 import 'package:que_app/services/ble_service.dart';
 
 class DeviceControlScreen extends StatefulWidget {

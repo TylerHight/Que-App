@@ -5,7 +5,7 @@ import 'package:que_app/screens/device_settings/device_settings_screen.dart'; //
 import 'timed_binary_button.dart'; // Import the TimedBinaryButton widget
 import 'package:que_app/models/device.dart'; // Import the Device class from your package
 import 'package:que_app/services/ble_service.dart'; // Import the BleService class
-import 'add_note_dialog.dart';
+import '../dialogs/add_note_dialog.dart';
 import 'package:que_app/models/note.dart';
 
 class DeviceRemote extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:que_app/models/note.dart';
 import 'package:que_app/models/notes_list.dart';
-import '../device_control/add_note_dialog.dart';
+import '../device_control/dialogs/add_note_dialog.dart';
 
 class NotesScreen extends StatefulWidget {
   @override

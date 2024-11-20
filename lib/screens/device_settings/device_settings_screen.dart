@@ -3,10 +3,10 @@ import 'package:flutter_blue/flutter_blue.dart';
 import 'package:provider/provider.dart';
 import 'package:que_app/models/device.dart';
 import 'package:que_app/models/device_list.dart';
-import 'package:que_app/screens/device_control/add_device_dialog.dart';
-import 'package:que_app/screens/device_settings/delete_device_dialog.dart';
-import 'duration_selection_dialog.dart';
-import 'heart_rate_threshold_dialog.dart';
+import 'package:que_app/screens/device_control/dialogs/add_device_dialog.dart';
+import 'package:que_app/screens/device_settings/dialogs/delete_device_dialog.dart';
+import 'dialogs/duration_selection_dialog.dart';
+import 'dialogs/heart_rate_threshold_dialog.dart';
 
 class SettingsScreen extends StatefulWidget {
   final Device device;
