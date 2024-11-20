@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:que_app/screens/device_settings/device_settings_screen.dart'; // Import the SettingsScreen widget
-import 'timed_binary_button.dart'; // Import the TimedBinaryButton widget
-import 'package:que_app/models/device.dart'; // Import the Device class from your package
-import 'package:que_app/services/ble_service.dart'; // Import the BleService class
-import '../dialogs/add_note_dialog.dart';
+import 'package:que_app/screens/device_settings/device_settings_screen.dart';
+import 'timed_binary_button.dart';
+import 'package:que_app/models/device.dart';
+import 'package:que_app/services/ble_service.dart';
+import '../../notes/dialogs/add_editor_dialog.dart';
 import 'package:que_app/models/note.dart';
 
 class DeviceRemote extends StatefulWidget {
@@ -24,22 +24,62 @@ class DeviceRemote extends StatefulWidget {
 
 class _DeviceRemoteState extends State<DeviceRemote> {
   late StreamSubscription<bool> _connectionSubscription;
+  late StreamSubscription<String>? _deviceStateSubscription;
   bool isConnected = false;
+  String _lastError = '';
 
   @override
   void initState() {
     super.initState();
-    _connectionSubscription = widget.bleService.connectionStatusStream.listen((status) {
-      setState(() {
-        isConnected = status;
-        widget.device.isBleConnected = status; // Update isBleConnected in the Device model
-      });
-    });
+    _setupSubscriptions();
+  }
+
+  void _setupSubscriptions() {
+    // Listen to connection status changes
+    _connectionSubscription = widget.bleService.connectionStatusStream.listen(
+          (status) {
+        setState(() {
+          isConnected = status;
+          widget.device.isBleConnected = status;
+        });
+      },
+      onError: (error) {
+        setState(() {
+          _lastError = 'Connection error: $error';
+          isConnected = false;
+          widget.device.isBleConnected = false;
+        });
+      },
+    );
+
+    // Listen to device state updates
+    _deviceStateSubscription = widget.bleService.deviceStateStream.listen(
+          (state) {
+        if (mounted && state.contains('error')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state)),
+          );
+        }
+      },
+    );
+  }
+
+  Future<void> _sendCommand(int command) async {
+    try {
+      await widget.bleService.setLedColor(command);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to send command: $e')),
+        );
+      }
+    }
   }
 
   @override
   void dispose() {
     _connectionSubscription.cancel();
+    _deviceStateSubscription?.cancel();
     super.dispose();
   }
 
@@ -58,72 +98,83 @@ class _DeviceRemoteState extends State<DeviceRemote> {
               padding: const EdgeInsets.all(6.0),
               child: Row(
                 children: [
-                  // Bluetooth Icon indicating connection status
+                  // Bluetooth status indicator
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
-                    child: Icon(
-                      device.isBleConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
-                      color: device.isBleConnected ? Colors.blue : Colors.grey.shade400,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Icon(
+                          device.isBleConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
+                          color: device.isBleConnected ? Colors.blue : Colors.grey.shade400,
+                        ),
+                        if (_lastError.isNotEmpty)
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: Icon(Icons.error_outline,
+                              size: 12,
+                              color: Colors.red,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 11.0),
-                        child: Text(
-                          device.deviceName,
-                          style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 19.0),
+                  // Device info and controls
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 11.0),
+                          child: Text(
+                            device.deviceName,
+                            style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 19.0),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 0),
-                      Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              // Open settings screen when settings icon button is tapped
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => SettingsScreen(device: device)),
-                              );
-                            },
-                            icon: Icon(
-                              Icons.settings,
-                              size: 28,
-                              color: Colors.grey.shade400,
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => SettingsScreen(device: device)),
+                                );
+                              },
+                              icon: Icon(
+                                Icons.settings,
+                                size: 28,
+                                color: Colors.grey.shade400,
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return Builder(
-                                    builder: (context) {
-                                      return AddNoteDialog(
-                                        onNoteAdded: (Note newNote) {
-                                          // Callback logic here
-                                        },
-                                        device: device, // Pass the device object
-                                      );
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                            icon: Icon(
-                              Icons.note_add,
-                              size: 28,
-                              color: Colors.grey.shade400,
+                            IconButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AddNoteDialog(
+                                      onNoteAdded: (Note newNote) {
+                                        // Callback logic here
+                                      },
+                                      device: device,
+                                    );
+                                  },
+                                );
+                              },
+                              icon: Icon(
+                                Icons.note_add,
+                                size: 28,
+                                color: Colors.grey.shade400,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  Spacer(), // Add spacer to push emission buttons to the right
+                  // Emission controls
                   TimedBinaryButton(
-                    key: UniqueKey(), // Add a unique key to force rebuild
+                    key: UniqueKey(),
                     periodicEmissionEnabled: device.isPeriodicEmissionEnabled,
                     periodicEmissionTimerDuration: device.releaseInterval1,
                     activeColor: Colors.lightBlue.shade400,
@@ -133,17 +184,13 @@ class _DeviceRemoteState extends State<DeviceRemote> {
                     iconSize: 40.0,
                     autoTurnOffDuration: device.emission1Duration,
                     autoTurnOffEnabled: true,
-                    onPressedTurnOn: () {
-                      widget.bleService.sendCommand(widget.bleService.controlCharacteristic, 1);
-                    },
-                    onPressedTurnOff: () {
-                      widget.bleService.sendCommand(widget.bleService.controlCharacteristic, 2);
-                    },
-                    isConnected: device.isBleConnected, // Pass the isConnected parameter
+                    onPressedTurnOn: () => _sendCommand(BleService.LED_RED),
+                    onPressedTurnOff: () => _sendCommand(BleService.LED_OFF),
+                    isConnected: device.isBleConnected,
                   ),
-                  SizedBox(width: 8), // Add spacing between emission buttons
+                  const SizedBox(width: 8),
                   TimedBinaryButton(
-                    key: UniqueKey(), // Add a unique key to force rebuild
+                    key: UniqueKey(),
                     periodicEmissionEnabled: device.isPeriodicEmissionEnabled2,
                     periodicEmissionTimerDuration: device.releaseInterval2,
                     activeColor: Colors.green.shade500,
@@ -153,13 +200,9 @@ class _DeviceRemoteState extends State<DeviceRemote> {
                     iconSize: 40.0,
                     autoTurnOffDuration: device.emission2Duration,
                     autoTurnOffEnabled: true,
-                    onPressedTurnOn: () {
-                      widget.bleService.sendCommand(widget.bleService.controlCharacteristic, 3);
-                    },
-                    onPressedTurnOff: () {
-                      widget.bleService.sendCommand(widget.bleService.controlCharacteristic, 4);
-                    },
-                    isConnected: device.isBleConnected, // Pass the isConnected parameter
+                    onPressedTurnOn: () => _sendCommand(BleService.LED_GREEN),
+                    onPressedTurnOff: () => _sendCommand(BleService.LED_OFF),
+                    isConnected: device.isBleConnected,
                   ),
                 ],
               ),

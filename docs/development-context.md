@@ -18,47 +18,85 @@ Example code comment format:
 ## ASSISTANT CONTEXT SECTION
 
 Current Development Focus:
-- Active Task: "Implementing device settings dialogs"
-- Last Change: "Reorganized device control components"
-- Next Task: "Add heart rate threshold configuration"
+- Active Task: "Fixing BLE implementation and permissions"
+- Last Change: "Updated BLE service with flutter_blue_plus"
+- Next Task: "Implement proper permission handling"
 
 Recent Code Changes (Last 3 conversations):
-1. Reorganized device_control directory structure (2024-11-20)
-2. Renamed device_remote.dart to device_remote_card.dart (2024-11-20)
-3. Added components/ and dialogs/ subdirectories (2024-11-20)
+1. Switched from flutter_blue to flutter_blue_plus (2024-11-20)
+2. Updated Android minSdkVersion to 21 (2024-11-20)
+3. Added BLE permissions to AndroidManifest.xml (2024-11-20)
+4. Created standalone BLE development tool (2024-11-20)
 
 Known Context Gaps:
-- Heart rate threshold handling needs implementation
-- BLE reconnection logic needs improvement
+- Runtime permission handling needed
+- MainActivity package name mismatch
+- BLE connection stability needs improvement
+- Permission request workflow required
+- BLE service implementation needs completion
 - Device settings persistence required
-- Error handling needs enhancement
+- Analytics service implementation pending
+- Test coverage needs expansion
 
 ## IMPLEMENTATION STATUS
 
 ### Currently Working Features ✓
-- Basic BLE device discovery
-- Device connection management
+- Device model implementation
 - Note creation and management
-- Basic device control interface
-- Device remote card
-- Database persistence
-- Application state management
+- Device control interface
+- Device remote card UI
+- Timed binary button
+- Device deletion confirmation
+- Duration selection dialog
+- Heart rate threshold dialog
+- Note creation dialog
+- Main application entry point
 
 ### In Progress 🔄
-- Device settings screens
-- Timer duration selection
-- Heart rate monitoring
-- Device deletion workflow
+- BLE permission handling
+- BLE connection management
+- Device scanning functionality
+- Package name consistency
+- Android platform configuration
+- BLE development tool
+- MainActivity implementation
+- Permission request workflow
+- Add device dialog
+- Device settings screen
+- BLE operations
+- Data persistence
+- BLE utilities
+- Global state management
+- Basic widget tests
+
+### Blocking Issues 🚫
+1. MainActivity not found error
+2. BLE permissions not properly handled
+3. Package name inconsistency
+4. Runtime permissions missing
 
 ### Planned Features 📋
-- Heart rate threshold configuration
-- Advanced device settings
-- Data analytics
-- User preferences
-- Connection resilience
-- Automated testing
+- API documentation
+- Documentation assets
+- Analytics service
+- Logging service
+- Test coverage:
+  - Device bloc tests
+  - Device model tests
+  - BLE service tests
 
 ## TECHNICAL SPECIFICATIONS
+
+### Required Permissions
+```xml
+<!-- Android Permissions -->
+<uses-permission android:name="android.permission.BLUETOOTH" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" 
+    android:usesPermissionFlags="neverForLocation"/>
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+```
 
 ### Core Data Types
 ```dart
@@ -66,7 +104,6 @@ Known Context Gaps:
 class Device {
   final String id;
   final String name;
-  final BluetoothDevice bleDevice;
   final DeviceSettings settings;
 }
 
@@ -79,76 +116,55 @@ class Note {
 }
 ```
 
-### BLE Service Integration
-```
-lib/services/
-├── ble_service.dart        # BLE communication handling
-└── database_service.dart   # Local data persistence
-
-lib/screens/device_control/
-├── components/
-│   └── device_remote_card.dart
-└── device_control_screen.dart
-```
-
-### BLE Configuration
-```dart
-// lib/services/ble_service.dart
-class BleService {
-  final FlutterBluePlus flutterBlue;
-  final StreamController<BluetoothState> _stateController;
-
-  Future<void> initialize() async {
-    // BLE initialization
-  }
-
-  Stream<List<BluetoothDevice>> scanForDevices() {
-    // Device scanning
-  }
-}
-```
-
 ## DEVELOPMENT NOTES
 
 ### Project Dependencies
 ```yaml
 dependencies:
+  flutter:
+    sdk: flutter
   flutter_blue_plus: ^1.31.8
+  permission_handler: ^11.0.1
   provider: ^6.1.1
   shared_preferences: ^2.2.2
   sqflite: ^2.3.0
 ```
 
 ### Known Issues
-1. ✓ Fixed: Basic BLE connection
-2. ✓ Fixed: Note persistence
-3. 🔄 Active: Device settings implementation
-4. 🔄 Active: Heart rate monitoring
-5. 📋 Planned: Connection resilience
-6. 📋 Planned: Data validation
+1. 🚫 MainActivity class not found
+2. 🚫 BLE permissions not granted
+3. 🔄 Package name inconsistency
+4. 🔄 Runtime permission handling
+5. ✓ Device control card implementation
+6. ✓ Note dialog creation
+7. 🔄 BLE service implementation
+8. 🔄 Device settings screen
+9. 📋 Analytics implementation
+10. 📋 Test coverage
+
+### Required Fixes
+1. Verify MainActivity location and package name
+2. Implement runtime permission requests
+3. Add proper error handling for permission denials
+4. Update package name consistently across project
+5. Add proper BLE initialization checks
 
 ### Architecture Decisions
-1. Using BLoC pattern for state management
-2. Implementing local storage with SQLite
-3. Using Provider for dependency injection
-4. Screen-specific component organization
+1. Screen-specific component organization
+2. Dialog-specific directory structure
+3. Shared services architecture
+4. Core model separation
 
-### Integration Patterns
-- BLE Communication
-- Local Data Persistence
-- State Management
-- Event-Driven Architecture
-
-## SECURITY CONSIDERATIONS
-- No sensitive data in code
-- Secure local storage
-- BLE security best practices
-- No hardcoded credentials
-- Proper error handling
-- Data validation
+### Security-Sensitive Components
+- BLE communication (ble_service.dart)
+- Local data storage (database_service.dart)
+- Application state (app_data.dart)
+- Runtime permissions handling
+- BLE device scanning
+- Device connection security
 
 ## VERSION CONTROL
-Document Version: 1.0
+Document Version: 1.2
 Last Editor: Assistant
 Last Edit Date: 2024-11-20
 
