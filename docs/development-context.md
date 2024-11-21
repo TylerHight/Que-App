@@ -18,18 +18,19 @@ Example code comment format:
 ## ASSISTANT CONTEXT SECTION
 
 Current Development Focus:
-- Active Task: "Fixing Android build configuration and MainActivity"
-- Last Change: "Updated Gradle configurations and fixed package names"
-- Next Task: "Implement BLE permission handling"
+- Active Task: "Fixing BLE implementation and permissions"
+- Last Change: "Updated BLE service with flutter_blue_plus"
+- Next Task: "Implement proper permission handling"
 
 Recent Code Changes (Last 3 conversations):
-1. Updated app/build.gradle to SDK 34 (2024-11-20)
-2. Fixed package name consistency to com.example.que_app (2024-11-20)
-3. Updated AndroidManifest.xml structure (2024-11-20)
-4. Updated Kotlin dependencies to resolve conflicts (2024-11-20)
+1. Switched from flutter_blue to flutter_blue_plus (2024-11-20)
+2. Updated Android minSdkVersion to 21 (2024-11-20)
+3. Added BLE permissions to AndroidManifest.xml (2024-11-20)
+4. Created standalone BLE development tool (2024-11-20)
 
 Known Context Gaps:
 - Runtime permission handling needed
+- MainActivity package name mismatch
 - BLE connection stability needs improvement
 - Permission request workflow required
 - BLE service implementation needs completion
@@ -50,14 +51,15 @@ Known Context Gaps:
 - Heart rate threshold dialog
 - Note creation dialog
 - Main application entry point
-- Android build configuration
-- MainActivity implementation
 
 ### In Progress 🔄
 - BLE permission handling
 - BLE connection management
 - Device scanning functionality
+- Package name consistency
+- Android platform configuration
 - BLE development tool
+- MainActivity implementation
 - Permission request workflow
 - Add device dialog
 - Device settings screen
@@ -68,9 +70,10 @@ Known Context Gaps:
 - Basic widget tests
 
 ### Blocking Issues 🚫
-1. BLE permissions not properly handled
-2. Runtime permissions missing
-3. BLE service implementation incomplete
+1. MainActivity not found error
+2. BLE permissions not properly handled
+3. Package name inconsistency
+4. Runtime permissions missing
 
 ### Planned Features 📋
 - API documentation
@@ -89,11 +92,10 @@ Known Context Gaps:
 <!-- Android Permissions -->
 <uses-permission android:name="android.permission.BLUETOOTH" />
 <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" 
+    android:usesPermissionFlags="neverForLocation"/>
 <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 ```
 
 ### Core Data Types
@@ -129,9 +131,9 @@ dependencies:
 ```
 
 ### Known Issues
-1. ✓ MainActivity class and package resolution
+1. 🚫 MainActivity class not found
 2. 🚫 BLE permissions not granted
-3. ✓ Package name consistency
+3. 🔄 Package name inconsistency
 4. 🔄 Runtime permission handling
 5. ✓ Device control card implementation
 6. ✓ Note dialog creation
@@ -141,11 +143,11 @@ dependencies:
 10. 📋 Test coverage
 
 ### Required Fixes
-1. Implement runtime permission requests
-2. Add proper error handling for permission denials
-3. Add proper BLE initialization checks
-4. Complete BLE service implementation
-5. Add comprehensive error handling
+1. Verify MainActivity location and package name
+2. Implement runtime permission requests
+3. Add proper error handling for permission denials
+4. Update package name consistently across project
+5. Add proper BLE initialization checks
 
 ### Architecture Decisions
 1. Screen-specific component organization
@@ -161,16 +163,8 @@ dependencies:
 - BLE device scanning
 - Device connection security
 
-### Android Configuration
-- compileSdkVersion: 34
-- minSdkVersion: 21
-- targetSdkVersion: 34
-- Kotlin version: 1.8.10
-- Gradle plugin version: 7.3.0
-- Package name: com.example.que_app
-
 ## VERSION CONTROL
-Document Version: 1.3
+Document Version: 1.2
 Last Editor: Assistant
 Last Edit Date: 2024-11-20
 
