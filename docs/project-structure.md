@@ -1,3 +1,4 @@
+
 # Project Structure Documentation
 [Last Updated: 2024-11-20]
 
@@ -17,9 +18,9 @@ When updating this document:
 - Document any new Flutter/Dart package dependencies
 
 ## Status Legend
-✓ - Implemented and tested
-🔄 - In Progress
-📋 - Planned
+✓ - Implemented and tested  
+🔄 - In Progress  
+📋 - Planned  
 ❌ - Deprecated/Removed
 
 ## File Status Overview
@@ -29,110 +30,85 @@ Total Files: 30
 - 📋 - Planned: 7
 - ❌ Deprecated/Removed: 0
 
-```
-que_app/
-├── android/                 # Android platform files
-│   └── app/
-│       └── src/
-│           └── main/
-│               ├── AndroidManifest.xml     # ✓ Platform configuration
-│               └── java/
-│                   └── com/
-│                       └── example/
-│                           └── que_app/
-│                               └── MainActivity.java  # ✓ Main activity
-├── docs/                    # Project documentation
-│   ├── api/                # 📋 API documentation (empty)
-│   ├── assets/             # 📋 Documentation assets (empty)
-│   └── project-structure.md # ✓ Project structure documentation
-│   └── development-context.md # ✓ Project development state
-│
-├── lib/                    # Source code
-│   ├── models/            # Data models
-│   │   ├── device.dart    # ✓ Device model class
-│   │   ├── device_list.dart # ✓ List management for devices
-│   │   ├── note.dart      # ✓ Note model class
-│   │   └── notes_list.dart # ✓ List management for notes
-│   │
-│   ├── screens/          # UI screens and components
-│   │   ├── device_control/
-│   │   │   ├── components/           
-│   │   │   │   ├── device_remote_card.dart  # ✓ Device control card
-│   │   │   │   └── timed_binary_button.dart # ✓ Timed, toggleable button for emissions
-│   │   │   ├── dialogs/             
-│   │   │   │   ├── add_device_dialog.dart   # 🔄 Add a new device
-│   │   │   └── device_control_screen.dart   # ✓ Main device control screen
-│   │   │
-│   │   ├── device_settings/
-│   │   │   ├── dialogs/
-│   │   │   │   ├── delete_device_dialog.dart      # ✓ Confirm device deletion
-│   │   │   │   ├── duration_selection_dialog.dart  # ✓ Select emission duration
-│   │   │   │   └── heart_rate_threshold_dialog.dart # ✓ Select heart rate threshold
-│   │   │   └── device_settings_screen.dart  # 🔄 Device-independent settings screen
-│   │   │
-│   │   └── notes/
-│   │       ├── dialogs/
-│   │       │   └── add_note_dialog.dart # ✓ Note creation dialog
-│   │       └── notes_screen.dart  # ✓ Show all notes and add notes
-│   │
-│   ├── services/
-│   │   ├── analytics_service.dart # 📋 Empty
-│   │   ├── ble_service.dart     # 🔄 BLE operations        
-│   │   ├── database_service.dart  # 🔄 Data persistence
-│   │   └── logging_service.dart # 📋 Empty
-│   │
-│   ├── tools/              # Development tools
-│   │   └── ble_development_tool.dart  # 🔄 BLE testing interface
-│   │
-│   ├── utils/           
-│   │   └── ble_utils.dart      # 🔄 BLE helper functions
-│   │
-│   ├── widgets/           # Globally shared widgets
-│   │   ├── buttons/
-│   │   └── cards/
-│   │
-│   ├── app_data.dart    # 🔄 Globally shared data
-│   ├── main.dart        # ✓ Application entry point
-│   └── README.md        # ✓ Library documentation
-│
-└── test/
-    ├── bloc
-    │   └── device_bloc_test.dart # 📋 Empty
-    ├── models
-    │   └── device_test.dart # 📋 Empty
-    ├── services
-    │   └── ble_service_test.dart # 📋 Empty
-    └── widget 
-        └── widget_test.dart # 🔄 Basic tests implemented
-```
-
-## Dependencies
-Key dependencies:
-- flutter_blue_plus: ^1.31.8
-- permission_handler: ^11.0.1
-- provider: ^6.1.1
-- shared_preferences: ^2.2.2
-- sqflite: ^2.3.0
-
-## Required Permissions
-```xml
-<!-- Android Permissions -->
-<uses-permission android:name="android.permission.BLUETOOTH" />
-<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-
-<!-- Feature declarations -->
-<uses-feature
-    android:name="android.hardware.bluetooth_le"
-    android:required="true" />
-<uses-feature
-    android:name="android.hardware.bluetooth"
-    android:required="true" />
-```
+```  
+que_app/  
+├── android/                 # Android platform files  
+│   └── app/  
+│       └── src/  
+│           └── main/  
+│               ├── AndroidManifest.xml     # ✓ Platform configuration  
+│               └── java/  
+│                   └── com/  
+│                       └── example/  
+│                           └── que_app/  
+│                               └── MainActivity.java  # ✓ Main activity  
+├── docs/                    # Project documentation  
+│   ├── api/                # 📋 API documentation (empty)│   ├── assets/             # 📋 Documentation assets (empty)│   └── project-structure.md # ✓ Project structure documentation  
+│   └── development-context.md # ✓ Project development state  
+│  
+├── lib/                    # Source code  
+│   ├── models/            # Data models  
+│   │   ├── device.dart    # ✓ Device model class  
+│   │   ├── device_list.dart # ✓ List management for devices  
+│   │   ├── note.dart      # ✓ Note model class  
+│   │   └── notes_list.dart # ✓ List management for notes  
+│   │  
+│   ├── screens/          # UI screens and components  
+│   │   ├── device_control/  
+│   │   │   ├── components/ │   │   │   │   ├── device_remote_card.dart  # ✓ Device control card  
+│   │   │   │   └── timed_binary_button.dart # ✓ Timed, toggleable button for emissions  
+│   │   │   ├── dialogs/ │   │   │   │   ├── add_device_dialog.dart   # 🔄 Add a new device│   │   │   └── device_control_screen.dart   # ✓ Main device control screen  
+│   │   │  
+│   │   ├── device_settings/  
+│   │   │   ├── dialogs/  
+│   │   │   │   ├── delete_device_dialog.dart      # ✓ Confirm device deletion  
+│   │   │   │   ├── duration_selection_dialog.dart  # ✓ Select emission duration  
+│   │   │   │   └── heart_rate_threshold_dialog.dart # ✓ Select heart rate threshold  
+│   │   │   └── device_settings_screen.dart  # 🔄 Device-independent settings screen│   │   │  
+│   │   └── notes/  
+│   │       ├── dialogs/  
+│   │       │   └── add_note_dialog.dart # ✓ Note creation dialog  
+│   │       └── notes_screen.dart  # ✓ Show all notes and add notes  
+│   │  
+│   ├── services/  
+│   │   ├── analytics_service.dart # 📋 Empty│   │   ├── ble_service.dart     # 🔄 BLE operations │   │   ├── database_service.dart  # 🔄 Data persistence│   │   └── logging_service.dart # 📋 Empty│   │  
+│   ├── tools/              # Development tools  
+│   │   └── ble_development_tool.dart  # 🔄 BLE testing interface│   │  
+│   ├── utils/ │   │   └── ble_utils.dart      # 🔄 BLE helper functions│   │  
+│   ├── widgets/           # Globally shared widgets  
+│   │   ├── buttons/  
+│   │   └── cards/  
+│   │  
+│   ├── app_data.dart    # 🔄 Globally shared data│   ├── main.dart        # ✓ Application entry point  
+│   └── README.md        # ✓ Library documentation  
+│  
+└── test/  
+ ├── bloc │   └── device_bloc_test.dart # 📋 Empty ├── models │   └── device_test.dart # 📋 Empty ├── services │   └── ble_service_test.dart # 📋 Empty └── widget└── widget_test.dart # 🔄 Basic tests implemented```  
+  
+## Dependencies  
+Key dependencies:  
+- flutter_blue_plus: ^1.31.8  
+- permission_handler: ^11.0.1  
+- provider: ^6.1.1  
+- shared_preferences: ^2.2.2  
+- sqflite: ^2.3.0  
+  
+## Required Permissions  
+```xml  
+<!-- Android Permissions -->  
+<uses-permission android:name="android.permission.BLUETOOTH" />  
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />  
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />  
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />  
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />  
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />  
+<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />  
+  
+<!-- Feature declarations -->  
+<uses-feature  
+ android:name="android.hardware.bluetooth_le" android:required="true" /><uses-feature  
+ android:name="android.hardware.bluetooth" android:required="true" />  
+```  
 
 ## Security-Sensitive Files
 - lib/services/ble_service.dart - BLE communication
