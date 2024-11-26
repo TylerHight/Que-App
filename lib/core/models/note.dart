@@ -30,6 +30,16 @@ class Note {
     'id': id,
     'content': content,
     'creationDate': creationDate.toIso8601String(),
-    'device': device?.toJson(),
+    'deviceId': device?.id,  // Changed to store only deviceId instead of full device
   };
+
+  factory Note.fromJson(Map<String, dynamic> json) {
+    return Note(
+      id: json['id'].toString(),
+      content: json['content'],
+      creationDate: DateTime.parse(json['creationDate']),
+      // Device will need to be set separately after loading from database
+      // as we only store the deviceId in the database
+    );
+  }
 }
