@@ -2,7 +2,7 @@
 
 import 'package:equatable/equatable.dart';
 
-import '../../../core/models/device.dart';
+import '../../../core/models/device/index.dart';
 
 /// Configuration model for device settings
 class SettingsConfig extends Equatable {

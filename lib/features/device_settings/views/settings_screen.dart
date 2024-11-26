@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:que_app/core/models/device.dart';
+import 'package:que_app/core/models/device/index.dart';
 import 'package:que_app/core/services/ble_service.dart';
 import 'package:que_app/features/device_settings/bloc/device_settings_bloc.dart';
 import 'package:que_app/features/device_settings/bloc/device_settings_event.dart';

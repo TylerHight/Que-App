@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:que_app/core/models/device.dart';
+import 'package:que_app/core/models/device/index.dart';
 import 'package:que_app/features/device_settings/bloc/device_settings_bloc.dart';
 import 'package:que_app/features/device_settings/bloc/device_settings_state.dart';
 import 'package:que_app/features/device_settings/widgets/settings_groups/scent_one_settings.dart';

@@ -29,21 +29,25 @@ class DeviceSettingsState extends Equatable {
   bool get isPeriodicEmission2Enabled => device.isPeriodicEmissionEnabled2;
   int get heartrateThreshold => device.heartrateThreshold;
   bool get isConnected => device.isBleConnected;
+  bool get isHeartRateMonitorConnected => false; // Added for UI compatibility
+  bool get firmwareUpdateAvailable => false; // Added for UI compatibility
 
   // Helper getters for UI
   bool get isLoading => status == DeviceSettingsStatus.loading;
   bool get hasError => status == DeviceSettingsStatus.failure;
   bool get isSuccess => status == DeviceSettingsStatus.success;
+  String? get error => errorMessage; // Added for backward compatibility
 
   DeviceSettingsState copyWith({
     Device? device,
     DeviceSettingsStatus? status,
     String? errorMessage,
+    bool? clearError, // Added to explicitly clear error
   }) {
     return DeviceSettingsState(
       device: device ?? this.device,
       status: status ?? this.status,
-      errorMessage: errorMessage,  // null means clear error
+      errorMessage: clearError == true ? null : (errorMessage ?? this.errorMessage),
     );
   }
 
@@ -55,14 +59,14 @@ class DeviceSettingsState extends Equatable {
   factory DeviceSettingsState.loading(DeviceSettingsState current) {
     return current.copyWith(
       status: DeviceSettingsStatus.loading,
-      errorMessage: null,
+      clearError: true,
     );
   }
 
   factory DeviceSettingsState.success(DeviceSettingsState current) {
     return current.copyWith(
       status: DeviceSettingsStatus.success,
-      errorMessage: null,
+      clearError: true,
     );
   }
 
