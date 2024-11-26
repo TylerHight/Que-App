@@ -2,7 +2,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../../core/models/device/index.dart';
-import '../../../core/services/ble_service.dart';
+import '../../../core/services/ble/ble_service.dart';
 import '../services/settings_service.dart';
 import '../repositories/device_settings_repository.dart';
 import 'device_settings_event.dart';

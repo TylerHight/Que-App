@@ -6,7 +6,7 @@ import 'package:que_app/core/models/device_list.dart';
 import '../../../core/models/device/index.dart';
 import '../dialogs/add_device_dialog.dart';
 import '../widgets/device_remote_card.dart';
-import 'package:que_app/core/services/ble_service.dart';
+import 'package:que_app/core/services/ble/ble_service.dart';
 
 class DeviceControlScreen extends StatefulWidget {
   const DeviceControlScreen({super.key});

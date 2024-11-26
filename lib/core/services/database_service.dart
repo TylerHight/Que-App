@@ -231,4 +231,64 @@ CREATE TABLE deviceSettings (
     final db = await instance.database;
     await db.close();
   }
+
+  Future<T?> get<T>(String key) async {
+    final db = await instance.database;
+    final result = await db.query(
+      'deviceSettings',
+      where: 'settingName = ?',
+      whereArgs: [key],
+      limit: 1,
+    );
+
+    if (result.isEmpty) return null;
+
+    final value = result.first['settingValue'] as String;
+    return _convertValue<T>(value);
+  }
+
+  Future<bool> set<T>(String key, T value) async {
+    final db = await instance.database;
+
+    try {
+      await db.insert(
+        'deviceSettings',
+        {
+          'settingName': key,
+          'settingValue': value.toString(),
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      return true;
+    } catch (e) {
+      print('Error setting value: $e');
+      return false;
+    }
+  }
+
+  Future<bool> delete(String key) async {
+    final db = await instance.database;
+    final result = await db.delete(
+      'deviceSettings',
+      where: 'settingName = ?',
+      whereArgs: [key],
+    );
+    return result > 0;
+  }
+
+  // Helper method to convert string values to the correct type
+  T? _convertValue<T>(String value) {
+    if (T == String) {
+      return value as T;
+    } else if (T == int) {
+      return int.tryParse(value) as T?;
+    } else if (T == double) {
+      return double.tryParse(value) as T?;
+    } else if (T == bool) {
+      return (value.toLowerCase() == 'true') as T;
+    } else if (T == DateTime) {
+      return DateTime.tryParse(value) as T?;
+    }
+    return null;
+  }
 }

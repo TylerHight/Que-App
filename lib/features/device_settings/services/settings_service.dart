@@ -2,7 +2,7 @@
 
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:que_app/core/models/device/index.dart';
-import 'package:que_app/core/services/ble_service.dart';
+import 'package:que_app/core/services/ble/ble_service.dart';
 import 'package:que_app/features/device_settings/models/settings_config.dart';
 import 'package:que_app/features/device_settings/repositories/device_settings_repository.dart';
 import 'package:que_app/features/device_settings/utils/settings_helpers.dart';

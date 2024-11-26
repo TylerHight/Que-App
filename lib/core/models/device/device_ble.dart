@@ -1,5 +1,5 @@
 // lib/core/models/device/device_ble.dart
-import '../../services/ble_service.dart';
+import '../../services/ble/ble_service.dart';
 import 'device.dart';
 
 class DeviceBle {

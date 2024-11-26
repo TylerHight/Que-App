@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:que_app/core/services/ble_service.dart';
+import 'package:que_app/core/services/ble/ble_service.dart';
 import 'package:que_app/core/utils/ble/ble_utils.dart';
 import 'package:que_app/core/models/device/index.dart';
 import 'package:provider/provider.dart';

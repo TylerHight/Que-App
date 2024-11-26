@@ -1,7 +1,7 @@
 // lib/features/device_settings/repositories/device_settings_repository.dart
 
 import 'package:que_app/core/services/database_service.dart';
-import 'package:que_app/core/services/ble_service.dart';
+import 'package:que_app/core/services/ble/ble_service.dart';
 import 'package:que_app/features/device_settings/models/settings_config.dart';
 
 class DeviceSettingsRepository {

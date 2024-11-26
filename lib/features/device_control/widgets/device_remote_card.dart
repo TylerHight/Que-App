@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:que_app/features/device_settings/views/settings_screen.dart';
 import 'timed_binary_button.dart';
 import 'package:que_app/core/models/device/index.dart';
-import 'package:que_app/core/services/ble_service.dart';
+import 'package:que_app/core/services/ble/ble_service.dart';
 import '../../notes/dialogs/add_note_dialog.dart';
 import 'package:que_app/core/models/note.dart';
 

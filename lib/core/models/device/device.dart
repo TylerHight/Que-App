@@ -2,7 +2,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import '../../services/ble_service.dart';
+import '../../services/ble/ble_service.dart';
 import 'device_state.dart';
 import 'device_ble.dart';
 import 'device_utils.dart';
