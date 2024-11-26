@@ -7,6 +7,7 @@ import 'package:que_app/core/models/device/index.dart';
 import 'package:que_app/core/services/ble/ble_service.dart';
 import '../../notes/dialogs/add_note_dialog.dart';
 import 'package:que_app/core/models/note.dart';
+import 'package:que_app/core/constants/ble_constants.dart';
 
 class DeviceRemote extends StatefulWidget {
   final Device device;
@@ -184,8 +185,8 @@ class _DeviceRemoteState extends State<DeviceRemote> {
                     iconSize: 40.0,
                     autoTurnOffDuration: device.emission1Duration,
                     autoTurnOffEnabled: true,
-                    onPressedTurnOn: () => _sendCommand(BleService.LED_RED),
-                    onPressedTurnOff: () => _sendCommand(BleService.LED_OFF),
+                    onPressedTurnOn: () => _sendCommand(BleConstants.CMD_LED_RED),
+                    onPressedTurnOff: () => _sendCommand(BleConstants.CMD_LED_OFF),
                     isConnected: device.isBleConnected,
                   ),
                   const SizedBox(width: 8),
@@ -200,8 +201,8 @@ class _DeviceRemoteState extends State<DeviceRemote> {
                     iconSize: 40.0,
                     autoTurnOffDuration: device.emission2Duration,
                     autoTurnOffEnabled: true,
-                    onPressedTurnOn: () => _sendCommand(BleService.LED_GREEN),
-                    onPressedTurnOff: () => _sendCommand(BleService.LED_OFF),
+                    onPressedTurnOn: () => _sendCommand(BleConstants.CMD_LED_GREEN),
+                    onPressedTurnOff: () => _sendCommand(BleConstants.CMD_LED_OFF),
                     isConnected: device.isBleConnected,
                   ),
                 ],
