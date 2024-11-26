@@ -5,10 +5,12 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(BleDevTool());
+  runApp(const BleDevTool());
 }
 
 class BleDevTool extends StatelessWidget {
+  const BleDevTool({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -17,12 +19,14 @@ class BleDevTool extends StatelessWidget {
         primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
-      home: BleDevToolHome(),
+      home: const BleDevToolHome(),
     );
   }
 }
 
 class BleDevToolHome extends StatefulWidget {
+  const BleDevToolHome({super.key});
+
   @override
   _BleDevToolHomeState createState() => _BleDevToolHomeState();
 }
@@ -176,19 +180,19 @@ class _BleDevToolHomeState extends State<BleDevToolHome> {
           TextFormField(
             controller: _durationController,
             keyboardType: TextInputType.number,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Duration (seconds)',
               border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 8),
-          Text(_status, style: TextStyle(fontSize: 12, color: Colors.grey)),
+          Text(_status, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: () {
@@ -196,7 +200,7 @@ class _BleDevToolHomeState extends State<BleDevToolHome> {
             _sendSetting(settingType, duration);
             Navigator.pop(context);
           },
-          child: Text('Set'),
+          child: const Text('Set'),
         ),
       ],
     );
@@ -206,7 +210,7 @@ class _BleDevToolHomeState extends State<BleDevToolHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Que Device Development Tool'),
+        title: const Text('Que Device Development Tool'),
         actions: [
           Icon(
             _isConnected ? Icons.bluetooth_connected : Icons.bluetooth_disabled,
@@ -248,7 +252,7 @@ class _BleDevToolHomeState extends State<BleDevToolHome> {
         return ListTile(
           title: Text(device.platformName),
           subtitle: Text('RSSI: ${_devices[index].rssi}'),
-          trailing: Icon(Icons.bluetooth),
+          trailing: const Icon(Icons.bluetooth),
           onTap: () => _connectToDevice(device),
         );
       },
@@ -284,10 +288,10 @@ class _BleDevToolHomeState extends State<BleDevToolHome> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: ElevatedButton(
         onPressed: onPressed,
-        child: Text(label),
         style: ElevatedButton.styleFrom(
-          minimumSize: Size(double.infinity, 48),
+          minimumSize: const Size(double.infinity, 48),
         ),
+        child: Text(label),
       ),
     );
   }
@@ -303,10 +307,10 @@ class _BleDevToolHomeState extends State<BleDevToolHome> {
             builder: (context) => _buildDurationDialog(label, settingType),
           );
         },
-        child: Text(label),
         style: OutlinedButton.styleFrom(
-          minimumSize: Size(double.infinity, 48),
+          minimumSize: const Size(double.infinity, 48),
         ),
+        child: Text(label),
       ),
     );
   }

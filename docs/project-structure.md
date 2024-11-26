@@ -1,12 +1,12 @@
-
 # Project Structure Documentation
-[Last Updated: 2024-11-20]
+[Last Updated: 2024-11-26]
 
 ## LLM INSTRUCTIONS
 When updating this document:
 - Always maintain the full path structure
 - Use consistent status indicators (✓, 🔄, 📋, ❌)
-- Preserve comments about implementation status
+- Preserve and update comments about implementation status
+- Preserve and update comments about file and directory purposes
 - Keep the hierarchy and indentation consistent
 - Update the File Status Overview counts
 - Add dates to Recent Changes
@@ -16,6 +16,7 @@ When updating this document:
 - Note any security-sensitive files
 - Maintain alphabetical ordering within directories
 - Document any new Flutter/Dart package dependencies
+- Always ensure that the project directory structure is complete
 
 ## Status Legend
 ✓ - Implemented and tested  
@@ -24,114 +25,144 @@ When updating this document:
 ❌ - Deprecated/Removed
 
 ## File Status Overview
-Total Files: 30
-- ✓ Implemented: 16
-- 🔄 In Progress: 7
-- 📋 - Planned: 7
+Total Files: 57
+- ✓ Implemented: 30
+- 🔄 In Progress: 9
+- 📋 - Planned: 18
 - ❌ Deprecated/Removed: 0
 
-```  
-que_app/  
-├── android/                 # Android platform files  
-│   └── app/  
-│       └── src/  
-│           └── main/  
-│               ├── AndroidManifest.xml     # ✓ Platform configuration  
-│               └── java/  
-│                   └── com/  
-│                       └── example/  
-│                           └── que_app/  
-│                               └── MainActivity.java  # ✓ Main activity  
-├── docs/                    # Project documentation  
-│   ├── api/                # 📋 API documentation (empty)│   ├── assets/             # 📋 Documentation assets (empty)│   └── project-structure.md # ✓ Project structure documentation  
-│   └── development-context.md # ✓ Project development state  
-│  
-├── lib/                    # Source code  
-│   ├── models/            # Data models  
-│   │   ├── device.dart    # ✓ Device model class  
-│   │   ├── device_list.dart # ✓ List management for devices  
-│   │   ├── note.dart      # ✓ Note model class  
-│   │   └── notes_list.dart # ✓ List management for notes  
-│   │  
-│   ├── screens/          # UI screens and components  
-│   │   ├── device_control/  
-│   │   │   ├── components/ │   │   │   │   ├── device_remote_card.dart  # ✓ Device control card  
-│   │   │   │   └── timed_binary_button.dart # ✓ Timed, toggleable button for emissions  
-│   │   │   ├── dialogs/ │   │   │   │   ├── add_device_dialog.dart   # 🔄 Add a new device│   │   │   └── device_control_screen.dart   # ✓ Main device control screen  
-│   │   │  
-│   │   ├── device_settings/  
-│   │   │   ├── dialogs/  
-│   │   │   │   ├── delete_device_dialog.dart      # ✓ Confirm device deletion  
-│   │   │   │   ├── duration_selection_dialog.dart  # ✓ Select emission duration  
-│   │   │   │   └── heart_rate_threshold_dialog.dart # ✓ Select heart rate threshold  
-│   │   │   └── device_settings_screen.dart  # 🔄 Device-independent settings screen│   │   │  
-│   │   └── notes/  
-│   │       ├── dialogs/  
-│   │       │   └── add_note_dialog.dart # ✓ Note creation dialog  
-│   │       └── notes_screen.dart  # ✓ Show all notes and add notes  
-│   │  
-│   ├── services/  
-│   │   ├── analytics_service.dart # 📋 Empty│   │   ├── ble_service.dart     # 🔄 BLE operations │   │   ├── database_service.dart  # 🔄 Data persistence│   │   └── logging_service.dart # 📋 Empty│   │  
-│   ├── tools/              # Development tools  
-│   │   └── ble_development_tool.dart  # 🔄 BLE testing interface│   │  
-│   ├── utils/ │   │   └── ble_utils.dart      # 🔄 BLE helper functions│   │  
-│   ├── widgets/           # Globally shared widgets  
-│   │   ├── buttons/  
-│   │   └── cards/  
-│   │  
-│   ├── app_data.dart    # 🔄 Globally shared data│   ├── main.dart        # ✓ Application entry point  
-│   └── README.md        # ✓ Library documentation  
-│  
-└── test/  
- ├── bloc │   └── device_bloc_test.dart # 📋 Empty ├── models │   └── device_test.dart # 📋 Empty ├── services │   └── ble_service_test.dart # 📋 Empty └── widget└── widget_test.dart # 🔄 Basic tests implemented```  
-  
-## Dependencies  
-Key dependencies:  
-- flutter_blue_plus: ^1.31.8  
-- permission_handler: ^11.0.1  
-- provider: ^6.1.1  
-- shared_preferences: ^2.2.2  
-- sqflite: ^2.3.0  
-  
-## Required Permissions  
-```xml  
-<!-- Android Permissions -->  
-<uses-permission android:name="android.permission.BLUETOOTH" />  
-<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />  
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />  
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />  
-<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />  
-<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />  
-<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />  
-  
-<!-- Feature declarations -->  
-<uses-feature  
- android:name="android.hardware.bluetooth_le" android:required="true" /><uses-feature  
- android:name="android.hardware.bluetooth" android:required="true" />  
-```  
-
-## Security-Sensitive Files
-- lib/services/ble_service.dart - BLE communication
-- lib/services/database_service.dart - Local data storage
-- lib/app_data.dart - Application state and user preferences
-- android/app/src/main/AndroidManifest.xml - Permission declarations
+```
+que_app/
+│
+├── lib/                           # Source code
+│   ├── core/                     # Core functionality
+│   │   ├── constants/
+│   │   │   ├── app_constants.dart    # 📋 App constants
+│   │   │   └── ble_constants.dart    # ✓ BLE constants
+│   │   │
+│   │   ├── models/
+│   │   │   ├── device/              # ✓ Device model directory
+│   │   │   │   ├── device.dart          # ✓ Main device class
+│   │   │   │   ├── device_state.dart    # ✓ Device state management
+│   │   │   │   ├── device_ble.dart      # ✓ BLE functionality
+│   │   │   │   ├── device_utils.dart    # ✓ Utility functions
+│   │   │   │   ├── device_persistence.dart # ✓ Persistence logic
+│   │   │   │   └── index.dart           # ✓ Barrel file
+│   │   │   ├── device_list.dart     # ✓ Device list
+│   │   │   ├── note.dart            # ✓ Note model
+│   │   │   └── notes_list.dart      # ✓ Notes list
+│   │   │
+│   │   ├── services/
+│   │   │   ├── analytics_service.dart # 📋 Analytics
+│   │   │   ├── ble_service.dart      # 🔄 BLE operations
+│   │   │   ├── database_service.dart  # 🔄 Data persistence
+│   │   │   └── logging_service.dart   # 📋 Logging
+│   │   │
+│   │   ├── utils/
+│   │   │   └── ble/
+│   │   │       ├── ble_permissions.dart # ✓ BLE permissions
+│   │   │       └── ble_utils.dart      # 🔄 BLE helpers
+│   │   │
+│   │   ├── widgets/
+│   │   │   ├── buttons/              # 🔄 Common buttons
+│   │   │   └── cards/               # 🔄 Common cards
+│   │   │
+│   │   └── themes/
+│   │       └── app_theme.dart       # 📋 Theme configuration
+│   │
+│   ├── features/
+│   │   ├── device_control/         # Device control feature
+│   │   │   └── [...]
+│   │   │
+│   │   ├── device_settings/       # Settings feature
+│   │   │   ├── bloc/             # State management
+│   │   │   │   ├── device_settings_bloc.dart    # ✓ Settings logic
+│   │   │   │   ├── device_settings_event.dart   # ✓ Events
+│   │   │   │   └── device_settings_state.dart   # ✓ States
+│   │   │   │
+│   │   │   ├── models/           # Feature-specific models
+│   │   │   │   └── settings_config.dart        # ✓ Settings configuration
+│   │   │   │
+│   │   │   ├── repositories/     # Data layer
+│   │   │   │   └── device_settings_repository.dart # ✓ Settings repository
+│   │   │   │
+│   │   │   ├── services/         # Business logic
+│   │   │   │   └── settings_service.dart       # ✓ Settings operations
+│   │   │   │
+│   │   │   ├── utils/            # Feature utilities
+│   │   │   │   └── settings_helpers.dart       # ✓ Helper functions
+│   │   │   │
+│   │   │   ├── widgets/          # UI components
+│   │   │   │   ├── base/        # Base components
+│   │   │   │   │   ├── settings_group.dart     # ✓ Base group widget
+│   │   │   │   │   ├── settings_list_tile.dart # ✓ Base list tile
+│   │   │   │   │   ├── settings_switch_tile.dart # ✓ Base switch tile
+│   │   │   │   │   ├── settings_value_tile.dart # ✓ Value display tile
+│   │   │   │   │   └── settings_info_tile.dart  # ✓ Info display tile
+│   │   │   │   │
+│   │   │   │   ├── settings_groups/          # Group components
+│   │   │   │   │   ├── scent_one_settings.dart # ✓ Scent one group
+│   │   │   │   │   ├── scent_two_settings.dart # ✓ Scent two group
+│   │   │   │   │   ├── heart_rate_settings.dart # ✓ Heart rate group
+│   │   │   │   │   └── device_settings.dart    # ✓ Device settings group
+│   │   │   │   │
+│   │   │   │   └── tiles/                    # Specific tiles
+│   │   │   │       ├── bluetooth_settings_tile.dart # ✓ Bluetooth tile
+│   │   │   │       ├── device_info_tile.dart      # ✓ Device info tile
+│   │   │   │       ├── duration_settings_tile.dart # ✓ Duration tile
+│   │   │   │       └── heart_rate_settings_tile.dart # ✓ Heart rate tile
+│   │   │   │
+│   │   │   ├── dialogs/          # Modal dialogs
+│   │   │   │   ├── delete_device_dialog.dart     # ✓ Delete device
+│   │   │   │   ├── duration_selection_dialog.dart # ✓ Duration picker
+│   │   │   │   ├── device_info_dialog.dart       # ✓ Device info
+│   │   │   │   └── heart_rate_threshold_dialog.dart # ✓ Heart rate
+│   │   │   │
+│   │   │   └── views/            # Screen implementations
+│   │   │       ├── settings_screen.dart      # ✓ Container component
+│   │   │       └── settings_content.dart     # ✓ Presentation component
+│   │   │
+│   │   └── notes/                # Notes feature
+│   │       └── [...]
+│   │
+│   ├── tools/
+│   │   └── ble_development_tool.dart  # 🔄 BLE testing
+│   │
+│   ├── app.dart                  # ✓ App configuration
+│   ├── main.dart                 # ✓ Entry point
+│   └── routes.dart               # 🔄 App navigation
+│
+└── test/                         # Test directory
+    ├── core/                    # Core tests
+    │   └── [same as original]
+    │
+    ├── features/               # Feature tests
+    │   ├── device_settings/   # Settings feature tests
+    │   │   ├── bloc/
+    │   │   │   └── device_settings_bloc_test.dart # 📋 BLoC tests
+    │   │   ├── repositories/
+    │   │   │   └── device_settings_repository_test.dart # 📋 Repo tests
+    │   │   ├── services/
+    │   │   │   └── settings_service_test.dart # 📋 Service tests
+    │   │   └── widgets/
+    │   │       ├── base/
+    │   │       │   └── settings_widgets_test.dart # 📋 Base widget tests
+    │   │       ├── settings_groups/
+    │   │       │   └── settings_groups_test.dart # 📋 Group tests
+    │   │       └── tiles/
+    │   │           └── settings_tiles_test.dart # 📋 Tile tests
+    │   │
+    │   └── [...]
+    │
+    └── widget_test.dart        # 🔄 Widget tests
+```
 
 ## Recent Changes
-1. [2024-11-20] Updated Android package structure to com.example.que_app
-2. [2024-11-20] Migrated MainActivity from Kotlin to Java
-3. [2024-11-20] Updated AndroidManifest.xml structure
-4. [2024-11-20] Updated build.gradle configurations for SDK 34
-5. [2024-11-20] Added complete set of BLE permissions
-
-## Critical Files
-1. lib/services/ble_service.dart - Core BLE communication
-2. lib/services/database_service.dart - Data persistence
-3. lib/screens/device_control/device_control_screen.dart - Main interface
-4. lib/app_data.dart - Application state management
-5. lib/models/device.dart - Core device functionality
-6. android/app/src/main/AndroidManifest.xml - Platform configuration
-
-[Previous directory details and organization sections remain unchanged...]
+1. [2024-11-26] Refactored Device model into modular structure
+2. [2024-11-24] Updated Device model with new methods and compatibility fixes
+3. [2024-11-23] Completed device settings feature implementation
+4. [2024-11-23] Added settings BLoC pattern implementation
+5. [2024-11-23] Added settings repository and service layers
 
 ## Platform Requirements
 - Android compileSdkVersion: 34
@@ -141,16 +172,19 @@ Key dependencies:
 - Location services for BLE scanning
 - Runtime permissions handling
 
-## Future Structure Considerations
-- Add `bloc/` directory for state management
-- Add `widgets/` for truly shared components
-- Add `constants/` for app-wide constants
-- Add `themes/` for styling
-- Add integration tests directory
-- Expand documentation with API specs
-- Add architecture diagrams
-- Implement proper error handling in BLE services
-- Add comprehensive permission handling
-- Implement analytics and logging services
+## Security-Sensitive Components
+- BLE communication (lib/core/services/ble_service.dart)
+- Local data storage (lib/core/services/database_service.dart)
+- BLE permissions (lib/core/utils/ble/ble_permissions.dart)
+- Device model (lib/core/models/device/device.dart)
+- Device BLE operations (lib/core/models/device/device_ble.dart)
+- Device state management (lib/core/models/device/device_state.dart)
+- Settings persistence (lib/features/device_settings/repositories/device_settings_repository.dart)
+- Runtime permissions handling
+- BLE device scanning
+- Device connection security
+- State persistence
+- Heart rate monitor integration
+- Device configuration management
 
 [End of Document]

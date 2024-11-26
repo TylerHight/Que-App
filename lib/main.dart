@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Import provider
-import 'screens/device_control/device_control_screen.dart';
-import 'screens/notes/notes_screen.dart';
-import 'package:que_app/models/notes_list.dart';
-import 'models/device_list.dart';
+import 'features/device_control/views/device_control_screen.dart';
+import 'features/notes/views/notes_screen.dart';
+import 'package:que_app/core/models/notes_list.dart';
+import 'core/models/device_list.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider( // Change to MultiProvider
@@ -23,11 +25,11 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,  // Add this line
         theme: ThemeData(
           primarySwatch: Colors.blue,
-          appBarTheme: AppBarTheme(
+          appBarTheme: const AppBarTheme(
             iconTheme: IconThemeData(color: Colors.white), // Set icon color to white
           ),
-          textTheme: TextTheme(headline6: TextStyle(color: Colors.white)), // Set text color to white
-          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          textTheme: const TextTheme(titleLarge: TextStyle(color: Colors.white)), // Set text color to white
+          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
             backgroundColor: Colors.white, // Set the background color to white
             selectedItemColor: Colors.blue, // Set the selected item color to blue
             unselectedItemColor: Colors.grey, // Set the unselected item color to grey
@@ -35,7 +37,7 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: '/', // Define initial route
         routes: {
-          '/': (context) => MyHomePage(), // Define the home route
+          '/': (context) => const MyHomePage(), // Define the home route
         },
       ),
     );
@@ -43,15 +45,17 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  static List<Widget> _widgetOptions = <Widget>[
-    DeviceControlScreen(),
-    NotesScreen(),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const DeviceControlScreen(),
+    const NotesScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -80,8 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         iconSize: 30.0, // Set the size of the icons
-        selectedLabelStyle: TextStyle(fontSize: 15.0), // Set the size of the selected text
-        unselectedLabelStyle: TextStyle(fontSize: 13.0), // Set the size of the unselected text
+        selectedLabelStyle: const TextStyle(fontSize: 15.0), // Set the size of the selected text
+        unselectedLabelStyle: const TextStyle(fontSize: 13.0), // Set the size of the unselected text
       ),
     );
   }
