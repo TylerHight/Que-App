@@ -20,6 +20,27 @@ class SettingsConfig extends Equatable {
     required this.lastUpdated,
   });
 
+  /// Creates a default configuration for a device
+  static SettingsConfig defaults({required String deviceId}) {
+    return SettingsConfig(
+      deviceId: deviceId,
+      scentOne: const ScentConfig(
+        emissionDuration: Duration(seconds: 30),
+        releaseInterval: Duration(minutes: 5),
+        isPeriodicEnabled: false,
+      ),
+      scentTwo: const ScentConfig(
+        emissionDuration: Duration(seconds: 30),
+        releaseInterval: Duration(minutes: 5),
+        isPeriodicEnabled: false,
+      ),
+      heartRate: const HeartRateConfig(
+        threshold: 120,
+      ),
+      lastUpdated: DateTime.now(),
+    );
+  }
+
   factory SettingsConfig.fromDevice(Device device) {
     return SettingsConfig(
       deviceId: device.id,

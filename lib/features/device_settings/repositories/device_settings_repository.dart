@@ -8,21 +8,26 @@ class DeviceSettingsRepository {
   final DatabaseService _databaseService;
   final BleService _bleService;
 
-  static const String _settingsCollection = 'device_settings';
-
   const DeviceSettingsRepository({
     required DatabaseService databaseService,
     required BleService bleService,
   }) : _databaseService = databaseService,
         _bleService = bleService;
 
+  /// Generate a unique key for device settings
+  String _getDeviceSettingsKey(String deviceId) => 'device_settings_$deviceId';
+
   /// Fetch settings for a specific device
   Future<SettingsConfig> getDeviceSettings(String deviceId) async {
     try {
-      final data = await _databaseService.get(
-        _settingsCollection,
-        deviceId,
-      );
+      final key = _getDeviceSettingsKey(deviceId);
+      final data = await _databaseService.get<Map<String, dynamic>>(key);
+
+      if (data == null) {
+        // Return default settings if none exist
+        return SettingsConfig.defaults(deviceId: deviceId);
+      }
+
       return SettingsConfig.fromJson(data);
     } catch (e) {
       throw SettingsRepositoryException(
@@ -34,12 +39,9 @@ class DeviceSettingsRepository {
   /// Save settings for a device
   Future<void> saveDeviceSettings(SettingsConfig config) async {
     try {
+      final key = _getDeviceSettingsKey(config.deviceId);
       // Save to local storage
-      await _databaseService.set(
-        _settingsCollection,
-        config.deviceId,
-        config.toJson(),
-      );
+      await _databaseService.set(key, config.toJson());
 
       // Update device via BLE
       await _updateDeviceViaBle(config);
@@ -110,10 +112,8 @@ class DeviceSettingsRepository {
   /// Delete device settings
   Future<void> deleteDeviceSettings(String deviceId) async {
     try {
-      await _databaseService.delete(
-        _settingsCollection,
-        deviceId,
-      );
+      final key = _getDeviceSettingsKey(deviceId);
+      await _databaseService.delete(key);
     } catch (e) {
       throw SettingsRepositoryException(
         'Failed to delete device settings: $e',
@@ -125,14 +125,16 @@ class DeviceSettingsRepository {
   Future<void> _updateDeviceViaBle(SettingsConfig config) async {
     try {
       await _bleService.updateDeviceSettings(
-        deviceId: config.deviceId,
-        emission1Duration: config.scentOne.emissionDuration,
-        emission2Duration: config.scentTwo.emissionDuration,
-        releaseInterval1: config.scentOne.releaseInterval,
-        releaseInterval2: config.scentTwo.releaseInterval,
-        isPeriodicEmissionEnabled: config.scentOne.isPeriodicEnabled,
-        isPeriodicEmissionEnabled2: config.scentTwo.isPeriodicEnabled,
-        heartrateThreshold: config.heartRate.threshold,
+        config.deviceId,
+        {
+          'emission1': config.scentOne.emissionDuration.inSeconds,
+          'emission2': config.scentTwo.emissionDuration.inSeconds,
+          'interval1': config.scentOne.releaseInterval.inSeconds,
+          'interval2': config.scentTwo.releaseInterval.inSeconds,
+          'periodic1': config.scentOne.isPeriodicEnabled ? 1 : 0,
+          'periodic2': config.scentTwo.isPeriodicEnabled ? 1 : 0,
+          'heartrate': config.heartRate.threshold,
+        },
       );
     } catch (e) {
       throw SettingsRepositoryException(

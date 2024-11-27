@@ -9,6 +9,7 @@ import 'package:que_app/features/device_settings/widgets/base/settings_group.dar
 import 'package:que_app/features/device_settings/widgets/base/settings_switch_tile.dart';
 import 'package:que_app/features/device_settings/widgets/base/settings_value_tile.dart';
 import 'package:que_app/features/device_settings/utils/settings_helpers.dart';
+import '../../dialogs/duration_selection_dialog.dart';
 
 class ScentOneSettings extends StatelessWidget {
   final bool enabled;
@@ -77,6 +78,8 @@ class ScentOneSettings extends StatelessWidget {
         initialDuration: current,
         minDuration: SettingsHelpers.minEmissionDuration,
         maxDuration: SettingsHelpers.maxEmissionDuration,
+        icon: Icons.timer,
+        iconColor: Colors.cyan,
       ),
     );
 
@@ -95,6 +98,8 @@ class ScentOneSettings extends StatelessWidget {
         initialDuration: current,
         minDuration: SettingsHelpers.minInterval,
         maxDuration: SettingsHelpers.maxInterval,
+        icon: Icons.timer,
+        iconColor: Colors.cyan,
       ),
     );
 

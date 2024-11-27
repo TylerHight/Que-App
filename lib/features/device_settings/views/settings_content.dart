@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:que_app/core/models/device/index.dart';
 import 'package:que_app/features/device_settings/bloc/device_settings_bloc.dart';
+import 'package:que_app/features/device_settings/bloc/device_settings_event.dart';  // Add this import
 import 'package:que_app/features/device_settings/bloc/device_settings_state.dart';
 import 'package:que_app/features/device_settings/widgets/settings_groups/scent_one_settings.dart';
 import 'package:que_app/features/device_settings/widgets/settings_groups/scent_two_settings.dart';
@@ -68,7 +69,7 @@ class SettingsContent extends StatelessWidget {
         RefreshIndicator(
           onRefresh: () async {
             context.read<DeviceSettingsBloc>().add(
-              InitializeSettings(device),
+              InitializeSettings(device),  // Update to match event class name
             );
           },
           child: CustomScrollView(
@@ -181,7 +182,7 @@ class SettingsContent extends StatelessWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      context.read<DeviceSettingsBloc>().add(DeleteDevice(device));
+      context.read<DeviceSettingsBloc>().add(DeleteDevice(device));  // Changed from DeleteDeviceEvent
       Navigator.of(context).pop(); // Close settings screen
     }
   }

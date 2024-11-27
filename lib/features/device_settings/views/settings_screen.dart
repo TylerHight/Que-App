@@ -8,7 +8,6 @@ import 'package:que_app/features/device_settings/bloc/device_settings_bloc.dart'
 import 'package:que_app/features/device_settings/bloc/device_settings_event.dart';
 import 'package:que_app/features/device_settings/bloc/device_settings_state.dart';
 import 'package:que_app/features/device_settings/repositories/device_settings_repository.dart';
-import 'package:que_app/features/device_settings/services/settings_service.dart';
 import 'settings_content.dart';
 
 /// Container component that handles dependency injection and state management
@@ -31,14 +30,10 @@ class SettingsScreen extends StatelessWidget {
           bleService: bleService,
         );
 
-        final settingsService = SettingsService(
-          bleService: bleService,
-          repository: repository,
-        );
-
         return DeviceSettingsBloc(
           bleService: bleService,
           device: device,
+          repository: repository,
         )..add(InitializeSettings(device));
       },
       child: BlocListener<DeviceSettingsBloc, DeviceSettingsState>(

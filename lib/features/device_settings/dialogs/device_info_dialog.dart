@@ -18,25 +18,19 @@ class DeviceInfoDialog extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow('Device Name', device.name),
+          _buildInfoRow('Device Name', device.deviceName),
           const SizedBox(height: 8),
-          _buildInfoRow('Firmware Version', device.firmwareVersion),
+          _buildInfoRow('Queue Name', device.connectedQueName),
           const SizedBox(height: 8),
           _buildInfoRow(
-            'Battery Level',
-            '${device.batteryLevel}%',
-            color: _getBatteryColor(device.batteryLevel),
+            'Connection Status',
+            device.isBleConnected ? 'Connected' : 'Disconnected',
+            color: device.isBleConnected ? Colors.green : Colors.orange,
           ),
           const SizedBox(height: 8),
           _buildInfoRow(
-            'Last Synced',
-            _formatLastSync(device.lastSyncTime),
-          ),
-          const SizedBox(height: 8),
-          _buildInfoRow(
-            'Heart Rate Monitor',
-            device.isHeartRateMonitorConnected ? 'Connected' : 'Not Connected',
-            color: device.isHeartRateMonitorConnected ? Colors.green : Colors.grey,
+            'Heart Rate Threshold',
+            '${device.heartrateThreshold} BPM',
           ),
         ],
       ),
@@ -67,31 +61,5 @@ class DeviceInfoDialog extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  Color _getBatteryColor(int level) {
-    if (level <= 20) return Colors.red;
-    if (level <= 40) return Colors.orange;
-    return Colors.green;
-  }
-
-  String _formatLastSync(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
-
-    if (difference.inMinutes < 1) {
-      return 'Just now';
-    } else if (difference.inHours < 1) {
-      final minutes = difference.inMinutes;
-      return '$minutes ${minutes == 1 ? 'minute' : 'minutes'} ago';
-    } else if (difference.inDays < 1) {
-      final hours = difference.inHours;
-      return '$hours ${hours == 1 ? 'hour' : 'hours'} ago';
-    } else if (difference.inDays < 7) {
-      final days = difference.inDays;
-      return '$days ${days == 1 ? 'day' : 'days'} ago';
-    } else {
-      return '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
-    }
   }
 }

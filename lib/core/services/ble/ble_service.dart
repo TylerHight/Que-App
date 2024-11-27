@@ -87,7 +87,8 @@ class BleService {
 
     if (_switchCharacteristic!.properties.notify) {
       await _switchCharacteristic!.setNotifyValue(true);
-      _switchCharacteristic!.value.listen(_notificationController.add);
+      // Updated: Use lastValueStream instead of value
+      _switchCharacteristic!.lastValueStream.listen(_notificationController.add);
     }
   }
 
@@ -335,8 +336,11 @@ class BleService {
     _connectionStatusController.add(false);
   }
 
-  Future<void> forgetDevice() async {
-    await disconnectFromDevice();
+  Future<void> forgetDevice(String deviceId) async {
+    if (_connectedDevice?.remoteId.str == deviceId) {
+      await disconnectFromDevice();
+    }
+    _deviceStateController.add("Device forgotten: $deviceId");
   }
 
   void dispose() {

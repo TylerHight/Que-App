@@ -61,6 +61,7 @@ class HeartRateSettingsTile extends StatelessWidget {
       final selectedThreshold = await showDialog<int>(
         context: context,
         builder: (context) => HeartRateThresholdDialog(
+          title: "Set Heart Rate Threshold",
           currentThreshold: threshold,
           minThreshold: SettingsHelpers.minHeartRate,
           maxThreshold: SettingsHelpers.maxHeartRate,

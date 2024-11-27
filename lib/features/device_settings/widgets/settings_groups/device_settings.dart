@@ -1,12 +1,12 @@
 // lib/features/device_settings/widgets/settings_groups/device_settings.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/models/device/index.dart';
 import '../../bloc/device_settings_bloc.dart';
 import '../../bloc/device_settings_event.dart';
 import '../../bloc/device_settings_state.dart';
 import '../base/settings_group.dart';
 import '../base/settings_list_tile.dart';
+import '../../dialogs/device_info_dialog.dart';
 
 class DeviceSettings extends StatelessWidget {
   final VoidCallback? onDeleteRequested;
