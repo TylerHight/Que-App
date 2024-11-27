@@ -33,59 +33,128 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   final _formKey = GlobalKey<FormState>();
   StreamSubscription? _deviceStateSubscription;
   StreamSubscription? _connectionStatusSubscription;
+  StreamSubscription? _bluetoothStateSubscription;
 
   bool _isScanning = false;
   bool _isConnecting = false;
   String _statusMessage = "";
   bool _isCompleted = false;
+  int _connectionRetries = 0;
+  static const int MAX_RETRIES = 3;
+  static const Duration CONNECTION_TIMEOUT = Duration(seconds: 10);
+  static const Duration RETRY_DELAY = Duration(seconds: 2);
 
   @override
   void initState() {
     super.initState();
     bleUtils = BleUtils();
     _setupSubscriptions();
-    _startScan();
+    _checkBluetoothState();
+  }
+
+  Future<void> _checkBluetoothState() async {
+    try {
+      final isSupported = await FlutterBluePlus.isSupported;
+      if (!isSupported) {
+        if (mounted) {
+          setState(() => _statusMessage = "Bluetooth not supported on this device");
+        }
+        return;
+      }
+
+      final isOn = await FlutterBluePlus.isOn;
+      if (!isOn) {
+        if (mounted) {
+          setState(() => _statusMessage = "Please enable Bluetooth");
+          _showBluetoothDialog();
+        }
+        return;
+      }
+
+      _startScan();
+    } catch (e) {
+      if (mounted) {
+        setState(() => _statusMessage = "Error checking Bluetooth: $e");
+      }
+    }
+  }
+
+  void _showBluetoothDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Bluetooth Required'),
+          content: const Text('Please enable Bluetooth to scan for devices.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Close add device dialog
+              },
+            ),
+            TextButton(
+              child: const Text('Enable'),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                try {
+                  await FlutterBluePlus.turnOn();
+                  _startScan();
+                } catch (e) {
+                  if (mounted) {
+                    setState(() => _statusMessage = "Failed to enable Bluetooth");
+                  }
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _setupSubscriptions() {
     _deviceStateSubscription = widget.bleService.deviceStateStream.listen(
-            (message) {
-          if (mounted) {
-            setState(() => _statusMessage = message);
-          }
-        },
-        onError: (error) {
-          if (mounted) {
-            setState(() {
-              _statusMessage = "Error: $error";
-              _isConnecting = false;
-            });
-          }
+          (message) {
+        if (mounted) {
+          setState(() => _statusMessage = message);
         }
+      },
+      onError: (error) {
+        if (mounted) {
+          setState(() {
+            _statusMessage = "Error: $error";
+            _isConnecting = false;
+          });
+        }
+      },
     );
 
     _connectionStatusSubscription = widget.bleService.connectionStatusStream.listen(
-            (isConnected) {
-          if (!mounted) return;
-          if (!isConnected && _isConnecting) {
-            setState(() {
-              _statusMessage = "Device disconnected";
-              _isConnecting = false;
-            });
+          (isConnected) {
+        if (!mounted) return;
+        if (!isConnected && _isConnecting) {
+          setState(() {
+            _statusMessage = "Device disconnected";
+            _isConnecting = false;
+          });
+          _handleConnectionFailure();
+        }
+      },
+    );
+
+    _bluetoothStateSubscription = FlutterBluePlus.adapterState.listen(
+          (BluetoothAdapterState state) {
+        if (state == BluetoothAdapterState.off) {
+          if (mounted) {
+            setState(() => _statusMessage = "Bluetooth is turned off");
+            _showBluetoothDialog();
           }
         }
+      },
     );
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _deviceStateSubscription?.cancel();
-    _connectionStatusSubscription?.cancel();
-    if (!_isCompleted && _isConnecting) {
-      widget.bleService.disconnectFromDevice();
-    }
-    super.dispose();
   }
 
   Future<void> _startScan() async {
@@ -121,8 +190,66 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     }
   }
 
-  List<BluetoothDevice> getDevicesWithNames() {
-    return nearbyDevices.where((device) => device.platformName.isNotEmpty).toList();
+  Future<bool> _connectWithRetry() async {
+    while (_connectionRetries < MAX_RETRIES) {
+      try {
+        await widget.bleService.connectToDevice(selectedDevice!);
+
+        // Wait for connection confirmation with timeout
+        final completer = Completer<bool>();
+        Timer? timeoutTimer;
+
+        timeoutTimer = Timer(CONNECTION_TIMEOUT, () {
+          if (!completer.isCompleted) {
+            completer.complete(false);
+          }
+        });
+
+        StreamSubscription? subscription;
+        subscription = widget.bleService.connectionStatusStream.listen((connected) {
+          if (connected && !completer.isCompleted) {
+            timeoutTimer?.cancel();
+            subscription?.cancel();
+            completer.complete(true);
+          }
+        });
+
+        final connected = await completer.future;
+
+        if (connected) {
+          return true;
+        }
+
+        _connectionRetries++;
+        if (_connectionRetries < MAX_RETRIES) {
+          if (mounted) {
+            setState(() => _statusMessage = "Retrying connection (${_connectionRetries + 1}/$MAX_RETRIES)...");
+          }
+          await Future.delayed(RETRY_DELAY);
+        }
+      } catch (e) {
+        _connectionRetries++;
+        if (_connectionRetries < MAX_RETRIES) {
+          if (mounted) {
+            setState(() => _statusMessage = "Connection attempt failed, retrying...");
+          }
+          await Future.delayed(RETRY_DELAY);
+        } else {
+          throw Exception("Failed to connect after $_connectionRetries attempts: $e");
+        }
+      }
+    }
+    return false;
+  }
+
+  void _handleConnectionFailure() async {
+    if (_connectionRetries < MAX_RETRIES) {
+      _connectionRetries++;
+      if (mounted) {
+        setState(() => _statusMessage = "Connection lost, retrying...");
+      }
+      await _connectWithRetry();
+    }
   }
 
   Future<void> _addDevice() async {
@@ -137,52 +264,76 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
       });
 
       try {
-        await widget.bleService.connectToDevice(selectedDevice!);
-
-        // Wait for connection confirmation
-        bool connected = false;
-        for (int i = 0; i < 5; i++) { // Try for 5 seconds
-          await Future.delayed(const Duration(seconds: 1));
-          connected = await bleUtils.checkDeviceConnected(selectedDevice!);
-          if (connected) break;
-        }
-
+        final connected = await _connectWithRetry();
         if (!connected) {
-          throw Exception("Connection timeout");
+          throw Exception("Failed to establish connection");
         }
 
+        // Create the device
+        final name = _nameController.text;
+        final deviceList = Provider.of<DeviceList>(context, listen: false);
+
+        final newDevice = Device(
+          id: UniqueKey().toString(),
+          deviceName: name,
+          connectedQueName: selectedDevice?.platformName ?? '',
+          bluetoothDevice: selectedDevice,
+          bleService: widget.bleService,
+        );
+
+        // Set completion flag before closing dialog
+        _isCompleted = true;
+        deviceList.add(newDevice);
+        widget.onDeviceAdded(newDevice);
+
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
       } catch (e) {
         if (mounted) {
           setState(() {
             _isConnecting = false;
             _statusMessage = "Connection failed: ${e.toString()}";
           });
-          return;
         }
       }
+    } else {
+      // Handle case where no device is selected
+      final name = _nameController.text;
+      final deviceList = Provider.of<DeviceList>(context, listen: false);
+
+      final newDevice = Device(
+        id: UniqueKey().toString(),
+        deviceName: name,
+        connectedQueName: '',
+        bluetoothDevice: null,
+        bleService: widget.bleService,
+      );
+
+      _isCompleted = true;
+      deviceList.add(newDevice);
+      widget.onDeviceAdded(newDevice);
+
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
+  }
 
-    if (!mounted) return;
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _deviceStateSubscription?.cancel();
+    _connectionStatusSubscription?.cancel();
+    _bluetoothStateSubscription?.cancel();
+    if (!_isCompleted && _isConnecting) {
+      widget.bleService.disconnectFromDevice();
+    }
+    super.dispose();
+  }
 
-    // Create the device
-    final name = _nameController.text;
-    final deviceList = Provider.of<DeviceList>(context, listen: false);
-
-    final newDevice = Device(
-      id: UniqueKey().toString(),
-      deviceName: name,
-      connectedQueName: selectedDevice?.platformName ?? '',
-      bluetoothDevice: selectedDevice,
-      bleService: widget.bleService,
-    );
-
-    // Set completion flag before closing dialog
-    _isCompleted = true;
-
-    deviceList.add(newDevice);
-    widget.onDeviceAdded(newDevice);
-
-    Navigator.of(context).pop();
+  List<BluetoothDevice> getDevicesWithNames() {
+    return nearbyDevices.where((device) => device.platformName.isNotEmpty).toList();
   }
 
   @override
