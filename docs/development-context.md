@@ -1,22 +1,28 @@
 # Que App: Development Context and Documentation
-[Last Updated: 2024-11-26]
+[Last Updated: 2024-11-27]
 
 ## Purpose
 This document provides essential context and current development status to assist with the ongoing development of the Que App, a Flutter application for managing BLE-enabled scent devices. This document should be used alongside the project structure document to understand both the current state and implementation details.
 
+## Development Instructions for LLM Assistant
+- Always include the complete file directory at the top of code files
+- Provide the complete code file when possible
+
+
 ## Current Development State
 
 ### Active Development
-- **Current Task**: Completing dialog parameter standardization and HIPAA compliance planning
-- **Last Major Change**: Standardized dialog parameters and device info implementation (2024-11-26)
-- **Next Priority**: HIPAA-compliant data storage and heart rate monitoring implementation
+- **Current Task**: Database service provider implementation and provider tree optimization
+- **Last Major Change**: Implemented singleton database service provider and standardized access patterns (2024-11-27)
+- **Next Priority**: HIPAA-compliant storage implementation and dialog parameter standardization
 
 ### Implementation Status
 #### Core Services Status
 - ✓ BLE Connection Management
 - ✓ Device State Management
 - ✓ BLE Constants and UUIDs
-- 🔄 Database Service
+- ✓ Database Service Architecture
+- 🔄 Database Implementation
 - 📋 Analytics Service
 - 📋 Logging Service
 - 📋 Encryption Service
@@ -33,7 +39,9 @@ This document provides essential context and current development status to assis
 
 ### Critical Implementation Gaps
 1. Database Service
-- Need to implement core CRUD operations with HIPAA compliance
+- ✓ Core database architecture implemented as singleton
+- ✓ Basic CRUD operations structure defined
+- 🔄 HIPAA compliance implementation in progress
 - Migration to feature-specific repositories needed
 - Local storage encryption required
 - Secure heart rate data storage needed
@@ -55,6 +63,7 @@ This document provides essential context and current development status to assis
 - Using BLoC pattern for feature-level state
 - ChangeNotifier for model-level state
 - Equatable for state comparison
+- Provider pattern for service injection
 
 2. BLE Implementation
 - Singleton service pattern
@@ -68,43 +77,21 @@ This document provides essential context and current development status to assis
 - Shared core services
 - Feature-specific repositories
 - Secure data handling patterns
-
-### Core Data Types Reference
-Key data structures that should be consistent across implementations:
-
-```dart
-// Device Settings Shape
-{
-  emission1Duration: Duration,
-  emission2Duration: Duration,
-  releaseInterval1: Duration,
-  releaseInterval2: Duration,
-  isPeriodicEmissionEnabled: bool,
-  isPeriodicEmissionEnabled2: bool,
-  heartrateThreshold: int,
-}
-
-// BLE Characteristic Types
-{
-  ledControl: uint8,
-  emissionDuration: uint16,
-  releaseInterval: uint16,
-  periodicEnabled: bool,
-  heartrateThreshold: uint8,
-}
-```
+- Proper dependency injection via provider
 
 ### Required Fixes
 1. ⚠️ High Priority
 - HIPAA-compliant storage implementation
-- Remaining dialog parameter standardization
 - Secure heart rate data handling
+- Database service provider access standardization
+- Provider tree optimization
 
 2. 🔄 In Progress
 - Feature-first architecture migration
 - Global state management
 - Navigation system
 - Dialog parameters alignment
+- Database service implementation
 
 3. 📋 Planned
 - Analytics integration
@@ -112,16 +99,6 @@ Key data structures that should be consistent across implementations:
 - Comprehensive testing
 - Security audit implementation
 
-### Security Considerations
-- All BLE operations must implement timeout handling
-- Database operations must handle transaction failures
-- Device settings must validate before persistence
-- BLE scanning must respect permission states
-- Heart rate data must be handled securely
-- HIPAA compliance required for health data storage
-- All health data must be encrypted at rest
-- Secure transmission protocols needed for health data
-
 ## VERSION CONTROL
-Document Version: 2.2
-Last Updated: 2024-11-26
+Document Version: 2.3
+Last Updated: 2024-11-27

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Import provider
+import 'core/services/database_service.dart';
 import 'features/device_control/views/device_control_screen.dart';
 import 'features/notes/views/notes_screen.dart';
 import 'package:que_app/core/models/notes_list.dart';
@@ -14,15 +15,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider( // Change to MultiProvider
+    return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => DeviceList()), // Provide the DeviceList
-        ChangeNotifierProvider(create: (_) => NotesList()), // Provide the NotesList
-        // Add other providers if needed
+        Provider<DatabaseService>.value(
+          value: DatabaseService.instance,
+        ),
+        ChangeNotifierProvider(create: (_) => DeviceList()),
+        ChangeNotifierProvider(create: (_) => NotesList()),
       ],
       child: MaterialApp(
         title: 'Que App',
-        debugShowCheckedModeBanner: false,  // Add this line
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
           appBarTheme: const AppBarTheme(

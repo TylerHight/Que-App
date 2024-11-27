@@ -138,47 +138,53 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   }
 
   Future<void> _addDevice() async {
-    if (!_formKey.currentState!.validate() || selectedDevice == null) return;
+    if (!_formKey.currentState!.validate()) return;
 
-    if (!mounted) return;
-    setState(() {
-      _isConnecting = true;
-      _statusMessage = "Connecting to ${selectedDevice!.platformName}...";
-    });
+    // If a device is selected, connect to it
+    if (selectedDevice != null) {
+      if (!mounted) return;
+      setState(() {
+        _isConnecting = true;
+        _statusMessage = "Connecting to ${selectedDevice!.platformName}...";
+      });
 
-    try {
-      await widget.bleService.connectToDevice(selectedDevice!);
-
-      // Wait a brief moment to ensure connection is stable
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      // Create the device only after successful connection
-      final name = _nameController.text;
-      final deviceList = Provider.of<DeviceList>(context, listen: false);
-
-      final newDevice = Device(
-        id: UniqueKey().toString(),
-        deviceName: name,
-        connectedQueName: selectedDevice!.platformName,
-        bluetoothDevice: selectedDevice,
-        bleService: widget.bleService,
-      );
-
-      // Set completion flag before closing dialog
-      _isCompleted = true;
-      deviceList.add(newDevice);
-      widget.onDeviceAdded(newDevice);
-
-      if (mounted) {
-        Navigator.of(context).pop();
+      try {
+        await widget.bleService.connectToDevice(selectedDevice!);
+        await Future.delayed(const Duration(milliseconds: 500));
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _isConnecting = false;
+            _statusMessage = "Connection failed: ${e.toString()}";
+          });
+          return;
+        }
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isConnecting = false;
-          _statusMessage = "Connection failed: ${e.toString()}";
-        });
-      }
+    }
+
+    // Create the device
+    final name = _nameController.text;
+    final deviceList = Provider.of<DeviceList>(context, listen: false);
+
+    final newDevice = Device(
+      id: UniqueKey().toString(),
+      deviceName: name,
+      connectedQueName: selectedDevice?.platformName ?? '',
+      bluetoothDevice: selectedDevice,
+      bleService: widget.bleService,
+    );
+
+    // Set completion flag before closing dialog
+    _isCompleted = true;
+
+    // Only add the device once through the deviceList
+    deviceList.add(newDevice);
+
+    // Just notify the parent that a device was added without passing the device
+    widget.onDeviceAdded(newDevice);
+
+    if (mounted) {
+      Navigator.of(context).pop();
     }
   }
 
@@ -221,28 +227,28 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                   child: DropdownButtonFormField<BluetoothDevice>(
                     isExpanded: true,
                     decoration: const InputDecoration(
-                      labelText: 'Select Que',
+                      labelText: 'Select Que (Optional)',
                       border: OutlineInputBorder(),
                     ),
                     value: selectedDevice,
                     onChanged: _isConnecting ? null : (BluetoothDevice? device) {
                       setState(() => selectedDevice = device);
                     },
-                    items: getDevicesWithNames()
-                        .map((device) => DropdownMenuItem(
-                      value: device,
-                      child: Text(
-                        device.platformName,
-                        overflow: TextOverflow.ellipsis,
+                    items: [
+                      const DropdownMenuItem<BluetoothDevice>(
+                        value: null,
+                        child: Text('No Que selected'),
                       ),
-                    ))
-                        .toList(),
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Please select a device';
-                      }
-                      return null;
-                    },
+                      ...getDevicesWithNames()
+                          .map((device) => DropdownMenuItem(
+                        value: device,
+                        child: Text(
+                          device.platformName,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ))
+                          .toList(),
+                    ],
                   ),
                 ),
                 ElevatedButton(
@@ -284,9 +290,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
           child: const Text('Cancel'),
         ),
         TextButton(
-          onPressed: (_isConnecting || _isScanning || selectedDevice == null)
-              ? null
-              : _addDevice,
+          onPressed: _isConnecting || _isScanning ? null : _addDevice,
           child: Text(_isConnecting ? 'Connecting...' : 'Add'),
         ),
       ],

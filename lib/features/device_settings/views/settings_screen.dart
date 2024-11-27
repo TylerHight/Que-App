@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:que_app/core/models/device/index.dart';
 import 'package:que_app/core/services/ble/ble_service.dart';
+import 'package:que_app/core/services/database_service.dart';
 import 'package:que_app/features/device_settings/bloc/device_settings_bloc.dart';
 import 'package:que_app/features/device_settings/bloc/device_settings_event.dart';
 import 'package:que_app/features/device_settings/bloc/device_settings_state.dart';
@@ -26,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) {
         final repository = DeviceSettingsRepository(
-          databaseService: context.read(),
+          databaseService: context.read<DatabaseService>(),
           bleService: bleService,
         );
 

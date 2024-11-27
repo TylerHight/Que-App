@@ -1,12 +1,19 @@
+// lib/core/models/device_list.dart
 import 'package:flutter/foundation.dart';
 import 'device/index.dart';
 
 class DeviceList extends ChangeNotifier {
-  final List<Device> _devices = [];
+  final Set<Device> _devices = {};
 
-  List<Device> get devices => _devices;
+  List<Device> get devices => _devices.toList();
+
+  bool hasDevice(String id) {
+    return _devices.any((device) => device.id == id);
+  }
 
   void add(Device device) {
+    // Remove existing device with same ID if it exists
+    _devices.removeWhere((d) => d.id == device.id);
     _devices.add(device);
     notifyListeners();
   }
@@ -21,5 +28,11 @@ class DeviceList extends ChangeNotifier {
     remove(device);
   }
 
-// Additional methods for functionality such as saving to storage, etc., can be added here
+  Device? findDeviceById(String id) {
+    try {
+      return _devices.firstWhere((device) => device.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
 }
