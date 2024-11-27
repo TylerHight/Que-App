@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import '../dialogs/not_connected_dialog.dart';
+import 'package:que_app/core/models/device/device.dart';
+import 'package:que_app/core/services/ble/ble_service.dart';
 
 class TimedBinaryButton extends StatefulWidget {
   final Color? activeColor;
@@ -14,7 +17,9 @@ class TimedBinaryButton extends StatefulWidget {
   final bool autoTurnOffEnabled;
   final Duration periodicEmissionTimerDuration;
   final bool periodicEmissionEnabled;
-  final bool isConnected; // New parameter
+  final bool isConnected;
+  final Device device;  // Add device parameter
+  final BleService bleService;  // Add bleService parameter
 
   const TimedBinaryButton({
     Key? key,
@@ -30,7 +35,9 @@ class TimedBinaryButton extends StatefulWidget {
     this.autoTurnOffEnabled = false,
     required this.periodicEmissionTimerDuration,
     this.periodicEmissionEnabled = false,
-    required this.isConnected, // New parameter
+    required this.isConnected,
+    required this.device,  // Add to constructor
+    required this.bleService,  // Add to constructor
   }) : super(key: key);
 
   @override
@@ -42,9 +49,9 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   late Timer _autoTurnOffTimer;
-  Timer? _periodicEmissionTimer; // Declare _periodicEmissionTimer as nullable
-  int _secondsLeft = 0; // Track the remaining seconds for auto turn-off
-  int _periodicEmissionSecondsLeft = 0; // Track the remaining seconds for periodic emission
+  Timer? _periodicEmissionTimer;
+  int _secondsLeft = 0;
+  int _periodicEmissionSecondsLeft = 0;
 
   @override
   void initState() {
@@ -93,12 +100,6 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
         setState(() {
           _secondsLeft--;
         });
-        // Convert to minutes if over 59 seconds
-        if (_secondsLeft > 59) {
-          //print('Auto Turn-Off: $minutes m $seconds s');
-        } else {
-          //print('Auto Turn-Off: $_secondsLeft s');
-        }
       } else {
         if (isLightOn) {
           toggleLight();
@@ -115,14 +116,6 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
         setState(() {
           _periodicEmissionSecondsLeft--;
         });
-        // Convert to minutes if over 59 seconds
-        if (_periodicEmissionSecondsLeft > 59) {
-          int minutes = _periodicEmissionSecondsLeft ~/ 60;
-          int seconds = _periodicEmissionSecondsLeft % 60;
-          print('Periodic Emission: $minutes m $seconds s');
-        } else {
-          print('Periodic Emission: $_periodicEmissionSecondsLeft s');
-        }
       } else {
         if (!isLightOn) {
           toggleLight();
@@ -134,30 +127,49 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
     });
   }
 
-  void toggleLight() {
+  void toggleLight() async {
+    if (!widget.isConnected) {
+      await showNotConnectedDialog(
+        context: context,
+        device: widget.device,
+        bleService: widget.bleService,
+        onConnected: () {
+          // Try the operation again after connection
+          if (!isLightOn) {
+            setState(() {
+              isLightOn = true;
+            });
+            if (widget.autoTurnOffEnabled) {
+              _secondsLeft = widget.autoTurnOffDuration.inSeconds;
+              _autoTurnOffTimer = _startAutoTurnOffTimer();
+            }
+            widget.onPressedTurnOn?.call();
+          }
+        },
+      );
+      return;
+    }
+
     setState(() {
-      if (widget.isConnected) {
-        isLightOn = !isLightOn;
+      isLightOn = !isLightOn;
 
-        if (!isLightOn) {
-          // Reset the auto turn-off timer when the button is turned off
-          _secondsLeft = 0;
-          if (_autoTurnOffTimer.isActive) {
-            _autoTurnOffTimer.cancel();
-          }
-          widget.onPressedTurnOff?.call(); // Call onPressedTurnOff immediately
-        } else {
-          if (widget.autoTurnOffEnabled) {
-            _secondsLeft = widget.autoTurnOffDuration.inSeconds;
-            _autoTurnOffTimer = _startAutoTurnOffTimer();
-          }
-
-          if (widget.periodicEmissionEnabled) {
-            _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
-            _periodicEmissionTimer = _startPeriodicEmissionTimer();
-          }
-          widget.onPressedTurnOn?.call(); // Call onPressedTurnOn immediately
+      if (!isLightOn) {
+        _secondsLeft = 0;
+        if (_autoTurnOffTimer.isActive) {
+          _autoTurnOffTimer.cancel();
         }
+        widget.onPressedTurnOff?.call();
+      } else {
+        if (widget.autoTurnOffEnabled) {
+          _secondsLeft = widget.autoTurnOffDuration.inSeconds;
+          _autoTurnOffTimer = _startAutoTurnOffTimer();
+        }
+
+        if (widget.periodicEmissionEnabled) {
+          _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
+          _periodicEmissionTimer = _startPeriodicEmissionTimer();
+        }
+        widget.onPressedTurnOn?.call();
       }
     });
 
@@ -254,15 +266,12 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
 
   String _formatTime(int seconds) {
     if (seconds >= 3600) {
-      // More than or equal to 1 hour
       int hours = seconds ~/ 3600;
       return '$hours' 'h';
     } else if (seconds >= 60) {
-      // More than or equal to 1 minute
       int minutes = seconds ~/ 60;
       return '$minutes' 'm';
     } else {
-      // Less than 1 minute
       return '$seconds' 's';
     }
   }

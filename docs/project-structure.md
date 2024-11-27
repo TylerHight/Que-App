@@ -10,6 +10,7 @@ When updating this document:
 - Update the File Status Overview counts
 - Include parent directories in file paths
 - Always ensure that the project directory structure is complete
+- The information provided in this document should be aimed at facilitating easy understanding of the project by the LLM.
 
 ## Status Legend
 ✓ - Implemented and tested  

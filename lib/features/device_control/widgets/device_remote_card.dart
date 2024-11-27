@@ -188,6 +188,8 @@ class _DeviceRemoteState extends State<DeviceRemote> {
                     onPressedTurnOn: () => _sendCommand(BleConstants.CMD_LED_RED),
                     onPressedTurnOff: () => _sendCommand(BleConstants.CMD_LED_OFF),
                     isConnected: device.isBleConnected,
+                    device: device,                   // Add this
+                    bleService: widget.bleService,    // Add this
                   ),
                   const SizedBox(width: 8),
                   TimedBinaryButton(
@@ -204,6 +206,8 @@ class _DeviceRemoteState extends State<DeviceRemote> {
                     onPressedTurnOn: () => _sendCommand(BleConstants.CMD_LED_GREEN),
                     onPressedTurnOff: () => _sendCommand(BleConstants.CMD_LED_OFF),
                     isConnected: device.isBleConnected,
+                    device: device,                   // Add this
+                    bleService: widget.bleService,    // Add this
                   ),
                 ],
               ),

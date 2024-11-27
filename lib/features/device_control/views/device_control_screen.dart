@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:que_app/core/models/device_list.dart';
 import '../../../core/models/device/index.dart';
 import '../dialogs/add_device_dialog.dart';
+import '../dialogs/not_connected_dialog.dart';
 import '../widgets/device_remote_card.dart';
 import 'package:que_app/core/services/ble/ble_service.dart';
 
@@ -100,52 +101,10 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                     return GestureDetector(
                       onTap: () async {
                         if (!isConnected) {
-                          // Show connection dialog with retry option
-                          showDialog(
+                          await showNotConnectedDialog(
                             context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: const Text('Not connected'),
-                                content: const Text('Would you like to try connecting?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('Cancel'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: const Text('Connect'),
-                                    onPressed: () async {
-                                      Navigator.of(context).pop();
-                                      try {
-                                        // Using the stored Bluetooth device
-                                        if (device.bluetoothDevice != null) {
-                                          await _bleService.connectToDevice(device.bluetoothDevice!);
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                              content: Text('Connected successfully'),
-                                              duration: Duration(seconds: 2),
-                                            ),
-                                          );
-                                        } else {
-                                          throw Exception('No Bluetooth device associated');
-                                        }
-                                      } catch (e) {
-                                        if (mounted) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Text('Connection failed: $e'),
-                                              duration: const Duration(seconds: 2),
-                                            ),
-                                          );
-                                        }
-                                      }
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
+                            device: device,
+                            bleService: _bleService,
                           );
                         }
                       },

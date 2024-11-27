@@ -7,6 +7,7 @@ This document provides essential context and current development status to assis
 ## Development Instructions for LLM Assistant
 - Always include the complete file directory at the top of code files
 - Provide the complete code file when possible
+- The information provided in this document should be aimed at facilitating easy understanding of the project by the LLM.
 
 
 ## Current Development State
