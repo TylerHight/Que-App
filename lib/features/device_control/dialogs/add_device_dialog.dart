@@ -99,37 +99,25 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     });
 
     try {
-      await FlutterBluePlus.startScan(
-        timeout: const Duration(seconds: 4),
-        androidScanMode: AndroidScanMode.lowLatency,
-      );
-
-      FlutterBluePlus.scanResults.listen((results) {
-        if (mounted) {
-          setState(() {
-            nearbyDevices = results
-                .where((result) =>
-            result.device.platformName == "Nano 33 BLE" &&
-                result.advertisementData.connectable)
-                .map((result) => result.device)
-                .toList();
-            _statusMessage = nearbyDevices.isEmpty ? "No devices found" : "";
-          });
-        }
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _statusMessage = "Scan failed: ${e.toString()}";
-      });
-    } finally {
-      if (!mounted) {
-        await FlutterBluePlus.stopScan();
-        return;
+      final devices = await bleUtils.startScan();
+      if (mounted) {
+        setState(() {
+          nearbyDevices = devices;
+          _statusMessage = devices.isEmpty ? "No devices found" : "";
+        });
       }
-      setState(() {
-        _isScanning = false;
-      });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _statusMessage = "Scan failed: ${e.toString()}";
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isScanning = false;
+        });
+      }
     }
   }
 
@@ -150,7 +138,19 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
 
       try {
         await widget.bleService.connectToDevice(selectedDevice!);
-        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Wait for connection confirmation
+        bool connected = false;
+        for (int i = 0; i < 5; i++) { // Try for 5 seconds
+          await Future.delayed(const Duration(seconds: 1));
+          connected = await bleUtils.checkDeviceConnected(selectedDevice!);
+          if (connected) break;
+        }
+
+        if (!connected) {
+          throw Exception("Connection timeout");
+        }
+
       } catch (e) {
         if (mounted) {
           setState(() {
@@ -161,6 +161,8 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
         }
       }
     }
+
+    if (!mounted) return;
 
     // Create the device
     final name = _nameController.text;
@@ -177,15 +179,10 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     // Set completion flag before closing dialog
     _isCompleted = true;
 
-    // Only add the device once through the deviceList
     deviceList.add(newDevice);
-
-    // Just notify the parent that a device was added without passing the device
     widget.onDeviceAdded(newDevice);
 
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
+    Navigator.of(context).pop();
   }
 
   @override
@@ -237,7 +234,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                     items: [
                       const DropdownMenuItem<BluetoothDevice>(
                         value: null,
-                        child: Text('No Que selected'),
+                        child: Text('None'),
                       ),
                       ...getDevicesWithNames()
                           .map((device) => DropdownMenuItem(
