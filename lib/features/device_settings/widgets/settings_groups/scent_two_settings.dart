@@ -13,10 +13,12 @@ import 'package:que_app/features/device_settings/utils/settings_helpers.dart';
 
 class ScentTwoSettings extends StatelessWidget {
   final bool enabled;
+  final bool hasPendingChanges;
 
   const ScentTwoSettings({
     Key? key,
     this.enabled = true,
+    required this.hasPendingChanges,
   }) : super(key: key);
 
   @override
@@ -31,7 +33,6 @@ class ScentTwoSettings extends StatelessWidget {
           title: 'Scent Two Settings',
           enabled: enabled,
           accentColor: Colors.green.shade500,
-          subtitle: !state.isConnected && state.hasPendingChanges ? 'Changes will sync when connected' : null,
           children: [
             SettingsValueTile(
               title: 'Release Duration',
@@ -95,7 +96,6 @@ class ScentTwoSettings extends StatelessWidget {
       },
     );
   }
-}
 
   void _showDurationPicker(BuildContext context, Duration current) async {
     try {

@@ -28,6 +28,7 @@ class Device extends ChangeNotifier with EquatableMixin {
   bool get isBleConnected => _state.isBleConnected;
   int get heartrateThreshold => _state.heartrateThreshold;
   Map<String, List<String>> get bluetoothServiceCharacteristics => _ble.serviceCharacteristics;
+  bool get isConnected => isBleConnected;
 
   set isBleConnected(bool value) {
     _state.isBleConnected = value;

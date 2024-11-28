@@ -17,6 +17,9 @@ class SettingsService {
   }) : _bleService = bleService,
         _repository = repository;
 
+  // Add getter for BleService to support connection handling
+  BleService get bleService => _bleService;
+
   /// Update emission duration for scent one
   Future<void> updateEmission1Duration(
       Device device,
@@ -33,7 +36,9 @@ class SettingsService {
       );
 
       await _repository.updateScentOneConfig(device.id, newScentConfig);
-      await _bleService.updateEmission1Duration(device.id, duration);
+      if (device.isConnected) {
+        await _bleService.updateEmission1Duration(device.id, duration);
+      }
     } catch (e) {
       throw SettingsServiceException('Failed to update emission 1 duration: $e');
     }
@@ -55,7 +60,9 @@ class SettingsService {
       );
 
       await _repository.updateScentTwoConfig(device.id, newScentConfig);
-      await _bleService.updateEmission2Duration(device.id, duration);
+      if (device.isConnected) {
+        await _bleService.updateEmission2Duration(device.id, duration);
+      }
     } catch (e) {
       throw SettingsServiceException('Failed to update emission 2 duration: $e');
     }
@@ -77,7 +84,9 @@ class SettingsService {
       );
 
       await _repository.updateScentOneConfig(device.id, newScentConfig);
-      await _bleService.updateInterval1(device.id, interval);
+      if (device.isConnected) {
+        await _bleService.updateInterval1(device.id, interval);
+      }
     } catch (e) {
       throw SettingsServiceException('Failed to update release interval 1: $e');
     }
@@ -99,7 +108,9 @@ class SettingsService {
       );
 
       await _repository.updateScentTwoConfig(device.id, newScentConfig);
-      await _bleService.updateInterval2(device.id, interval);
+      if (device.isConnected) {
+        await _bleService.updateInterval2(device.id, interval);
+      }
     } catch (e) {
       throw SettingsServiceException('Failed to update release interval 2: $e');
     }
@@ -119,7 +130,9 @@ class SettingsService {
       );
 
       await _repository.updateScentOneConfig(device.id, newScentConfig);
-      await _bleService.updatePeriodicEmission1(device.id, enabled);
+      if (device.isConnected) {
+        await _bleService.updatePeriodicEmission1(device.id, enabled);
+      }
     } catch (e) {
       throw SettingsServiceException('Failed to update periodic emission 1: $e');
     }
@@ -139,7 +152,9 @@ class SettingsService {
       );
 
       await _repository.updateScentTwoConfig(device.id, newScentConfig);
-      await _bleService.updatePeriodicEmission2(device.id, enabled);
+      if (device.isConnected) {
+        await _bleService.updatePeriodicEmission2(device.id, enabled);
+      }
     } catch (e) {
       throw SettingsServiceException('Failed to update periodic emission 2: $e');
     }
@@ -159,7 +174,9 @@ class SettingsService {
       );
 
       await _repository.updateHeartRateConfig(device.id, newHeartRateConfig);
-      await _bleService.updateHeartRateThreshold(device.id, threshold);
+      if (device.isConnected) {
+        await _bleService.updateHeartRateThreshold(device.id, threshold);
+      }
     } catch (e) {
       throw SettingsServiceException('Failed to update heart rate threshold: $e');
     }
@@ -184,7 +201,9 @@ class SettingsService {
   Future<void> deleteDevice(Device device) async {
     try {
       await _repository.deleteDeviceSettings(device.id);
-      await _bleService.forgetDevice(device.id);
+      if (device.isConnected) {
+        await _bleService.forgetDevice(device.id);
+      }
     } catch (e) {
       throw SettingsServiceException('Failed to delete device: $e');
     }
@@ -197,6 +216,25 @@ class SettingsService {
       await _repository.saveDeviceSettings(config);
     } catch (e) {
       throw SettingsServiceException('Failed to save settings: $e');
+    }
+  }
+
+  /// Sync pending changes
+  Future<void> syncPendingChanges(Device device) async {
+    try {
+      final config = await _repository.getDeviceSettings(device.id);
+      if (device.isConnected) {
+        // Sync all settings with device
+        await _bleService.updateEmission1Duration(device.id, config.scentOne.emissionDuration);
+        await _bleService.updateEmission2Duration(device.id, config.scentTwo.emissionDuration);
+        await _bleService.updateInterval1(device.id, config.scentOne.releaseInterval);
+        await _bleService.updateInterval2(device.id, config.scentTwo.releaseInterval);
+        await _bleService.updatePeriodicEmission1(device.id, config.scentOne.isPeriodicEnabled);
+        await _bleService.updatePeriodicEmission2(device.id, config.scentTwo.isPeriodicEnabled);
+        await _bleService.updateHeartRateThreshold(device.id, config.heartRate.threshold);
+      }
+    } catch (e) {
+      throw SettingsServiceException('Failed to sync pending changes: $e');
     }
   }
 }

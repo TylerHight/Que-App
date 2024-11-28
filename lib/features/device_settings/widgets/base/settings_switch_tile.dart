@@ -10,6 +10,7 @@ class SettingsSwitchTile extends StatelessWidget {
   final Color iconColor;
   final ValueChanged<bool>? onChanged;
   final bool enabled;
+  final Widget? trailing;
 
   const SettingsSwitchTile({
     Key? key,
@@ -20,6 +21,7 @@ class SettingsSwitchTile extends StatelessWidget {
     required this.iconColor,
     this.onChanged,
     this.enabled = true,
+    this.trailing,
   }) : super(key: key);
 
   @override

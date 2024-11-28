@@ -12,16 +12,20 @@ import '../../dialogs/heart_rate_threshold_dialog.dart';
 
 class HeartRateSettings extends StatelessWidget {
   final bool enabled;
+  final bool hasPendingChanges;
 
   const HeartRateSettings({
     Key? key,
     this.enabled = true,
+    required this.hasPendingChanges,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DeviceSettingsBloc, DeviceSettingsState>(
       builder: (context, state) {
+        final hasPendingThresholdChange = state.pendingChanges.containsKey('heartrateThreshold');
+
         return SettingsGroup(
           title: 'Heart Rate Settings',
           enabled: enabled,
@@ -46,6 +50,13 @@ class HeartRateSettings extends StatelessWidget {
               icon: Icons.favorite,
               iconColor: Colors.red,
               enabled: enabled,
+              trailing: !state.isConnected && hasPendingThresholdChange
+                  ? Icon(
+                Icons.sync_disabled,
+                size: 16,
+                color: Colors.orange[700],
+              )
+                  : null,
               onTap: () => _showThresholdPicker(
                 context,
                 state.heartrateThreshold,

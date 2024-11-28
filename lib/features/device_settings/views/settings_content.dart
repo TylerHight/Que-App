@@ -162,14 +162,6 @@ class SettingsContent extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-                if (!state.isConnected)
-                  Text(
-                    'Settings can be changed but won\'t sync until connected',
-                    style: TextStyle(
-                      color: Colors.orange.shade700,
-                      fontSize: 12,
-                    ),
-                  ),
               ],
             ),
           ),

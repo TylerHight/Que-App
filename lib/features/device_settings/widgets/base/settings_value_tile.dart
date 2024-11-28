@@ -11,6 +11,7 @@ class SettingsValueTile extends StatelessWidget {
   final bool enabled;
   final String? subtitle;
   final Widget? customValue;
+  final Widget? trailing;
 
   const SettingsValueTile({
     Key? key,
@@ -22,6 +23,7 @@ class SettingsValueTile extends StatelessWidget {
     this.enabled = true,
     this.subtitle,
     this.customValue,
+    this.trailing,
   }) : super(key: key);
 
   @override

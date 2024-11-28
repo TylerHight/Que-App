@@ -13,10 +13,12 @@ import '../../dialogs/duration_selection_dialog.dart';
 
 class ScentOneSettings extends StatelessWidget {
   final bool enabled;
+  final bool hasPendingChanges;
 
   const ScentOneSettings({
     Key? key,
     this.enabled = true,
+    required this.hasPendingChanges,
   }) : super(key: key);
 
   @override
@@ -31,7 +33,6 @@ class ScentOneSettings extends StatelessWidget {
           title: 'Scent One Settings',
           enabled: enabled,
           accentColor: Colors.lightBlue.shade400,
-          subtitle: !state.isConnected && state.hasPendingChanges ? 'Changes will sync when connected' : null,
           children: [
             SettingsValueTile(
               title: 'Release Duration',
@@ -39,6 +40,10 @@ class ScentOneSettings extends StatelessWidget {
               icon: Icons.air,
               iconColor: Colors.lightBlue.shade400,
               enabled: enabled,
+              onTap: () => _showDurationPicker(
+                context,
+                state.emission1Duration,
+              ),
               trailing: !state.isConnected && hasPendingDurationChange
                   ? Icon(
                 Icons.sync_disabled,
@@ -46,10 +51,6 @@ class ScentOneSettings extends StatelessWidget {
                 color: Colors.orange[700],
               )
                   : null,
-              onTap: () => _showDurationPicker(
-                context,
-                state.emission1Duration,
-              ),
             ),
             SettingsSwitchTile(
               title: 'Periodic Emissions',
