@@ -37,135 +37,238 @@ class _NotesScreenState extends State<NotesScreen> {
     });
   }
 
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays == 0) {
+      return 'Today ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+    } else if (difference.inDays == 1) {
+      return 'Yesterday ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} days ago';
+    } else {
+      return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text(
-          'Notes',
+        // Add leading close button when in selection mode
+        leading: _isSelectionMode
+            ? IconButton(
+          icon: const Icon(Icons.close, color: Colors.black87),
+          onPressed: _toggleSelectionMode,
+          tooltip: 'Cancel selection',
+        )
+            : null,
+        title: Text(
+          _isSelectionMode ? '${_selectedNotes.length} selected' : 'My Notes',
           style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w400, // Decrease the font weight
+            color: Colors.black87,
+            fontWeight: _isSelectionMode ? FontWeight.w500 : FontWeight.w600,
+            fontSize: 24,
           ),
         ),
-        backgroundColor: Colors.white, // Set the AppBar background color to white
-        iconTheme: const IconThemeData(color: Colors.black), // Set the color of icons in AppBar
-        elevation: 0.0, // Remove the shadow/depth of the AppBar
+        backgroundColor: Colors.white,
+        elevation: 0,
         actions: <Widget>[
           if (_isSelectionMode)
-            Transform.scale(
-              scale: 1.2, // Increase the size of the delete icon
-              child: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: _selectedNotes.isEmpty ? null : _deleteSelectedNotes,
-                padding: const EdgeInsets.symmetric(horizontal: 5.0), // Reduce padding around the trash icon
+            TextButton.icon(
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              label: Text(
+                'Delete',
+                style: TextStyle(
+                  color: _selectedNotes.isEmpty ? Colors.grey : Colors.red,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
+              onPressed: _selectedNotes.isEmpty ? null : _deleteSelectedNotes,
+            )
+          else
+            IconButton(
+              icon: const Icon(Icons.checklist, color: Colors.black54),
+              onPressed: _toggleSelectionMode,
+              tooltip: 'Select notes',
             ),
-          Transform.scale(
-            scale: 1.3, // Increase the size of the Checkbox
-            child: Checkbox(
-              value: _isSelectionMode,
-              onChanged: (value) {
-                _toggleSelectionMode();
-              },
-            ),
-          ),
-          const SizedBox(width: 9.0), // Adjust spacing between the Checkbox and the Add Icon
-          Padding(
-            padding: const EdgeInsets.only(right: 14.0), // Add padding to the right
-            child: Container(
-              width: 35.0, // Slightly reduce the size of the circle
-              height: 35.0,
-              decoration: const BoxDecoration(
-                color: Colors.blue, // Blue background
-                shape: BoxShape.circle, // Circle shape
-              ),
-              child: Center(
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: const Icon(Icons.add, color: Colors.white), // White "add" icon
-                  onPressed: () {
+          if (!_isSelectionMode)
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: Material(
+                color: Colors.blue[600],
+                borderRadius: BorderRadius.circular(12),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () {
                     showDialog(
                       context: context,
-                      builder: (BuildContext context) {
-                        return AddNoteDialog(
-                          onNoteAdded: (Note newNote) {
-                            // Do nothing here, as the note is already added in AddNoteDialog
-                          },
-                        );
-                      },
+                      builder: (BuildContext context) => AddNoteDialog(onNoteAdded: (_) {}),
                     );
                   },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.add, color: Colors.white, size: 20),
+                        SizedBox(width: 4),
+                        Text(
+                          'New Note',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
       body: Consumer<NotesList>(
         builder: (context, notesList, _) {
-          // Check if there are notes in the list
           if (notesList.notes.isEmpty) {
-            // If no notes, display a message with padding
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0), // Horizontal padding added
-                child: Text(
-                  'No notes yet. Tap the "+" button to add a note or use the note icon on each device.',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300), // Decrease the font weight
-                  textAlign: TextAlign.center,
-                ),
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.note_alt_outlined,
+                      size: 48,
+                      color: Colors.blue[400],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'No notes yet',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Tap "New Note" to create your first note\nor use the note icon on each device.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey[600],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             );
-          } else {
-            // If there are notes, display them using ListView.builder
-            final reversedNotes = notesList.notes.reversed.toList();
-            return ListView.builder(
-              itemCount: reversedNotes.length,
-              itemBuilder: (context, index) {
-                final note = reversedNotes[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0), // Add vertical padding
-                  child: ListTile(
-                    onLongPress: () {
-                      if (!_isSelectionMode) {
-                        _toggleSelectionMode();
-                      }
+          }
+
+          final reversedNotes = notesList.notes.reversed.toList();
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: reversedNotes.length,
+            itemBuilder: (context, index) {
+              final note = reversedNotes[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onLongPress: () {
+                    if (!_isSelectionMode) {
+                      _toggleSelectionMode();
                       _toggleNoteSelection(note);
-                    },
-                    onTap: () {
-                      if (_isSelectionMode) {
-                        _toggleNoteSelection(note);
-                      }
-                    },
-                    title: Text(
-                      note.content,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Device: ${note.device?.deviceName ?? "N/A"}'),
-                        Text(note.creationDate.toLocal().toString().split('.')[0]),
+                    }
+                  },
+                  onTap: () {
+                    if (_isSelectionMode) {
+                      _toggleNoteSelection(note);
+                    }
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: _selectedNotes.contains(note)
+                          ? Border.all(color: Colors.blue, width: 2)
+                          : null,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
                       ],
                     ),
-                    trailing: _isSelectionMode
-                        ? Transform.scale(
-                      scale: 1.2, // Slightly increase the size of the selection checkboxes
-                      child: Checkbox(
-                        value: _selectedNotes.contains(note),
-                        onChanged: (value) {
-                          _toggleNoteSelection(note);
-                        },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.devices,
+                                size: 16,
+                                color: Colors.grey[600],
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  note.device?.deviceName ?? 'No Device',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                              ),
+                              if (_isSelectionMode)
+                                Transform.scale(
+                                  scale: 1.1,
+                                  child: Checkbox(
+                                    value: _selectedNotes.contains(note),
+                                    onChanged: (_) => _toggleNoteSelection(note),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            note.content,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            _formatDate(note.creationDate),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
-                    )
-                        : null,
+                    ),
                   ),
-                );
-              },
-            );
-          }
+                ),
+              );
+            },
+          );
         },
       ),
     );
