@@ -1,16 +1,17 @@
 # Project Structure Documentation
-[Last Updated: 2024-11-27]
+[Last Updated: 2024-11-28]
 
 ## LLM INSTRUCTIONS
 When updating this document:
 - Always maintain the full path structure
+- Always provide the complete, unabbreviated document when updating
 - Use consistent status indicators (✓, 🔄, 📋, ❌)
 - Preserve and update comments about implementation status
 - Preserve and update comments about file and directory purposes
 - Update the File Status Overview counts
 - Include parent directories in file paths
-- Always ensure that the project directory structure is complete
 - The information provided in this document should be aimed at facilitating easy understanding of the project by the LLM.
+- Do not add additional sections or a follow-up
 
 ## Status Legend
 ✓ - Implemented and tested  
@@ -19,9 +20,9 @@ When updating this document:
 ❌ - Deprecated/Removed
 
 ## File Status Overview
-Total Files: 57
-- ✓ Implemented: 34
-- 🔄 In Progress: 5  // Updated count due to add_device_dialog.dart status change
+Total Files: 63
+- ✓ Implemented: 39
+- 🔄 In Progress: 6
 - 📋 - Planned: 18
 - ❌ Deprecated/Removed: 0
 
@@ -67,7 +68,18 @@ que_app/                          # Root project directory - Flutter mobile appl
 │   ├── features/              # Features - Main application features
 │   │   ├── device_control/    # Device control - Necklace interaction
 │   │   │   ├── dialogs/       # Modal dialogs - User interactions
-│   │   │   │   ├── add_device_dialog.dart   # 🔄 Device addition with improved connection handling
+│   │   │   │   ├── add_device/              # Add device dialog components
+│   │   │   │   │   ├── add_device_dialog.dart        # 🔄 Main dialog widget
+│   │   │   │   │   ├── models/
+│   │   │   │   │   │   └── add_device_state.dart     # ✓ Dialog state management
+│   │   │   │   │   ├── managers/
+│   │   │   │   │   │   └── ble_connection_manager.dart # 🔄 BLE connection handling
+│   │   │   │   │   ├── components/
+│   │   │   │   │   │   ├── device_name_field.dart    # ✓ Name input field
+│   │   │   │   │   │   ├── device_selector.dart      # ✓ Device dropdown
+│   │   │   │   │   │   └── bluetooth_status.dart     # ✓ Status and scan button
+│   │   │   │   │   └── dialogs/
+│   │   │   │   │       └── bluetooth_enable_dialog.dart # ✓ Bluetooth enable prompt
 │   │   │   │   └── not_connected_dialog.dart # 🔄 Connection status handling
 │   │   │   ├── widgets/       # UI components
 │   │   │   │   ├── device_remote_card.dart  # ✓ Device control interface
@@ -161,10 +173,3 @@ que_app/                          # Root project directory - Flutter mobile appl
 ```
 
 [End of Document]
-
-Key changes made:
-1. Added complete device_control feature structure
-2. Added not_connected_dialog.dart to device_control/dialogs
-3. Updated status of BLE-related files to 🔄 to reflect ongoing improvements
-4. Updated File Status Overview counts
-5. Maintained existing structure for yet-to-be-implemented features
