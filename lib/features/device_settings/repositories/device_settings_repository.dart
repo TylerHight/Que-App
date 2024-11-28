@@ -40,11 +40,23 @@ class DeviceSettingsRepository {
   Future<void> saveDeviceSettings(SettingsConfig config) async {
     try {
       final key = _getDeviceSettingsKey(config.deviceId);
-      // Save to local storage
-      await _databaseService.set(key, config.toJson());
 
-      // Update device via BLE
-      await _updateDeviceViaBle(config);
+      // Get existing settings to preserve pending changes
+      final existingSettings = await getDeviceSettings(config.deviceId);
+
+      // Create updated config with existing pending changes
+      final updatedConfig = config.copyWith(
+        pendingChanges: existingSettings.pendingChanges,
+      );
+
+      // Save to local storage
+      await _databaseService.set(key, updatedConfig.toJson());
+
+      // Update device via BLE only if connected
+      final connectionStatus = await _bleService.connectionStatusStream.first;
+      if (connectionStatus) {
+        await _updateDeviceViaBle(config);
+      }
     } catch (e) {
       throw SettingsRepositoryException(
         'Failed to save device settings: $e',
@@ -62,6 +74,7 @@ class DeviceSettingsRepository {
       final updatedSettings = settings.copyWith(
         scentOne: config,
         lastUpdated: DateTime.now(),
+        pendingChanges: settings.pendingChanges, // Preserve pending changes
       );
       await saveDeviceSettings(updatedSettings);
     } catch (e) {
@@ -81,6 +94,7 @@ class DeviceSettingsRepository {
       final updatedSettings = settings.copyWith(
         scentTwo: config,
         lastUpdated: DateTime.now(),
+        pendingChanges: settings.pendingChanges, // Preserve pending changes
       );
       await saveDeviceSettings(updatedSettings);
     } catch (e) {
@@ -100,6 +114,7 @@ class DeviceSettingsRepository {
       final updatedSettings = settings.copyWith(
         heartRate: config,
         lastUpdated: DateTime.now(),
+        pendingChanges: settings.pendingChanges, // Preserve pending changes
       );
       await saveDeviceSettings(updatedSettings);
     } catch (e) {
@@ -139,6 +154,39 @@ class DeviceSettingsRepository {
     } catch (e) {
       throw SettingsRepositoryException(
         'Failed to update device via BLE: $e',
+      );
+    }
+  }
+
+  /// Update pending changes
+  Future<void> updatePendingChanges(
+      String deviceId,
+      Map<String, dynamic> changes,
+      ) async {
+    try {
+      final settings = await getDeviceSettings(deviceId);
+      final updatedSettings = settings.copyWith(
+        pendingChanges: changes,
+        lastUpdated: DateTime.now(),
+      );
+      await _databaseService.set(
+        _getDeviceSettingsKey(deviceId),
+        updatedSettings.toJson(),
+      );
+    } catch (e) {
+      throw SettingsRepositoryException(
+        'Failed to update pending changes: $e',
+      );
+    }
+  }
+
+  /// Clear pending changes
+  Future<void> clearPendingChanges(String deviceId) async {
+    try {
+      await updatePendingChanges(deviceId, {});
+    } catch (e) {
+      throw SettingsRepositoryException(
+        'Failed to clear pending changes: $e',
       );
     }
   }

@@ -1,7 +1,6 @@
 // lib/features/device_settings/bloc/device_settings_bloc.dart
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../../core/models/device/index.dart';
 import '../../../core/services/ble/ble_service.dart';
 import '../services/settings_service.dart';
@@ -36,6 +35,12 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState>
         super(DeviceSettingsState.initial(device)) {
     _registerEventHandlers();
     _setupConnectionListener();
+    _loadInitialState();
+  }
+
+  // New method to load saved state including pending changes
+  Future<void> _loadInitialState() async {
+    add(InitializeSettings(state.device));
   }
 
   void _registerEventHandlers() {
@@ -45,7 +50,6 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState>
     on<FactoryResetDevice>(_onFactoryReset);
     on<HandleError>(_onHandleError);
 
-    // Register mixin event handlers
     registerEmissionHandlers();
     registerPeriodicHandlers();
     registerHeartRateHandlers();
@@ -67,7 +71,9 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState>
     try {
       emit(DeviceSettingsState.loading(state));
 
+      // Load settings and pending changes from repository
       final settings = await _repository.getDeviceSettings(event.device.id);
+
       final updatedDevice = event.device.copyWith(
         emission1Duration: settings.scentOne.emissionDuration,
         emission2Duration: settings.scentTwo.emissionDuration,
@@ -78,9 +84,12 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState>
         heartrateThreshold: settings.heartRate.threshold,
       );
 
+      // Load stored pending changes
+      Map<String, dynamic> pendingChanges = settings.pendingChanges;
+
       emit(DeviceSettingsState.success(state.copyWith(
         device: updatedDevice,
-        pendingChanges: {},
+        pendingChanges: pendingChanges,
       )));
     } catch (e) {
       emit(DeviceSettingsState.failure(state, 'Failed to initialize settings: $e'));
@@ -96,6 +105,10 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState>
     try {
       emit(DeviceSettingsState.loading(state));
       await _syncPendingChanges();
+
+      // Clear pending changes in repository after successful sync
+      await _repository.updatePendingChanges(state.device.id, {});
+
       emit(DeviceSettingsState.success(state.copyWith(pendingChanges: {})));
     } catch (e) {
       emit(DeviceSettingsState.failure(state, 'Failed to sync settings: $e'));
@@ -130,6 +143,15 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState>
     }
   }
 
+  // Helper method to persist pending changes
+  Future<void> _savePendingChanges(Map<String, dynamic> changes) async {
+    try {
+      await _repository.updatePendingChanges(state.device.id, changes);
+    } catch (e) {
+      add(HandleError('Failed to save pending changes: $e'));
+    }
+  }
+
   Future<void> _onStartFirmwareUpdate(
       StartFirmwareUpdate event,
       Emitter<DeviceSettingsState> emit,
@@ -156,6 +178,10 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState>
     try {
       if (state.isConnected) {
         await bleService.disconnectFromDevice();
+      }
+      // Save any pending changes before closing
+      if (state.hasPendingChanges) {
+        await _savePendingChanges(state.pendingChanges);
       }
     } catch (e) {
       print('Error during BLoC closure: $e');

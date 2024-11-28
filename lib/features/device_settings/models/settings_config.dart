@@ -1,7 +1,6 @@
 // lib/features/device_settings/models/settings_config.dart
 
 import 'package:equatable/equatable.dart';
-
 import '../../../core/models/device/index.dart';
 
 /// Configuration model for device settings
@@ -11,6 +10,7 @@ class SettingsConfig extends Equatable {
   final ScentConfig scentTwo;
   final HeartRateConfig heartRate;
   final DateTime lastUpdated;
+  final Map<String, dynamic> pendingChanges;
 
   const SettingsConfig({
     required this.deviceId,
@@ -18,6 +18,7 @@ class SettingsConfig extends Equatable {
     required this.scentTwo,
     required this.heartRate,
     required this.lastUpdated,
+    this.pendingChanges = const {},
   });
 
   /// Creates a default configuration for a device
@@ -38,6 +39,7 @@ class SettingsConfig extends Equatable {
         threshold: 120,
       ),
       lastUpdated: DateTime.now(),
+      pendingChanges: const {},
     );
   }
 
@@ -58,6 +60,7 @@ class SettingsConfig extends Equatable {
         threshold: device.heartrateThreshold,
       ),
       lastUpdated: DateTime.now(),
+      pendingChanges: const {},
     );
   }
 
@@ -67,6 +70,7 @@ class SettingsConfig extends Equatable {
     'scentTwo': scentTwo.toJson(),
     'heartRate': heartRate.toJson(),
     'lastUpdated': lastUpdated.toIso8601String(),
+    'pendingChanges': pendingChanges,
   };
 
   factory SettingsConfig.fromJson(Map<String, dynamic> json) => SettingsConfig(
@@ -75,6 +79,7 @@ class SettingsConfig extends Equatable {
     scentTwo: ScentConfig.fromJson(json['scentTwo'] as Map<String, dynamic>),
     heartRate: HeartRateConfig.fromJson(json['heartRate'] as Map<String, dynamic>),
     lastUpdated: DateTime.parse(json['lastUpdated'] as String),
+    pendingChanges: Map<String, dynamic>.from(json['pendingChanges'] as Map<dynamic, dynamic>? ?? {}),
   );
 
   SettingsConfig copyWith({
@@ -83,6 +88,7 @@ class SettingsConfig extends Equatable {
     ScentConfig? scentTwo,
     HeartRateConfig? heartRate,
     DateTime? lastUpdated,
+    Map<String, dynamic>? pendingChanges,
   }) {
     return SettingsConfig(
       deviceId: deviceId ?? this.deviceId,
@@ -90,11 +96,12 @@ class SettingsConfig extends Equatable {
       scentTwo: scentTwo ?? this.scentTwo,
       heartRate: heartRate ?? this.heartRate,
       lastUpdated: lastUpdated ?? this.lastUpdated,
+      pendingChanges: pendingChanges ?? this.pendingChanges,
     );
   }
 
   @override
-  List<Object> get props => [deviceId, scentOne, scentTwo, heartRate, lastUpdated];
+  List<Object> get props => [deviceId, scentOne, scentTwo, heartRate, lastUpdated, pendingChanges];
 }
 
 class ScentConfig extends Equatable {
@@ -120,6 +127,18 @@ class ScentConfig extends Equatable {
     isPeriodicEnabled: json['isPeriodicEnabled'] as bool,
   );
 
+  ScentConfig copyWith({
+    Duration? emissionDuration,
+    Duration? releaseInterval,
+    bool? isPeriodicEnabled,
+  }) {
+    return ScentConfig(
+      emissionDuration: emissionDuration ?? this.emissionDuration,
+      releaseInterval: releaseInterval ?? this.releaseInterval,
+      isPeriodicEnabled: isPeriodicEnabled ?? this.isPeriodicEnabled,
+    );
+  }
+
   @override
   List<Object> get props => [emissionDuration, releaseInterval, isPeriodicEnabled];
 }
@@ -138,6 +157,14 @@ class HeartRateConfig extends Equatable {
   factory HeartRateConfig.fromJson(Map<String, dynamic> json) => HeartRateConfig(
     threshold: json['threshold'] as int,
   );
+
+  HeartRateConfig copyWith({
+    int? threshold,
+  }) {
+    return HeartRateConfig(
+      threshold: threshold ?? this.threshold,
+    );
+  }
 
   @override
   List<Object> get props => [threshold];
