@@ -13,11 +13,13 @@ class DeviceSettingsState extends Equatable {
   final Device device;
   final DeviceSettingsStatus status;
   final String? errorMessage;
+  final Map<String, dynamic> pendingChanges; // Added to track changes
 
   const DeviceSettingsState({
     required this.device,
     this.status = DeviceSettingsStatus.initial,
     this.errorMessage,
+    this.pendingChanges = const {},
   });
 
   // Device state getters
@@ -29,25 +31,28 @@ class DeviceSettingsState extends Equatable {
   bool get isPeriodicEmission2Enabled => device.isPeriodicEmissionEnabled2;
   int get heartrateThreshold => device.heartrateThreshold;
   bool get isConnected => device.isBleConnected;
-  bool get isHeartRateMonitorConnected => false; // Added for UI compatibility
-  bool get firmwareUpdateAvailable => false; // Added for UI compatibility
+  bool get isHeartRateMonitorConnected => false;
+  bool get firmwareUpdateAvailable => false;
 
-  // Helper getters for UI
+  // Helper getters
   bool get isLoading => status == DeviceSettingsStatus.loading;
   bool get hasError => status == DeviceSettingsStatus.failure;
   bool get isSuccess => status == DeviceSettingsStatus.success;
-  String? get error => errorMessage; // Added for backward compatibility
+  String? get error => errorMessage;
+  bool get hasPendingChanges => pendingChanges.isNotEmpty;
 
   DeviceSettingsState copyWith({
     Device? device,
     DeviceSettingsStatus? status,
     String? errorMessage,
-    bool? clearError, // Added to explicitly clear error
+    bool? clearError,
+    Map<String, dynamic>? pendingChanges,
   }) {
     return DeviceSettingsState(
       device: device ?? this.device,
       status: status ?? this.status,
       errorMessage: clearError == true ? null : (errorMessage ?? this.errorMessage),
+      pendingChanges: pendingChanges ?? this.pendingChanges,
     );
   }
 

@@ -20,9 +20,9 @@ When updating this document:
 ❌ - Deprecated/Removed
 
 ## File Status Overview
-Total Files: 63
-- ✓ Implemented: 39
-- 🔄 In Progress: 6
+Total Files: 67
+- ✓ Implemented: 41
+- 🔄 In Progress: 8
 - 📋 - Planned: 18
 - ❌ Deprecated/Removed: 0
 
@@ -89,9 +89,14 @@ que_app/                          # Root project directory - Flutter mobile appl
 │   │   │
 │   │   ├── device_settings/   # Settings feature - Device configuration
 │   │   │   ├── bloc/          # State management - Settings state handling
-│   │   │   │   ├── device_settings_bloc.dart    # ✓ Settings logic
+│   │   │   │   ├── device_settings_bloc.dart    # 🔄 Settings logic
+│   │   │   │   ├── mixins/                      # BLoC functionality separation
+│   │   │   │   │   ├── emission_settings_mixin.dart  # ✓ Emission settings handlers
+│   │   │   │   │   ├── periodic_settings_mixin.dart  # ✓ Periodic settings handlers
+│   │   │   │   │   ├── heart_rate_settings_mixin.dart # ✓ Heart rate settings handlers
+│   │   │   │   │   └── device_connection_mixin.dart   # ✓ Device connection handlers
 │   │   │   │   ├── device_settings_event.dart   # ✓ Events
-│   │   │   │   └── device_settings_state.dart   # ✓ States
+│   │   │   │   └── device_settings_state.dart   # 🔄 States with offline support
 │   │   │   │
 │   │   │   ├── models/        # Feature models - Settings data structures
 │   │   │   │   └── settings_config.dart        # ✓ Settings configuration
@@ -100,7 +105,7 @@ que_app/                          # Root project directory - Flutter mobile appl
 │   │   │   │   └── device_settings_repository.dart # ✓ Settings repository
 │   │   │   │
 │   │   │   ├── services/      # Business logic - Settings operations
-│   │   │   │   └── settings_service.dart       # ✓ Settings operations
+│   │   │   │   └── settings_service.dart       # 🔄 Settings operations with offline support
 │   │   │   │
 │   │   │   ├── utils/         # Feature utilities - Settings helpers
 │   │   │   │   └── settings_helpers.dart       # ✓ Helper functions
@@ -133,7 +138,7 @@ que_app/                          # Root project directory - Flutter mobile appl
 │   │   │   │
 │   │   │   └── views/         # Screen implementations
 │   │   │       ├── settings_screen.dart      # ✓ Container component
-│   │   │       └── settings_content.dart     # ✓ Presentation component
+│   │   │       └── settings_content.dart     # 🔄 Presentation component with offline support
 │   │   │
 │   │   └── notes/             # Notes feature - User annotations
 │   │       └── [...]
@@ -152,7 +157,12 @@ que_app/                          # Root project directory - Flutter mobile appl
     ├── features/            # Feature tests - Feature-specific testing
     │   ├── device_settings/ # Settings feature tests
     │   │   ├── bloc/
-    │   │   │   └── device_settings_bloc_test.dart # 📋 BLoC tests
+    │   │   │   ├── device_settings_bloc_test.dart # 📋 BLoC tests
+    │   │   │   └── mixins/                        # Mixin tests
+    │   │   │       ├── emission_settings_test.dart   # 📋 Emission settings tests
+    │   │   │       ├── periodic_settings_test.dart   # 📋 Periodic settings tests
+    │   │   │       ├── heart_rate_settings_test.dart # 📋 Heart rate settings tests
+    │   │   │       └── device_connection_test.dart   # 📋 Connection handling tests
     │   │   ├── repositories/
     │   │   │   └── device_settings_repository_test.dart # 📋 Repo tests
     │   │   ├── services/

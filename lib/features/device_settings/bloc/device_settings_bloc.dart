@@ -1,4 +1,5 @@
 // lib/features/device_settings/bloc/device_settings_bloc.dart
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../../core/models/device/index.dart';
@@ -7,8 +8,18 @@ import '../services/settings_service.dart';
 import '../repositories/device_settings_repository.dart';
 import 'device_settings_event.dart';
 import 'device_settings_state.dart';
+import 'mixins/emission_settings_mixin.dart';
+import 'mixins/periodic_settings_mixin.dart';
+import 'mixins/heart_rate_settings_mixin.dart';
+import 'mixins/device_connection_mixin.dart';
 
-class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState> {
+class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState>
+    with
+        EmissionSettingsMixin,
+        PeriodicSettingsMixin,
+        HeartRateSettingsMixin,
+        DeviceConnectionMixin {
+
   final BleService bleService;
   final SettingsService _settingsService;
   final DeviceSettingsRepository _repository;
@@ -23,21 +34,30 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState> 
   ),
         _repository = repository,
         super(DeviceSettingsState.initial(device)) {
+    _registerEventHandlers();
+    _setupConnectionListener();
+  }
+
+  void _registerEventHandlers() {
     on<InitializeSettings>(_onInitializeSettings);
-    on<UpdateEmission1Duration>(_onUpdateEmission1Duration);
-    on<UpdateEmission2Duration>(_onUpdateEmission2Duration);
-    on<UpdateReleaseInterval1>(_onUpdateReleaseInterval1);
-    on<UpdateReleaseInterval2>(_onUpdateReleaseInterval2);
-    on<UpdatePeriodicEmission1>(_onUpdatePeriodicEmission1);
-    on<UpdatePeriodicEmission2>(_onUpdatePeriodicEmission2);
-    on<UpdateHeartRateThreshold>(_onUpdateHeartRateThreshold);
-    on<ConnectToDevice>(_onConnectToDevice);
-    on<ConnectToHeartRateMonitor>(_onConnectToHeartRateMonitor);
-    on<DeleteDevice>(_onDeleteDevice);
     on<SaveSettings>(_onSaveSettings);
     on<StartFirmwareUpdate>(_onStartFirmwareUpdate);
     on<FactoryResetDevice>(_onFactoryReset);
     on<HandleError>(_onHandleError);
+
+    // Register mixin event handlers
+    registerEmissionHandlers();
+    registerPeriodicHandlers();
+    registerHeartRateHandlers();
+    registerConnectionHandlers();
+  }
+
+  void _setupConnectionListener() {
+    bleService.connectionStatusStream.listen((isConnected) {
+      if (isConnected && state.hasPendingChanges) {
+        add(const SaveSettings());
+      }
+    });
   }
 
   Future<void> _onInitializeSettings(
@@ -58,180 +78,12 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState> 
         heartrateThreshold: settings.heartRate.threshold,
       );
 
-      emit(DeviceSettingsState.success(state.copyWith(device: updatedDevice)));
+      emit(DeviceSettingsState.success(state.copyWith(
+        device: updatedDevice,
+        pendingChanges: {},
+      )));
     } catch (e) {
       emit(DeviceSettingsState.failure(state, 'Failed to initialize settings: $e'));
-    }
-  }
-
-  Future<void> _onUpdateEmission1Duration(
-      UpdateEmission1Duration event,
-      Emitter<DeviceSettingsState> emit,
-      ) async {
-    try {
-      emit(DeviceSettingsState.loading(state));
-      await _settingsService.updateEmission1Duration(state.device, event.duration);
-
-      final updatedDevice = state.device.copyWith(
-        emission1Duration: event.duration,
-      );
-
-      emit(DeviceSettingsState.success(state.copyWith(device: updatedDevice)));
-    } catch (e) {
-      emit(DeviceSettingsState.failure(state, 'Failed to update emission 1 duration: $e'));
-    }
-  }
-
-  Future<void> _onUpdateEmission2Duration(
-      UpdateEmission2Duration event,
-      Emitter<DeviceSettingsState> emit,
-      ) async {
-    try {
-      emit(DeviceSettingsState.loading(state));
-      await _settingsService.updateEmission2Duration(state.device, event.duration);
-
-      final updatedDevice = state.device.copyWith(
-        emission2Duration: event.duration,
-      );
-
-      emit(DeviceSettingsState.success(state.copyWith(device: updatedDevice)));
-    } catch (e) {
-      emit(DeviceSettingsState.failure(state, 'Failed to update emission 2 duration: $e'));
-    }
-  }
-
-  Future<void> _onUpdateReleaseInterval1(
-      UpdateReleaseInterval1 event,
-      Emitter<DeviceSettingsState> emit,
-      ) async {
-    try {
-      emit(DeviceSettingsState.loading(state));
-      await _settingsService.updateReleaseInterval1(state.device, event.interval);
-
-      final updatedDevice = state.device.copyWith(
-        releaseInterval1: event.interval,
-      );
-
-      emit(DeviceSettingsState.success(state.copyWith(device: updatedDevice)));
-    } catch (e) {
-      emit(DeviceSettingsState.failure(state, 'Failed to update release interval 1: $e'));
-    }
-  }
-
-  Future<void> _onUpdateReleaseInterval2(
-      UpdateReleaseInterval2 event,
-      Emitter<DeviceSettingsState> emit,
-      ) async {
-    try {
-      emit(DeviceSettingsState.loading(state));
-      await _settingsService.updateReleaseInterval2(state.device, event.interval);
-
-      final updatedDevice = state.device.copyWith(
-        releaseInterval2: event.interval,
-      );
-
-      emit(DeviceSettingsState.success(state.copyWith(device: updatedDevice)));
-    } catch (e) {
-      emit(DeviceSettingsState.failure(state, 'Failed to update release interval 2: $e'));
-    }
-  }
-
-  Future<void> _onUpdatePeriodicEmission1(
-      UpdatePeriodicEmission1 event,
-      Emitter<DeviceSettingsState> emit,
-      ) async {
-    try {
-      emit(DeviceSettingsState.loading(state));
-      await _settingsService.updatePeriodicEmission1(state.device, event.enabled);
-
-      final updatedDevice = state.device.copyWith(
-        isPeriodicEmissionEnabled: event.enabled,
-      );
-
-      emit(DeviceSettingsState.success(state.copyWith(device: updatedDevice)));
-    } catch (e) {
-      emit(DeviceSettingsState.failure(state, 'Failed to update periodic emission 1: $e'));
-    }
-  }
-
-  Future<void> _onUpdatePeriodicEmission2(
-      UpdatePeriodicEmission2 event,
-      Emitter<DeviceSettingsState> emit,
-      ) async {
-    try {
-      emit(DeviceSettingsState.loading(state));
-      await _settingsService.updatePeriodicEmission2(state.device, event.enabled);
-
-      final updatedDevice = state.device.copyWith(
-        isPeriodicEmissionEnabled2: event.enabled,
-      );
-
-      emit(DeviceSettingsState.success(state.copyWith(device: updatedDevice)));
-    } catch (e) {
-      emit(DeviceSettingsState.failure(state, 'Failed to update periodic emission 2: $e'));
-    }
-  }
-
-  Future<void> _onUpdateHeartRateThreshold(
-      UpdateHeartRateThreshold event,
-      Emitter<DeviceSettingsState> emit,
-      ) async {
-    try {
-      emit(DeviceSettingsState.loading(state));
-      await _settingsService.updateHeartRateThreshold(state.device, event.threshold);
-
-      final updatedDevice = state.device.copyWith(
-        heartrateThreshold: event.threshold,
-      );
-
-      emit(DeviceSettingsState.success(state.copyWith(device: updatedDevice)));
-    } catch (e) {
-      emit(DeviceSettingsState.failure(state, 'Failed to update heart rate threshold: $e'));
-    }
-  }
-
-  Future<void> _onConnectToDevice(
-      ConnectToDevice event,
-      Emitter<DeviceSettingsState> emit,
-      ) async {
-    try {
-      emit(DeviceSettingsState.loading(state));
-      await bleService.connectToDevice(event.device);
-
-      final updatedDevice = state.device.copyWith(
-        isBleConnected: true,
-        bluetoothDevice: event.device,
-      );
-
-      emit(DeviceSettingsState.success(state.copyWith(device: updatedDevice)));
-    } catch (e) {
-      emit(DeviceSettingsState.failure(state, 'Failed to connect to device: $e'));
-    }
-  }
-
-  Future<void> _onConnectToHeartRateMonitor(
-      ConnectToHeartRateMonitor event,
-      Emitter<DeviceSettingsState> emit,
-      ) async {
-    try {
-      emit(DeviceSettingsState.loading(state));
-      await _settingsService.connectToHeartRateMonitor(state.device);
-      emit(DeviceSettingsState.success(state));
-    } catch (e) {
-      emit(DeviceSettingsState.failure(state, 'Failed to connect to heart rate monitor: $e'));
-    }
-  }
-
-  Future<void> _onDeleteDevice(
-      DeleteDevice event,
-      Emitter<DeviceSettingsState> emit,
-      ) async {
-    try {
-      emit(DeviceSettingsState.loading(state));
-      await _settingsService.deleteDevice(event.device);
-      emit(DeviceSettingsState.success(state));
-    } catch (e) {
-      emit(DeviceSettingsState.failure(state, 'Failed to delete device: $e'));
     }
   }
 
@@ -239,12 +91,42 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState> 
       SaveSettings event,
       Emitter<DeviceSettingsState> emit,
       ) async {
+    if (!state.isConnected || state.pendingChanges.isEmpty) return;
+
     try {
       emit(DeviceSettingsState.loading(state));
-      await _settingsService.saveSettings(state.device);
-      emit(DeviceSettingsState.success(state));
+      await _syncPendingChanges();
+      emit(DeviceSettingsState.success(state.copyWith(pendingChanges: {})));
     } catch (e) {
-      emit(DeviceSettingsState.failure(state, 'Failed to save settings: $e'));
+      emit(DeviceSettingsState.failure(state, 'Failed to sync settings: $e'));
+    }
+  }
+
+  Future<void> _syncPendingChanges() async {
+    for (final entry in state.pendingChanges.entries) {
+      switch (entry.key) {
+        case 'emission1Duration':
+          await _settingsService.updateEmission1Duration(state.device, entry.value as Duration);
+          break;
+        case 'emission2Duration':
+          await _settingsService.updateEmission2Duration(state.device, entry.value as Duration);
+          break;
+        case 'releaseInterval1':
+          await _settingsService.updateReleaseInterval1(state.device, entry.value as Duration);
+          break;
+        case 'releaseInterval2':
+          await _settingsService.updateReleaseInterval2(state.device, entry.value as Duration);
+          break;
+        case 'isPeriodicEmission1':
+          await _settingsService.updatePeriodicEmission1(state.device, entry.value as bool);
+          break;
+        case 'isPeriodicEmission2':
+          await _settingsService.updatePeriodicEmission2(state.device, entry.value as bool);
+          break;
+        case 'heartRateThreshold':
+          await _settingsService.updateHeartRateThreshold(state.device, entry.value as int);
+          break;
+      }
     }
   }
 
@@ -252,7 +134,6 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState> 
       StartFirmwareUpdate event,
       Emitter<DeviceSettingsState> emit,
       ) async {
-    // TODO: Implement firmware update logic
     emit(DeviceSettingsState.failure(state, 'Firmware update not implemented'));
   }
 
@@ -260,7 +141,6 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState> 
       FactoryResetDevice event,
       Emitter<DeviceSettingsState> emit,
       ) async {
-    // TODO: Implement factory reset logic
     emit(DeviceSettingsState.failure(state, 'Factory reset not implemented'));
   }
 
@@ -278,7 +158,6 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState> 
         await bleService.disconnectFromDevice();
       }
     } catch (e) {
-      // Log error but don't prevent closure
       print('Error during BLoC closure: $e');
     }
     return super.close();

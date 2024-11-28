@@ -23,10 +23,15 @@ class ScentOneSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DeviceSettingsBloc, DeviceSettingsState>(
       builder: (context, state) {
+        final hasPendingDurationChange = state.pendingChanges.containsKey('emission1Duration');
+        final hasPendingIntervalChange = state.pendingChanges.containsKey('releaseInterval1');
+        final hasPendingPeriodicChange = state.pendingChanges.containsKey('isPeriodicEmission1');
+
         return SettingsGroup(
           title: 'Scent One Settings',
           enabled: enabled,
           accentColor: Colors.lightBlue.shade400,
+          subtitle: !state.isConnected && state.hasPendingChanges ? 'Changes will sync when connected' : null,
           children: [
             SettingsValueTile(
               title: 'Release Duration',
@@ -34,6 +39,13 @@ class ScentOneSettings extends StatelessWidget {
               icon: Icons.air,
               iconColor: Colors.lightBlue.shade400,
               enabled: enabled,
+              trailing: !state.isConnected && hasPendingDurationChange
+                  ? Icon(
+                Icons.sync_disabled,
+                size: 16,
+                color: Colors.orange[700],
+              )
+                  : null,
               onTap: () => _showDurationPicker(
                 context,
                 state.emission1Duration,
@@ -48,6 +60,13 @@ class ScentOneSettings extends StatelessWidget {
               value: state.isPeriodicEmission1Enabled,
               iconColor: Colors.blue,
               enabled: enabled,
+              trailing: !state.isConnected && hasPendingPeriodicChange
+                  ? Icon(
+                Icons.sync_disabled,
+                size: 16,
+                color: Colors.orange[700],
+              )
+                  : null,
               onChanged: (value) => context.read<DeviceSettingsBloc>().add(
                 UpdatePeriodicEmission1(value),
               ),
@@ -59,6 +78,13 @@ class ScentOneSettings extends StatelessWidget {
                 icon: Icons.timer_outlined,
                 iconColor: Colors.blue,
                 enabled: enabled,
+                trailing: !state.isConnected && hasPendingIntervalChange
+                    ? Icon(
+                  Icons.sync_disabled,
+                  size: 16,
+                  color: Colors.orange[700],
+                )
+                    : null,
                 onTap: () => _showIntervalPicker(
                   context,
                   state.releaseInterval1,

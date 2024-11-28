@@ -8,6 +8,7 @@ class SettingsGroup extends StatelessWidget {
   final bool enabled;
   final VoidCallback? onTap;
   final Color? accentColor;
+  final String? subtitle;
 
   const SettingsGroup({
     Key? key,
@@ -16,6 +17,7 @@ class SettingsGroup extends StatelessWidget {
     this.enabled = true,
     this.onTap,
     this.accentColor,
+    this.subtitle,
   }) : super(key: key);
 
   @override
@@ -48,6 +50,27 @@ class SettingsGroup extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 4.0),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.sync_disabled,
+                          size: 14,
+                          color: Colors.orange[700],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          subtitle!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.orange[700],
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 8.0),
                 ],
                 ...children,

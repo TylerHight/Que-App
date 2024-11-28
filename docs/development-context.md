@@ -12,8 +12,8 @@ This document provides essential context and current development status to assis
 ## Current Development State
 
 ### Active Development
-- **Current Task**: BLE connection reliability improvements and dialog parameter standardization
-- **Last Major Change**: Refactored add device dialog into component-based architecture (2024-11-28)
+- **Current Task**: State management modularization and offline functionality support
+- **Last Major Change**: Refactored settings BLoC into modular mixins and added offline changes support (2024-11-28)
 - **Next Priority**: Error handling standardization across BLE operations
 
 ### Implementation Status
@@ -23,6 +23,7 @@ This document provides essential context and current development status to assis
 - ✓ BLE Constants and UUIDs
 - 🔄 Database Service Architecture
 - 🔄 Database Implementation
+- 🔄 Offline State Management
 - 📋 Analytics Service
 - 📋 Logging Service
 - 📋 Encryption Service
@@ -34,6 +35,7 @@ This document provides essential context and current development status to assis
 - 🔄 Device Control Feature (Improving connection reliability)
 - ✓ Device Info Dialog
 - ✓ Heart Rate Configuration UI
+- ✓ Offline Settings Support
 - 🔄 Notes Feature
 - 🔄 Global Navigation
 
@@ -45,11 +47,13 @@ This document provides essential context and current development status to assis
 - 📋 Connection quality monitoring
 - 📋 Device verification systems
 - ✓ Bluetooth state management
+- ✓ Offline state handling
 
 2. Dialog Parameter Standardization
 - ✓ Duration selection dialog parameters standardized
 - ✓ Heart rate threshold dialog parameters aligned
 - ✓ Add device dialog parameters standardized
+- 🔄 Pending changes indicators standardized
 - 📋 Connection status dialogs need standardization
 - 📋 Error message standardization needed
 
@@ -58,6 +62,7 @@ This document provides essential context and current development status to assis
 - 📋 Connection reliability testing needed
 - 📋 Error recovery testing needed
 - 📋 State management testing required
+- 📋 Offline functionality testing needed
 
 ### Architecture Notes
 1. State Management
@@ -66,6 +71,8 @@ This document provides essential context and current development status to assis
 - Equatable for state comparison
 - Provider pattern for service injection
 - Component-based state management for complex dialogs
+- Mixin-based state management modularization
+- Offline state tracking and sync
 
 2. BLE Implementation
 - Singleton service pattern
@@ -75,6 +82,7 @@ This document provides essential context and current development status to assis
 - Standardized BLE constants
 - Improved timeout handling
 - Optional device connection support
+- Offline operation support
 
 3. Feature Organization
 - Feature-first architecture
@@ -83,6 +91,7 @@ This document provides essential context and current development status to assis
 - Enhanced error handling patterns
 - Proper dependency injection via provider
 - Component-based dialog architecture
+- Modular BLoC organization using mixins
 
 ### Required Fixes
 1. ⚠️ High Priority
@@ -90,6 +99,7 @@ This document provides essential context and current development status to assis
 - Error recovery mechanisms
 - Connection retry logic refinement
 - Bluetooth state handling optimization
+- Offline sync reliability
 
 2. 🔄 In Progress
 - Add device dialog UI refinements
@@ -97,6 +107,7 @@ This document provides essential context and current development status to assis
 - State management improvements
 - Device verification systems
 - Connection reliability improvements
+- Offline state indicators
 
 3. 📋 Planned
 - Connection quality monitoring
@@ -104,7 +115,8 @@ This document provides essential context and current development status to assis
 - Comprehensive connection testing
 - Error logging system
 - Dialog parameter standardization completion
+- Offline sync conflict resolution
 
 ## VERSION CONTROL
-Document Version: 2.5
+Document Version: 2.6
 Last Updated: 2024-11-28

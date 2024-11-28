@@ -23,10 +23,15 @@ class ScentTwoSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DeviceSettingsBloc, DeviceSettingsState>(
       builder: (context, state) {
+        final hasPendingDurationChange = state.pendingChanges.containsKey('emission2Duration');
+        final hasPendingIntervalChange = state.pendingChanges.containsKey('releaseInterval2');
+        final hasPendingPeriodicChange = state.pendingChanges.containsKey('isPeriodicEmission2');
+
         return SettingsGroup(
           title: 'Scent Two Settings',
           enabled: enabled,
           accentColor: Colors.green.shade500,
+          subtitle: !state.isConnected && state.hasPendingChanges ? 'Changes will sync when connected' : null,
           children: [
             SettingsValueTile(
               title: 'Release Duration',
@@ -34,6 +39,13 @@ class ScentTwoSettings extends StatelessWidget {
               icon: Icons.air,
               iconColor: Colors.green.shade500,
               enabled: enabled,
+              trailing: !state.isConnected && hasPendingDurationChange
+                  ? Icon(
+                Icons.sync_disabled,
+                size: 16,
+                color: Colors.orange[700],
+              )
+                  : null,
               onTap: () => _showDurationPicker(
                 context,
                 state.emission2Duration,
@@ -48,6 +60,13 @@ class ScentTwoSettings extends StatelessWidget {
               value: state.isPeriodicEmission2Enabled,
               iconColor: Colors.green.shade500,
               enabled: enabled,
+              trailing: !state.isConnected && hasPendingPeriodicChange
+                  ? Icon(
+                Icons.sync_disabled,
+                size: 16,
+                color: Colors.orange[700],
+              )
+                  : null,
               onChanged: (value) => context.read<DeviceSettingsBloc>().add(
                 UpdatePeriodicEmission2(value),
               ),
@@ -59,6 +78,13 @@ class ScentTwoSettings extends StatelessWidget {
                 icon: Icons.timer_outlined,
                 iconColor: Colors.green.shade500,
                 enabled: enabled,
+                trailing: !state.isConnected && hasPendingIntervalChange
+                    ? Icon(
+                  Icons.sync_disabled,
+                  size: 16,
+                  color: Colors.orange[700],
+                )
+                    : null,
                 onTap: () => _showIntervalPicker(
                   context,
                   state.releaseInterval2,
@@ -69,6 +95,7 @@ class ScentTwoSettings extends StatelessWidget {
       },
     );
   }
+}
 
   void _showDurationPicker(BuildContext context, Duration current) async {
     try {
