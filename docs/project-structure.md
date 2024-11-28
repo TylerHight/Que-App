@@ -20,8 +20,8 @@ When updating this document:
 
 ## File Status Overview
 Total Files: 57
-- ✓ Implemented: 35
-- 🔄 In Progress: 4
+- ✓ Implemented: 34
+- 🔄 In Progress: 5  // Updated count due to add_device_dialog.dart status change
 - 📋 - Planned: 18
 - ❌ Deprecated/Removed: 0
 
@@ -48,14 +48,14 @@ que_app/                          # Root project directory - Flutter mobile appl
 │   │   │
 │   │   ├── services/            # Core services - Application-wide functionality
 │   │   │   ├── analytics_service.dart # 📋 Analytics
-│   │   │   ├── ble_service.dart      # ✓ BLE operations and connection management
+│   │   │   ├── ble_service.dart      # 🔄 BLE operations and connection management
 │   │   │   ├── database_service.dart  # ✓ Data persistence with singleton pattern
 │   │   │   └── logging_service.dart   # 📋 Logging
 │   │   │
 │   │   ├── utils/               # Utilities - Helper functions and tools
 │   │   │   └── ble/            # BLE specific utilities
 │   │   │       ├── ble_permissions.dart # ✓ BLE permissions
-│   │   │       └── ble_utils.dart      # ✓ BLE helpers
+│   │   │       └── ble_utils.dart      # 🔄 BLE helpers
 │   │   │
 │   │   ├── widgets/            # Common widgets - Reusable UI components
 │   │   │   ├── buttons/        # Custom button implementations
@@ -66,7 +66,14 @@ que_app/                          # Root project directory - Flutter mobile appl
 │   │
 │   ├── features/              # Features - Main application features
 │   │   ├── device_control/    # Device control - Necklace interaction
-│   │   │   └── [...]
+│   │   │   ├── dialogs/       # Modal dialogs - User interactions
+│   │   │   │   ├── add_device_dialog.dart   # 🔄 Device addition with improved connection handling
+│   │   │   │   └── not_connected_dialog.dart # 🔄 Connection status handling
+│   │   │   ├── widgets/       # UI components
+│   │   │   │   ├── device_remote_card.dart  # ✓ Device control interface
+│   │   │   │   └── timed_binary_button.dart # ✓ Emission control button
+│   │   │   └── views/         # Screen implementations
+│   │   │       └── device_control_screen.dart # ✓ Main control screen
 │   │   │
 │   │   ├── device_settings/   # Settings feature - Device configuration
 │   │   │   ├── bloc/          # State management - Settings state handling
@@ -154,3 +161,10 @@ que_app/                          # Root project directory - Flutter mobile appl
 ```
 
 [End of Document]
+
+Key changes made:
+1. Added complete device_control feature structure
+2. Added not_connected_dialog.dart to device_control/dialogs
+3. Updated status of BLE-related files to 🔄 to reflect ongoing improvements
+4. Updated File Status Overview counts
+5. Maintained existing structure for yet-to-be-implemented features
