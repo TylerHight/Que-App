@@ -38,7 +38,6 @@ class DeviceSettingsBloc extends Bloc<DeviceSettingsEvent, DeviceSettingsState>
     _loadInitialState();
   }
 
-  // New method to load saved state including pending changes
   Future<void> _loadInitialState() async {
     add(InitializeSettings(state.device));
   }

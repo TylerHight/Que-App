@@ -1,3 +1,5 @@
+// lib/features/notes/views/notes_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:que_app/core/models/note.dart';
@@ -57,7 +59,6 @@ class _NotesScreenState extends State<NotesScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        // Add leading close button when in selection mode
         leading: _isSelectionMode
             ? IconButton(
           icon: const Icon(Icons.close, color: Colors.black87),
@@ -193,77 +194,98 @@ class _NotesScreenState extends State<NotesScreen> {
                       _toggleNoteSelection(note);
                     }
                   },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: _selectedNotes.contains(note)
-                          ? Border.all(color: Colors.blue, width: 2)
-                          : null,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: _selectedNotes.contains(note)
+                              ? Border.all(color: Colors.blue, width: 2)
+                              : null,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            left: 16,
+                            right: _isSelectionMode ? 72 : 16,
+                            top: 16,
+                            bottom: 16,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.devices,
-                                size: 16,
-                                color: Colors.grey[600],
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  note.device?.deviceName ?? 'No Device',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey[700],
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.devices,
+                                    size: 16,
+                                    color: Colors.grey[600],
                                   ),
-                                ),
-                              ),
-                              if (_isSelectionMode)
-                                Transform.scale(
-                                  scale: 1.1,
-                                  child: Checkbox(
-                                    value: _selectedNotes.contains(note),
-                                    onChanged: (_) => _toggleNoteSelection(note),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      note.device?.deviceName ?? 'No Device',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey[700],
+                                      ),
                                     ),
                                   ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                note.content,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
                                 ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                _formatDate(note.creationDate),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            note.content,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            _formatDate(note.creationDate),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                      if (_isSelectionMode)
+                        Positioned(
+                          top: 0,
+                          bottom: 0,
+                          right: 16,  // Changed from 8 to 16 to move it further from the edge
+                          child: Center(
+                            child: SizedBox(
+                              width: 48,  // Increased from 40 to 48
+                              height: 48, // Increased from 40 to 48
+                              child: Transform.scale(
+                                scale: 1.3,  // Increased from 1.2 to 1.3
+                                child: Checkbox(
+                                  value: _selectedNotes.contains(note),
+                                  onChanged: (_) => _toggleNoteSelection(note),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               );
