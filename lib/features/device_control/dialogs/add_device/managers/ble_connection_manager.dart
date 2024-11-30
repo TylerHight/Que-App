@@ -18,9 +18,11 @@ class BleConnectionManager {
   StreamSubscription? _deviceStateSubscription;
   StreamSubscription? _connectionStatusSubscription;
   StreamSubscription? _bluetoothStateSubscription;
+  Timer? _autoScanTimer;
 
   static const Duration connectionTimeout = Duration(seconds: 10);
   static const Duration retryDelay = Duration(seconds: 2);
+  static const Duration autoScanInterval = Duration(seconds: 10);
 
   BleConnectionManager({
     required this.bleService,
@@ -31,6 +33,7 @@ class BleConnectionManager {
   Future<void> initialize() async {
     _setupSubscriptions();
     await _checkBluetoothState();
+    _startAutoScan();
   }
 
   void _setupSubscriptions() {
@@ -68,6 +71,15 @@ class BleConnectionManager {
     );
   }
 
+  void _startAutoScan() {
+    _autoScanTimer?.cancel();
+    _autoScanTimer = Timer.periodic(autoScanInterval, (_) {
+      if (!_state.isScanning) {
+        startScan();
+      }
+    });
+  }
+
   Future<void> _checkBluetoothState() async {
     try {
       final isSupported = await FlutterBluePlus.isSupported;
@@ -77,7 +89,7 @@ class BleConnectionManager {
         return;
       }
 
-      final isOn = await FlutterBluePlus.isOn;
+      final isOn = await FlutterBluePlus.adapterState.first == BluetoothAdapterState.on;
       if (!isOn) {
         await _handleBluetoothDisabled();
         return;
@@ -112,10 +124,12 @@ class BleConnectionManager {
     onStateChanged(_state);
 
     try {
+      await FlutterBluePlus.stopScan();
       final devices = await _bleUtils.startScan();
       if (!mounted) return;
 
       _state.setNearbyDevices(devices);
+      _state.setLastScanTime(DateTime.now());
       _state.setScanning(false);
       onStateChanged(_state);
     } catch (e) {
@@ -196,6 +210,7 @@ class BleConnectionManager {
     _deviceStateSubscription?.cancel();
     _connectionStatusSubscription?.cancel();
     _bluetoothStateSubscription?.cancel();
+    _autoScanTimer?.cancel();
     if (!_state.isCompleted && _state.isConnecting) {
       bleService.disconnectFromDevice();
     }

@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 class SettingsGroup extends StatelessWidget {
-  final String title;
+  final String? title;
   final List<Widget> children;
   final bool enabled;
   final VoidCallback? onTap;
@@ -12,7 +12,7 @@ class SettingsGroup extends StatelessWidget {
 
   const SettingsGroup({
     Key? key,
-    required this.title,
+    this.title,
     required this.children,
     this.enabled = true,
     this.onTap,
@@ -41,9 +41,9 @@ class SettingsGroup extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (title.isNotEmpty) ...[
+                if (title != null && title!.isNotEmpty) ...[
                   Text(
-                    title,
+                    title!,
                     style: TextStyle(
                       fontSize: 18,
                       color: accentColor ?? Colors.grey.shade500,

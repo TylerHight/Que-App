@@ -10,6 +10,7 @@ class AddDeviceState {
   List<BluetoothDevice> _nearbyDevices = [];
   BluetoothDevice? _selectedDevice;
   int _connectionRetries = 0;
+  DateTime? _lastScanTime;
 
   static const int maxRetries = 3;
 
@@ -21,6 +22,7 @@ class AddDeviceState {
   List<BluetoothDevice> get nearbyDevices => List.unmodifiable(_nearbyDevices);
   BluetoothDevice? get selectedDevice => _selectedDevice;
   int get connectionRetries => _connectionRetries;
+  DateTime? get lastScanTime => _lastScanTime;
 
   // State update methods
   void setScanning(bool value) {
@@ -56,6 +58,10 @@ class AddDeviceState {
     _connectionRetries = 0;
   }
 
+  void setLastScanTime(DateTime time) {
+    _lastScanTime = time;
+  }
+
   void incrementRetries() {
     _connectionRetries++;
   }
@@ -73,6 +79,7 @@ class AddDeviceState {
     _nearbyDevices = other._nearbyDevices;
     _selectedDevice = other._selectedDevice;
     _connectionRetries = other._connectionRetries;
+    _lastScanTime = other._lastScanTime;
   }
 
   // Create a copy with updated values
@@ -84,6 +91,7 @@ class AddDeviceState {
     List<BluetoothDevice>? nearbyDevices,
     BluetoothDevice? selectedDevice,
     int? connectionRetries,
+    DateTime? lastScanTime,
   }) {
     final newState = AddDeviceState()
       .._isScanning = isScanning ?? _isScanning
@@ -92,7 +100,8 @@ class AddDeviceState {
       .._statusMessage = statusMessage ?? _statusMessage
       .._nearbyDevices = nearbyDevices ?? _nearbyDevices
       .._selectedDevice = selectedDevice ?? _selectedDevice
-      .._connectionRetries = connectionRetries ?? _connectionRetries;
+      .._connectionRetries = connectionRetries ?? _connectionRetries
+      .._lastScanTime = lastScanTime ?? _lastScanTime;
 
     return newState;
   }
@@ -106,5 +115,6 @@ class AddDeviceState {
     _nearbyDevices.clear();
     _selectedDevice = null;
     _connectionRetries = 0;
+    _lastScanTime = null;
   }
 }

@@ -27,7 +27,6 @@ class HeartRateSettings extends StatelessWidget {
         final hasPendingThresholdChange = state.pendingChanges.containsKey('heartrateThreshold');
 
         return SettingsGroup(
-          title: 'Heart Rate Settings',
           enabled: enabled,
           children: [
             SettingsListTile(

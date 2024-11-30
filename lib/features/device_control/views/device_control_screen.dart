@@ -56,7 +56,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
         elevation: 0,
         actions: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Material(
               color: Colors.blue[600],
               borderRadius: BorderRadius.circular(12),
@@ -64,7 +64,7 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
                 borderRadius: BorderRadius.circular(12),
                 onTap: _showAddDeviceDialog,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   child: const Row(
                     children: [
                       Icon(Icons.add, color: Colors.white, size: 20),

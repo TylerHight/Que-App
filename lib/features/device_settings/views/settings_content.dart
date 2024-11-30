@@ -257,7 +257,7 @@ class SettingsContent extends StatelessWidget {
       child: Text(
         title,
         style: const TextStyle(
-          fontSize: 14,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
           color: Colors.black54,
         ),

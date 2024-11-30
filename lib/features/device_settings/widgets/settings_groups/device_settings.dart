@@ -21,7 +21,6 @@ class DeviceSettings extends StatelessWidget {
     return BlocBuilder<DeviceSettingsBloc, DeviceSettingsState>(
       builder: (context, state) {
         return SettingsGroup(
-          title: 'Device',
           children: [
             SettingsListTile(
               title: 'Device Information',

@@ -190,7 +190,7 @@ class _DeviceRemoteState extends State<DeviceRemote> {
                               const SizedBox(width: 8),
                               _ActionButton(
                                 icon: Icons.note_add,
-                                label: 'Notes',
+                                label: 'Add Note',
                                 onPressed: () {
                                   showDialog(
                                     context: context,

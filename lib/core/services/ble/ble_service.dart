@@ -18,17 +18,28 @@ class BleService {
   BluetoothCharacteristic? _switchCharacteristic;
   bool _isConnecting = false;
   bool _isConnected = false;
-  StreamSubscription<BluetoothConnectionState>? _connectionSubscription;
+  int _retryAttempt = 0;
   Timer? _keepAliveTimer;
+  Timer? _connectionQualityTimer;
+  StreamSubscription? _connectionSubscription;
 
   // Stream controllers
   final _deviceStateController = StreamController<String>.broadcast();
   final _connectionStatusController = StreamController<bool>.broadcast();
+  final _connectionQualityController = StreamController<double>.broadcast();
   final _notificationController = StreamController<List<int>>.broadcast();
+
+  // Connection configuration
+  static const int maxRetryAttempts = 5;
+  static const Duration initialRetryDelay = Duration(seconds: 1);
+  static const Duration maxRetryDelay = Duration(seconds: 32);
+  static const Duration qualityCheckInterval = Duration(seconds: 5);
+  static const int minAcceptableRSSI = -80;
 
   // Public streams and getters
   Stream<String> get deviceStateStream => _deviceStateController.stream;
   Stream<bool> get connectionStatusStream => _connectionStatusController.stream;
+  Stream<double> get connectionQualityStream => _connectionQualityController.stream;
   Stream<List<int>> get notifications => _notificationController.stream;
   BluetoothDevice? get connectedDevice => _connectedDevice;
   bool get isConnected => _isConnected;
@@ -37,34 +48,61 @@ class BleService {
   Future<void> connectToDevice(BluetoothDevice device) async {
     if (_isConnecting) return;
     _isConnecting = true;
+    _retryAttempt = 0;
 
     try {
-      await disconnectFromDevice();
-      _deviceStateController.add("Connecting to ${device.platformName}...");
-
-      await device.connect(
-        timeout: BleConstants.CONNECTION_TIMEOUT,
-        autoConnect: false,
-      );
-      _connectedDevice = device;
-
-      _setupConnectionMonitoring(device);
-      await Future.delayed(const Duration(seconds: 1));
-
-      await _discoverServices();
-
-      _isConnected = true;
-      _connectionStatusController.add(true);
-      _deviceStateController.add("Connected to ${device.platformName}");
-      _startKeepAliveTimer();
-
+      await _attemptConnection(device);
     } catch (e) {
-      _deviceStateController.add("Connection failed: $e");
-      await disconnectFromDevice();
-      throw Exception("Failed to connect: $e");
+      _handleConnectionError(e);
     } finally {
       _isConnecting = false;
     }
+  }
+
+  Future<void> _attemptConnection(BluetoothDevice device) async {
+    while (_retryAttempt < maxRetryAttempts) {
+      try {
+        await disconnectFromDevice();
+        _deviceStateController.add("Attempting connection (${_retryAttempt + 1}/$maxRetryAttempts)");
+
+        // Calculate exponential backoff delay
+        if (_retryAttempt > 0) {
+          final backoffDelay = Duration(
+              seconds: (initialRetryDelay.inSeconds * (1 << (_retryAttempt - 1)))
+                  .clamp(0, maxRetryDelay.inSeconds)
+          );
+          await Future.delayed(backoffDelay);
+        }
+
+        await device.connect(
+            timeout: BleConstants.CONNECTION_TIMEOUT,
+            autoConnect: false
+        );
+
+        _connectedDevice = device;
+        await _setupConnection(device);
+        return;
+
+      } catch (e) {
+        _retryAttempt++;
+        if (_retryAttempt >= maxRetryAttempts) {
+          throw Exception('Failed to connect after $_retryAttempt attempts: $e');
+        }
+      }
+    }
+  }
+
+  Future<void> _setupConnection(BluetoothDevice device) async {
+    await Future.delayed(const Duration(seconds: 1));
+    await _discoverServices();
+
+    _setupConnectionMonitoring(device);
+    _startKeepAliveTimer();
+    _startQualityMonitoring();
+
+    _isConnected = true;
+    _connectionStatusController.add(true);
+    _deviceStateController.add("Connected successfully");
   }
 
   Future<void> _discoverServices() async {
@@ -87,7 +125,6 @@ class BleService {
 
     if (_switchCharacteristic!.properties.notify) {
       await _switchCharacteristic!.setNotifyValue(true);
-      // Updated: Use lastValueStream instead of value
       _switchCharacteristic!.lastValueStream.listen(_notificationController.add);
     }
   }
@@ -123,9 +160,60 @@ class BleService {
         }
       } catch (e) {
         _deviceStateController.add("Keep-alive failed: $e");
-        await reconnectIfNeeded();
+        await _handleConnectionFailure();
       }
     });
+  }
+
+  void _startQualityMonitoring() {
+    _connectionQualityTimer?.cancel();
+    _connectionQualityTimer = Timer.periodic(
+        qualityCheckInterval,
+            (_) => _checkConnectionQuality()
+    );
+  }
+
+  Future<void> _checkConnectionQuality() async {
+    if (!_isConnected || _connectedDevice == null) return;
+
+    try {
+      final rssi = await _connectedDevice!.readRssi();
+
+      // Calculate quality percentage (0-100)
+      final quality = ((rssi - minAcceptableRSSI) / (0 - minAcceptableRSSI) * 100)
+          .clamp(0.0, 100.0);
+
+      _connectionQualityController.add(quality);
+
+      if (rssi < minAcceptableRSSI) {
+        _deviceStateController.add("Poor connection quality");
+        await _handleConnectionFailure();
+      }
+    } catch (e) {
+      _deviceStateController.add("Quality check failed: $e");
+    }
+  }
+
+  Future<void> _handleConnectionFailure() async {
+    if (_connectedDevice != null && _retryAttempt < maxRetryAttempts) {
+      _deviceStateController.add("Connection unstable, attempting recovery");
+      await _attemptConnection(_connectedDevice!);
+    }
+  }
+
+  void _handleConnectionError(dynamic error) {
+    _deviceStateController.add("Connection error: $error");
+    _handleDisconnection();
+  }
+
+  void _handleDisconnection() {
+    _isConnected = false;
+    _connectedDevice = null;
+    _switchCharacteristic = null;
+    _keepAliveTimer?.cancel();
+    _connectionQualityTimer?.cancel();
+    _connectionSubscription?.cancel();
+    _connectionStatusController.add(false);
   }
 
   // LED control
@@ -141,7 +229,7 @@ class BleService {
       _deviceStateController.add("LED command sent: $colorCommand");
     } catch (e) {
       _deviceStateController.add("Failed to set LED: $e");
-      await reconnectIfNeeded();
+      await _handleConnectionFailure();
       throw Exception("Failed to set LED: $e");
     }
   }
@@ -313,6 +401,7 @@ class BleService {
 
   Future<void> disconnectFromDevice() async {
     _keepAliveTimer?.cancel();
+    _connectionQualityTimer?.cancel();
     _connectionSubscription?.cancel();
 
     try {
@@ -327,15 +416,6 @@ class BleService {
     }
   }
 
-  void _handleDisconnection() {
-    _isConnected = false;
-    _connectedDevice = null;
-    _switchCharacteristic = null;
-    _keepAliveTimer?.cancel();
-    _connectionSubscription?.cancel();
-    _connectionStatusController.add(false);
-  }
-
   Future<void> forgetDevice(String deviceId) async {
     if (_connectedDevice?.remoteId.str == deviceId) {
       await disconnectFromDevice();
@@ -346,9 +426,11 @@ class BleService {
   void dispose() {
     disconnectFromDevice();
     _keepAliveTimer?.cancel();
+    _connectionQualityTimer?.cancel();
     _connectionSubscription?.cancel();
     _deviceStateController.close();
     _connectionStatusController.close();
+    _connectionQualityController.close();
     _notificationController.close();
   }
 }
