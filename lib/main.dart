@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Import provider
+import 'package:provider/provider.dart';
 import 'core/services/database_service.dart';
 import 'features/device_control/views/device_control_screen.dart';
 import 'features/notes/views/notes_screen.dart';
@@ -29,18 +29,29 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
           appBarTheme: const AppBarTheme(
-            iconTheme: IconThemeData(color: Colors.white), // Set icon color to white
+            iconTheme: IconThemeData(color: Colors.white),
           ),
-          textTheme: const TextTheme(titleLarge: TextStyle(color: Colors.white)), // Set text color to white
+          dialogTheme: const DialogTheme(
+            titleTextStyle: TextStyle(
+              color: Colors.black87,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+            contentTextStyle: TextStyle(
+              color: Colors.black87,
+              fontSize: 16,
+            ),
+            backgroundColor: Colors.white,
+          ),
           bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-            backgroundColor: Colors.white, // Set the background color to white
-            selectedItemColor: Colors.blue, // Set the selected item color to blue
-            unselectedItemColor: Colors.grey, // Set the unselected item color to grey
+            backgroundColor: Colors.white,
+            selectedItemColor: Colors.blue,
+            unselectedItemColor: Colors.grey,
           ),
         ),
-        initialRoute: '/', // Define initial route
+        initialRoute: '/',
         routes: {
-          '/': (context) => const MyHomePage(), // Define the home route
+          '/': (context) => const MyHomePage(),
         },
       ),
     );
@@ -86,9 +97,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        iconSize: 30.0, // Set the size of the icons
-        selectedLabelStyle: const TextStyle(fontSize: 15.0), // Set the size of the selected text
-        unselectedLabelStyle: const TextStyle(fontSize: 13.0), // Set the size of the unselected text
+        iconSize: 30.0,
+        selectedLabelStyle: const TextStyle(fontSize: 15.0),
+        unselectedLabelStyle: const TextStyle(fontSize: 13.0),
       ),
     );
   }
