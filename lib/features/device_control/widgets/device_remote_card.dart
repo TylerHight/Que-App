@@ -10,7 +10,8 @@ import 'package:que_app/core/services/ble/ble_service.dart';
 import '../../notes/dialogs/add_note_dialog.dart';
 import 'package:que_app/core/models/note.dart';
 import 'package:que_app/core/constants/ble_constants.dart';
-
+// TODO: Make settings and notes buttons bigger and easier to tap
+// TODO: Add a way to change the device name
 class DeviceRemote extends StatefulWidget {
   final Device device;
   final BleService bleService;
