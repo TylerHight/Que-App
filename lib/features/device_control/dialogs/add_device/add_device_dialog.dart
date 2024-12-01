@@ -6,11 +6,11 @@ import 'package:provider/provider.dart';
 import 'package:que_app/core/models/device/index.dart';
 import 'package:que_app/core/models/device_list.dart';
 import 'package:que_app/core/services/ble/ble_service.dart';
-import 'package:que_app/features/device_control/dialogs/add_device/managers/ble_connection_manager.dart';
-import 'package:que_app/features/device_control/dialogs/add_device/models/add_device_state.dart';
-import 'package:que_app/features/device_control/dialogs/add_device/components/device_name_field.dart';
-import 'package:que_app/features/device_control/dialogs/add_device/components/device_selector.dart';
-import 'package:que_app/features/device_control/dialogs/add_device/components/bluetooth_status.dart';
+import './managers/ble_connection_manager.dart';
+import './models/add_device_state.dart';
+import './components/device_name_field.dart';
+import './components/device_selector.dart';
+import './components/bluetooth_status.dart';
 
 class AddDeviceDialog extends StatefulWidget {
   final Function(Device) onDeviceAdded;
@@ -33,6 +33,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   late final AddDeviceState _state;
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  bool _stateUpdateEnabled = true;
 
   @override
   void initState() {
@@ -43,7 +44,6 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Initialize BLE manager here since we need context
     _bleManager = BleConnectionManager(
       bleService: widget.bleService,
       onStateChanged: _handleStateChange,
@@ -53,10 +53,29 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   }
 
   void _handleStateChange(AddDeviceState newState) {
-    if (!mounted) return;
+    if (!mounted || !_stateUpdateEnabled) return;
     setState(() {
+      // Preserve selected device when updating state
+      final currentDevice = _state.selectedDevice;
       _state.update(newState);
+      if (currentDevice != null) {
+        final matchingDevice = newState.nearbyDevices.firstWhere(
+              (device) => device.remoteId.str == currentDevice.remoteId.str,
+          orElse: () => currentDevice,
+        );
+        _state.setSelectedDevice(matchingDevice);
+      }
     });
+  }
+
+  Future<void> _handleDeviceSelection(BluetoothDevice? device) async {
+    if (!mounted) return;
+    _stateUpdateEnabled = false;  // Temporarily disable state updates
+    setState(() {
+      _state.setSelectedDevice(device);
+    });
+    await Future.delayed(const Duration(milliseconds: 100));
+    _stateUpdateEnabled = true;  // Re-enable state updates
   }
 
   Future<void> _handleAddDevice() async {
@@ -82,7 +101,6 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
 
         if (!mounted) return;
 
-        // Show dialog asking if user wants to continue without connection
         final continueWithoutConnection = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
@@ -162,7 +180,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                   devices: _state.nearbyDevices,
                   selectedDevice: _state.selectedDevice,
                   isConnecting: _state.isConnecting,
-                  onDeviceSelected: (device) => setState(() => _state.setSelectedDevice(device)),
+                  onDeviceSelected: _handleDeviceSelection,
                 ),
                 BluetoothStatus(
                   isScanning: _state.isScanning,
@@ -183,7 +201,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
           child: const Text('Cancel'),
         ),
         TextButton(
-          onPressed: () {
+          onPressed: _state.isConnecting ? null : () {
             if (_formKey.currentState?.validate() ?? false) {
               _handleAddDevice();
             }

@@ -19,7 +19,18 @@ class DeviceSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final devicesList = devices.where((device) => device.platformName.isNotEmpty).toList();
+    // Deduplicate devices by remoteId
+    final uniqueDevices = <String, BluetoothDevice>{};
+    for (var device in devices) {
+      if (device.platformName.isNotEmpty) {
+        uniqueDevices[device.remoteId.str] = device;
+      }
+    }
+
+    // Get currently selected device from unique devices if it exists
+    final currentDevice = selectedDevice != null
+        ? uniqueDevices[selectedDevice!.remoteId.str] ?? selectedDevice
+        : null;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -35,7 +46,7 @@ class DeviceSelector extends StatelessWidget {
             child: DropdownButton<BluetoothDevice>(
               isExpanded: true,
               isDense: true,
-              value: devicesList.contains(selectedDevice) ? selectedDevice : null,
+              value: currentDevice,
               onChanged: isConnecting ? null : onDeviceSelected,
               items: [
                 const DropdownMenuItem<BluetoothDevice>(
@@ -48,7 +59,7 @@ class DeviceSelector extends StatelessWidget {
                     ],
                   ),
                 ),
-                ...devicesList.map((device) => DropdownMenuItem(
+                ...uniqueDevices.values.map((device) => DropdownMenuItem(
                   value: device,
                   child: Row(
                     children: [

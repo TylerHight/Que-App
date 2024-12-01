@@ -18,6 +18,7 @@ class BleConnectionManager {
   StreamSubscription? _deviceStateSubscription;
   StreamSubscription? _connectionStatusSubscription;
   StreamSubscription? _bluetoothStateSubscription;
+  StreamSubscription? _scanSubscription;
   Timer? _autoScanTimer;
 
   static const Duration connectionTimeout = Duration(seconds: 10);
@@ -34,6 +35,43 @@ class BleConnectionManager {
     _setupSubscriptions();
     await _checkBluetoothState();
     _startAutoScan();
+  }
+
+  Future<void> _checkBluetoothState() async {
+    try {
+      final isSupported = await FlutterBluePlus.isSupported;
+      if (!isSupported) {
+        _state.setStatusMessage("Bluetooth not supported on this device");
+        onStateChanged(_state);
+        return;
+      }
+
+      final isOn = await FlutterBluePlus.adapterState.first == BluetoothAdapterState.on;
+      if (!isOn) {
+        await _handleBluetoothDisabled();
+        return;
+      }
+
+      startScan();
+    } catch (e) {
+      _state.setStatusMessage("Error checking Bluetooth: $e");
+      onStateChanged(_state);
+    }
+  }
+
+  Future<void> _handleBluetoothDisabled() async {
+    if (!context.mounted) return;
+
+    final result = await showBluetoothEnableDialog(context);
+
+    if (result == BluetoothEnableResult.enabled) {
+      _state.setStatusMessage("Starting scan...");
+      onStateChanged(_state);
+      await startScan();
+    } else {
+      _state.setStatusMessage("Bluetooth is required for scanning");
+      onStateChanged(_state);
+    }
   }
 
   void _setupSubscriptions() {
@@ -74,45 +112,43 @@ class BleConnectionManager {
   void _startAutoScan() {
     _autoScanTimer?.cancel();
     _autoScanTimer = Timer.periodic(autoScanInterval, (_) {
-      if (!_state.isScanning) {
-        startScan();
+      if (!_state.isScanning && !_state.isConnecting) {
+        _updateDeviceList();
       }
     });
   }
 
-  Future<void> _checkBluetoothState() async {
+  Future<void> _updateDeviceList() async {
+    if (!mounted || _state.isScanning || _state.isConnecting) return;
+
     try {
-      final isSupported = await FlutterBluePlus.isSupported;
-      if (!isSupported) {
-        _state.setStatusMessage("Bluetooth not supported on this device");
-        onStateChanged(_state);
-        return;
+      final currentSelectedDevice = _state.selectedDevice;
+      final devices = await _bleUtils.startScan(
+        checkIfPoweredOn: false,
+        timeout: const Duration(seconds: 2),
+      );
+
+      // Only update the device list if we're still mounted and not connecting
+      if (!mounted || _state.isConnecting) return;
+
+      // Preserve the selected device if it still exists in the new list
+      BluetoothDevice? updatedSelectedDevice;
+      if (currentSelectedDevice != null) {
+        updatedSelectedDevice = devices.firstWhere(
+              (device) => device.remoteId.str == currentSelectedDevice.remoteId.str,
+          orElse: () => currentSelectedDevice,
+        );
       }
 
-      final isOn = await FlutterBluePlus.adapterState.first == BluetoothAdapterState.on;
-      if (!isOn) {
-        await _handleBluetoothDisabled();
-        return;
+      _state.setNearbyDevices(devices);
+      if (updatedSelectedDevice != null) {
+        _state.setSelectedDevice(updatedSelectedDevice);
       }
-
-      startScan();
+      _state.setLastScanTime(DateTime.now());
+      onStateChanged(_state);
     } catch (e) {
-      _state.setStatusMessage("Error checking Bluetooth: $e");
-      onStateChanged(_state);
-    }
-  }
-
-  Future<void> _handleBluetoothDisabled() async {
-    if (!context.mounted) return;
-
-    final result = await showBluetoothEnableDialog(context);
-
-    if (result == BluetoothEnableResult.enabled) {
-      _state.setStatusMessage("Starting scan...");
-      onStateChanged(_state);
-      await startScan();
-    } else {
-      _state.setStatusMessage("Bluetooth is required for scanning");
+      if (!mounted) return;
+      _state.setStatusMessage("Scan update failed: ${e.toString()}");
       onStateChanged(_state);
     }
   }
@@ -125,8 +161,21 @@ class BleConnectionManager {
 
     try {
       await FlutterBluePlus.stopScan();
+
+      // Store current selected device
+      final currentSelectedDevice = _state.selectedDevice;
+
       final devices = await _bleUtils.startScan();
       if (!mounted) return;
+
+      // Preserve selected device if it still exists in the new list
+      if (currentSelectedDevice != null) {
+        final updatedSelectedDevice = devices.firstWhere(
+              (device) => device.remoteId.str == currentSelectedDevice.remoteId.str,
+          orElse: () => currentSelectedDevice,
+        );
+        _state.setSelectedDevice(updatedSelectedDevice);
+      }
 
       _state.setNearbyDevices(devices);
       _state.setLastScanTime(DateTime.now());
@@ -134,7 +183,6 @@ class BleConnectionManager {
       onStateChanged(_state);
     } catch (e) {
       if (!mounted) return;
-
       _state.setStatusMessage("Scan failed: ${e.toString()}");
       _state.setScanning(false);
       onStateChanged(_state);
@@ -196,7 +244,7 @@ class BleConnectionManager {
   }
 
   void _handleConnectionFailure() async {
-    if (_state.canRetry()) {
+    if (_state.canRetry() && _state.selectedDevice != null) {
       _state.incrementRetries();
       _state.setStatusMessage("Connection lost, retrying...");
       onStateChanged(_state);
@@ -210,6 +258,7 @@ class BleConnectionManager {
     _deviceStateSubscription?.cancel();
     _connectionStatusSubscription?.cancel();
     _bluetoothStateSubscription?.cancel();
+    _scanSubscription?.cancel();
     _autoScanTimer?.cancel();
     if (!_state.isCompleted && _state.isConnecting) {
       bleService.disconnectFromDevice();

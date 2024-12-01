@@ -6,7 +6,6 @@ class BluetoothStatus extends StatelessWidget {
   final bool isScanning;
   final bool isConnecting;
   final String statusMessage;
-  final DateTime? lastScanTime;
   final VoidCallback onScanPressed;
 
   const BluetoothStatus({
@@ -15,21 +14,7 @@ class BluetoothStatus extends StatelessWidget {
     required this.isConnecting,
     required this.statusMessage,
     required this.onScanPressed,
-    this.lastScanTime,
   });
-
-  String _getLastScanText() {
-    if (lastScanTime == null) return '';
-    final difference = DateTime.now().difference(lastScanTime!);
-
-    if (difference.inSeconds < 60) {
-      return 'Last scan: ${difference.inSeconds}s ago';
-    } else if (difference.inMinutes < 60) {
-      return 'Last scan: ${difference.inMinutes}m ago';
-    } else {
-      return 'Last scan: ${difference.inHours}h ago';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,18 +47,6 @@ class BluetoothStatus extends StatelessWidget {
             ],
           ),
         ),
-        if (lastScanTime != null && !isScanning)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              _getLastScanText(),
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
         if (statusMessage.isNotEmpty && !statusMessage.contains('Scanning'))
           Padding(
             padding: const EdgeInsets.only(top: 8),
