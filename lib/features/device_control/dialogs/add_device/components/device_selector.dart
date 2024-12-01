@@ -17,72 +17,61 @@ class DeviceSelector extends StatelessWidget {
     required this.onDeviceSelected,
   });
 
-  List<BluetoothDevice> _getDevicesWithNames() {
-    return devices.where((device) => device.platformName.isNotEmpty).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final devicesWithNames = _getDevicesWithNames();
+    final devicesList = devices.where((device) => device.platformName.isNotEmpty).toList();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: DropdownButtonFormField<BluetoothDevice>(
-            isExpanded: true,
-            decoration: const InputDecoration(
-              labelText: 'Connect to Device',
-              helperStyle: TextStyle(fontStyle: FontStyle.italic),
-              helperMaxLines: 2,
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-            ),
-            hint: const Text('Select a device or leave empty'),
-            value: selectedDevice,
-            onChanged: isConnecting
-                ? null
-                : (BluetoothDevice? device) => onDeviceSelected(device),
-            items: [
-              const DropdownMenuItem<BluetoothDevice>(
-                value: null,
-                child: Row(
-                  children: [
-                    Icon(Icons.do_not_disturb, size: 16, color: Colors.grey),
-                    SizedBox(width: 8),
-                    Text('No device selected'),
-                  ],
-                ),
-              ),
-              if (devicesWithNames.isNotEmpty)
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: InputDecorator(
+        decoration: const InputDecoration(
+          labelText: 'Connect to Device',
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        ),
+        child: DropdownButtonHideUnderline(
+          child: ButtonTheme(
+            alignedDropdown: true,
+            child: DropdownButton<BluetoothDevice>(
+              isExpanded: true,
+              isDense: true,
+              value: devicesList.contains(selectedDevice) ? selectedDevice : null,
+              onChanged: isConnecting ? null : onDeviceSelected,
+              items: [
                 const DropdownMenuItem<BluetoothDevice>(
-                  enabled: false,
-                  child: Divider(),
+                  value: null,
+                  child: Row(
+                    children: [
+                      Icon(Icons.do_not_disturb, size: 16, color: Colors.grey),
+                      SizedBox(width: 8),
+                      Text('No device selected'),
+                    ],
+                  ),
                 ),
-              ...devicesWithNames.map((device) => DropdownMenuItem(
-                value: device,
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.bluetooth,
-                      size: 16,
-                      color: Colors.blue,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        device.platformName,
-                        overflow: TextOverflow.ellipsis,
+                ...devicesList.map((device) => DropdownMenuItem(
+                  value: device,
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.bluetooth,
+                        size: 16,
+                        color: Colors.blue,
                       ),
-                    ),
-                  ],
-                ),
-              )).toList(),
-            ],
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          device.platformName,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                )).toList(),
+              ],
+            ),
           ),
         ),
-      ],
+      ),
     );
   }
 }
