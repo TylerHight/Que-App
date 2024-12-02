@@ -1,6 +1,7 @@
 // lib/features/device_control/views/device_control_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:que_app/core/models/device_list.dart';
 import 'package:que_app/core/models/device/index.dart';
@@ -16,13 +17,46 @@ class DeviceControlScreen extends StatefulWidget {
   _DeviceControlScreenState createState() => _DeviceControlScreenState();
 }
 
-class _DeviceControlScreenState extends State<DeviceControlScreen> {
+class _DeviceControlScreenState extends State<DeviceControlScreen> with WidgetsBindingObserver {
   final BleService _bleService = BleService();
 
   @override
-  void dispose() {
-    _bleService.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _connectToStoredDevices();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        _connectToStoredDevices();
+        break;
+      case AppLifecycleState.paused:
+        _bleService.disconnectFromDevice();
+        break;
+      default:
+        break;
+    }
+  }
+
+  Future<void> _connectToStoredDevices() async {
+    final deviceList = Provider.of<DeviceList>(context, listen: false);
+    for (final device in deviceList.devices) {
+      if (device.bluetoothDevice != null && !device.isConnected) {
+        try {
+          await _bleService.connectToDevice(device.bluetoothDevice!);
+          device.isBleConnected = true;
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to connect to ${device.deviceName}: $e')),
+            );
+          }
+        }
+      }
+    }
   }
 
   Future<void> _showAddDeviceDialog() async {
@@ -32,11 +66,50 @@ class _DeviceControlScreenState extends State<DeviceControlScreen> {
       context: context,
       builder: (BuildContext context) {
         return AddDeviceDialog(
-          onDeviceAdded: (Device newDevice) {},
+          onDeviceAdded: (String name, BluetoothDevice? selectedDevice) async {
+            final deviceList = Provider.of<DeviceList>(context, listen: false);
+
+            // Create new device
+            final newDevice = Device(
+              deviceName: name,
+              connectedQueName: selectedDevice?.platformName ?? '',
+              bluetoothDevice: selectedDevice,
+              bleService: _bleService,
+            );
+
+            // Add to device list
+            deviceList.add(newDevice);
+
+            // Attempt connection if we have a Bluetooth device
+            if (selectedDevice != null) {
+              try {
+                await _bleService.connectToDevice(selectedDevice);
+                newDevice.isBleConnected = true;
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Device connected successfully')),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to connect: $e')),
+                  );
+                }
+              }
+            }
+          },
           bleService: _bleService,
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _bleService.dispose();
+    super.dispose();
   }
 
   @override

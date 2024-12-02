@@ -2,9 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:provider/provider.dart';
-import 'package:que_app/core/models/device/index.dart';
-import 'package:que_app/core/models/device_list.dart';
 import 'package:que_app/core/services/ble/ble_service.dart';
 import './managers/ble_connection_manager.dart';
 import './models/add_device_state.dart';
@@ -13,7 +10,7 @@ import './components/device_selector.dart';
 import './components/bluetooth_status.dart';
 
 class AddDeviceDialog extends StatefulWidget {
-  final Function(Device) onDeviceAdded;
+  final Function(String name, BluetoothDevice? device) onDeviceAdded;
   final bool includeNameField;
   final BleService bleService;
 
@@ -84,68 +81,9 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
     final name = _nameController.text;
     final selectedDevice = _state.selectedDevice;
 
-    if (selectedDevice != null) {
-      setState(() => _state.setConnecting(true));
-
-      try {
-        final connected = await _bleManager.connectToDevice(selectedDevice);
-        if (!connected) {
-          throw Exception("Failed to establish connection");
-        }
-        _createAndAddDevice(name, selectedDevice);
-      } catch (e) {
-        setState(() {
-          _state.setConnecting(false);
-          _state.setStatusMessage("Connection failed: ${e.toString()}");
-        });
-
-        if (!mounted) return;
-
-        final continueWithoutConnection = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Connection Failed'),
-            content: const Text('Would you like to add the device without connecting?'),
-            actions: [
-              TextButton(
-                child: const Text('Cancel'),
-                onPressed: () => Navigator.of(context).pop(false),
-              ),
-              TextButton(
-                child: const Text('Add Without Connection'),
-                onPressed: () => Navigator.of(context).pop(true),
-              ),
-            ],
-          ),
-        );
-
-        if (continueWithoutConnection == true) {
-          _createAndAddDevice(name, null);
-        }
-      }
-    } else {
-      _createAndAddDevice(name, null);
-    }
-  }
-
-  void _createAndAddDevice(String name, BluetoothDevice? bluetoothDevice) {
-    final deviceList = Provider.of<DeviceList>(context, listen: false);
-
-    final newDevice = Device(
-      id: UniqueKey().toString(),
-      deviceName: name,
-      connectedQueName: bluetoothDevice?.platformName ?? '',
-      bluetoothDevice: bluetoothDevice,
-      bleService: widget.bleService,
-    );
-
-    _state.setCompleted(true);
-    deviceList.add(newDevice);
-    widget.onDeviceAdded(newDevice);
-
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
+    // Return name and selected device to parent
+    widget.onDeviceAdded(name, selectedDevice);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -206,7 +144,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
               _handleAddDevice();
             }
           },
-          child: Text(_state.isConnecting ? 'Connecting...' : 'Add'),
+          child: const Text('Add'),
         ),
       ],
     );
