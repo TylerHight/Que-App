@@ -3,135 +3,98 @@
 import 'dart:async';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../constants/ble_constants.dart';
+import 'managers/connection_manager.dart';
+import 'managers/characteristics_manager.dart';
+import 'managers/keep_alive_manager.dart';
+import 'ble_types.dart';
 
 class BleService {
   // Singleton pattern
   static final BleService _instance = BleService._internal();
   factory BleService() => _instance;
-  BleService._internal();
 
-  // Private state
-  BluetoothDevice? _connectedDevice;
-  BluetoothCharacteristic? _switchCharacteristic;
-  bool _isConnecting = false;
-  bool _isConnected = false;
-  int _retryAttempt = 0;
-  Timer? _keepAliveTimer;
-  StreamSubscription? _connectionSubscription;
+  late final BleConnectionManager _connectionManager;
+  late final BleCharacteristicsManager _characteristicsManager;
+  late final BleKeepAliveManager _keepAliveManager;
 
   // Stream controllers
   final _deviceStateController = StreamController<String>.broadcast();
   final _connectionStatusController = StreamController<bool>.broadcast();
 
-  // Configuration
-  static const Duration keepAliveInterval = Duration(seconds: 15);
-  static const int maxRetryAttempts = 3;
+  // State
+  BluetoothDevice? _connectedDevice;
+  BleConnectionState _connectionState = BleConnectionState.disconnected;
 
   // Public streams and getters
   Stream<String> get deviceStateStream => _deviceStateController.stream;
   Stream<bool> get connectionStatusStream => _connectionStatusController.stream;
   BluetoothDevice? get connectedDevice => _connectedDevice;
-  bool get isConnected => _isConnected;
+  bool get isConnected => _connectionState == BleConnectionState.connected;
+
+  BleService._internal() {
+    _connectionManager = BleConnectionManager(
+      onStateChange: _handleConnectionStateChange,
+      onError: _handleConnectionError,
+    );
+
+    _characteristicsManager = BleCharacteristicsManager(
+      onError: _handleCharacteristicError,
+    );
+
+    _keepAliveManager = BleKeepAliveManager(
+      interval: const Duration(seconds: 15),
+      onKeepAliveFailed: _handleKeepAliveFailed,
+    );
+  }
 
   Future<void> connectToDevice(BluetoothDevice device) async {
-    if (_isConnecting) return;
-    _isConnecting = true;
-    _retryAttempt = 0;
+    if (_connectionState == BleConnectionState.connecting) return;
 
     try {
-      await _attemptConnection(device);
-    } catch (e) {
-      _handleConnectionError(e);
-    } finally {
-      _isConnecting = false;
-    }
-  }
+      _updateState(BleConnectionState.connecting);
+      _deviceStateController.add("Connecting to device...");
 
-  Future<void> _attemptConnection(BluetoothDevice device) async {
-    await disconnectFromDevice();
-
-    try {
-      await device.connect(
-          timeout: BleConstants.CONNECTION_TIMEOUT,
-          autoConnect: false
-      );
+      final success = await _connectionManager.connectWithRetry(device);
+      if (!success) {
+        throw BleException("Failed to establish stable connection");
+      }
 
       _connectedDevice = device;
-      await _setupConnection(device);
+      await _initializeDevice(device);
 
     } catch (e) {
-      if (_retryAttempt < maxRetryAttempts) {
-        _retryAttempt++;
-        await Future.delayed(Duration(seconds: _retryAttempt));
-        await _attemptConnection(device);
-      } else {
-        throw Exception('Failed to connect after $_retryAttempt attempts');
-      }
+      _handleConnectionError(e);
+      rethrow;
     }
   }
 
-  Future<void> _setupConnection(BluetoothDevice device) async {
-    await Future.delayed(const Duration(seconds: 1));
-    await _discoverServices();
-    _setupConnectionMonitoring(device);
-    _startKeepAliveTimer();
+  Future<void> _initializeDevice(BluetoothDevice device) async {
+    try {
+      await _characteristicsManager.discoverCharacteristics(device);
 
-    _isConnected = true;
-    _connectionStatusController.add(true);
-    _deviceStateController.add("Connected successfully");
+      _keepAliveManager.startKeepAlive(() async {
+        await _characteristicsManager.readCharacteristic(
+            BleConstants.SWITCH_CHARACTERISTIC_UUID
+        );
+      });
+
+      _updateState(BleConnectionState.connected);
+      _deviceStateController.add("Connected successfully");
+      _connectionStatusController.add(true);
+
+    } catch (e) {
+      _handleConnectionError(e);
+      rethrow;
+    }
   }
 
-  void _setupConnectionMonitoring(BluetoothDevice device) {
-    _connectionSubscription?.cancel();
-    _connectionSubscription = device.connectionState.listen(
-            (BluetoothConnectionState state) {
-          final isConnected = state == BluetoothConnectionState.connected;
-          _isConnected = isConnected;
-          _connectionStatusController.add(isConnected);
+  void _handleConnectionStateChange(BleConnectionState newState) {
+    _updateState(newState);
+    _connectionStatusController.add(isConnected);
 
-          if (!isConnected) {
-            _deviceStateController.add("Device disconnected");
-            _handleDisconnection();
-          }
-        }
-    );
-  }
-
-  void _startKeepAliveTimer() {
-    _keepAliveTimer?.cancel();
-    _keepAliveTimer = Timer.periodic(keepAliveInterval, (_) async {
-      if (_isConnected && _switchCharacteristic != null) {
-        try {
-          await _switchCharacteristic!.read();
-          _deviceStateController.add("Keep-alive successful");
-        } catch (e) {
-          _deviceStateController.add("Keep-alive failed: $e");
-          await _handleConnectionFailure();
-        }
-      }
-    });
-  }
-
-  Future<void> _discoverServices() async {
-    final services = await _connectedDevice!.discoverServices();
-
-    final ledService = services.firstWhere(
-            (service) => service.uuid.toString().toLowerCase() ==
-            BleConstants.LED_SERVICE_UUID.toLowerCase(),
-        orElse: () => throw Exception("LED service not found")
-    );
-
-    _switchCharacteristic = ledService.characteristics.firstWhere(
-            (char) => char.uuid.toString().toLowerCase() ==
-            BleConstants.SWITCH_CHARACTERISTIC_UUID.toLowerCase(),
-        orElse: () => throw Exception("Switch characteristic not found")
-    );
-  }
-
-  Future<void> _handleConnectionFailure() async {
-    if (_connectedDevice != null && _retryAttempt < maxRetryAttempts) {
-      _deviceStateController.add("Connection unstable, attempting recovery");
-      await _attemptConnection(_connectedDevice!);
+    if (newState == BleConnectionState.disconnected) {
+      _deviceStateController.add("Device disconnected");
+      _handleDisconnection();
     }
   }
 
@@ -140,36 +103,156 @@ class BleService {
     _handleDisconnection();
   }
 
+  void _handleCharacteristicError(String message) {
+    _deviceStateController.add("Device error: $message");
+  }
+
+  void _handleKeepAliveFailed() async {
+    _deviceStateController.add("Keep-alive failed, attempting recovery");
+    if (_connectedDevice != null) {
+      await _connectionManager.attemptRecovery(_connectedDevice!);
+    }
+  }
+
+  void _updateState(BleConnectionState newState) {
+    _connectionState = newState;
+  }
+
   void _handleDisconnection() {
-    _isConnected = false;
+    _updateState(BleConnectionState.disconnected);
     _connectedDevice = null;
-    _switchCharacteristic = null;
-    _keepAliveTimer?.cancel();
-    _connectionSubscription?.cancel();
+    _keepAliveManager.stopKeepAlive();
     _connectionStatusController.add(false);
   }
 
+  // Device Operations
   Future<void> setLedColor(int colorCommand) async {
-    if (!_isConnected || _switchCharacteristic == null) {
-      throw Exception('Device not connected');
-    }
+    _ensureConnected();
 
     try {
-      await _switchCharacteristic!.write([colorCommand]);
+      await _characteristicsManager.writeCharacteristic(
+        BleConstants.SWITCH_CHARACTERISTIC_UUID,
+        [colorCommand],
+      );
       _deviceStateController.add("LED command sent: $colorCommand");
     } catch (e) {
       _deviceStateController.add("Failed to set LED: $e");
-      throw Exception("Failed to set LED: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> updateEmission1Duration(String deviceId, Duration duration) async {
+    _ensureConnected();
+
+    try {
+      await _characteristicsManager.writeCharacteristic(
+        BleConstants.SWITCH_CHARACTERISTIC_UUID,
+        [BleConstants.CMD_EMISSION1_DURATION, duration.inSeconds],
+      );
+    } catch (e) {
+      throw BleException('Failed to update emission 1 duration: $e');
+    }
+  }
+
+  Future<void> updateEmission2Duration(String deviceId, Duration duration) async {
+    _ensureConnected();
+
+    try {
+      await _characteristicsManager.writeCharacteristic(
+        BleConstants.SWITCH_CHARACTERISTIC_UUID,
+        [BleConstants.CMD_EMISSION2_DURATION, duration.inSeconds],
+      );
+    } catch (e) {
+      throw BleException('Failed to update emission 2 duration: $e');
+    }
+  }
+
+  Future<void> updateInterval1(String deviceId, Duration interval) async {
+    _ensureConnected();
+
+    try {
+      await _characteristicsManager.writeCharacteristic(
+        BleConstants.SWITCH_CHARACTERISTIC_UUID,
+        [BleConstants.CMD_INTERVAL1, interval.inSeconds],
+      );
+    } catch (e) {
+      throw BleException('Failed to update interval 1: $e');
+    }
+  }
+
+  Future<void> updateInterval2(String deviceId, Duration interval) async {
+    _ensureConnected();
+
+    try {
+      await _characteristicsManager.writeCharacteristic(
+        BleConstants.SWITCH_CHARACTERISTIC_UUID,
+        [BleConstants.CMD_INTERVAL2, interval.inSeconds],
+      );
+    } catch (e) {
+      throw BleException('Failed to update interval 2: $e');
+    }
+  }
+
+  Future<void> updatePeriodicEmission1(String deviceId, bool enabled) async {
+    _ensureConnected();
+
+    try {
+      await _characteristicsManager.writeCharacteristic(
+        BleConstants.SWITCH_CHARACTERISTIC_UUID,
+        [BleConstants.CMD_PERIODIC1, enabled ? 1 : 0],
+      );
+    } catch (e) {
+      throw BleException('Failed to update periodic emission 1: $e');
+    }
+  }
+
+  Future<void> updatePeriodicEmission2(String deviceId, bool enabled) async {
+    _ensureConnected();
+
+    try {
+      await _characteristicsManager.writeCharacteristic(
+        BleConstants.SWITCH_CHARACTERISTIC_UUID,
+        [BleConstants.CMD_PERIODIC2, enabled ? 1 : 0],
+      );
+    } catch (e) {
+      throw BleException('Failed to update periodic emission 2: $e');
+    }
+  }
+
+  Future<void> updateHeartRateThreshold(String deviceId, int threshold) async {
+    _ensureConnected();
+
+    try {
+      await _characteristicsManager.writeCharacteristic(
+        BleConstants.SWITCH_CHARACTERISTIC_UUID,
+        [BleConstants.CMD_HEARTRATE, threshold],
+      );
+    } catch (e) {
+      throw BleException('Failed to update heart rate threshold: $e');
+    }
+  }
+
+  Future<List<BluetoothDevice>> scanForHeartRateMonitors() async {
+    if (_connectionState == BleConnectionState.connecting) return [];
+
+    try {
+      return await _connectionManager.scanForDevices(
+        timeout: const Duration(seconds: 4),
+        withServices: [Guid(BleConstants.HEARTRATE_SERVICE_UUID)],
+        filter: (device) => device.platformName.toLowerCase().contains("heart"),
+      );
+    } finally {
+      await FlutterBluePlus.stopScan();
     }
   }
 
   Future<void> disconnectFromDevice() async {
-    _keepAliveTimer?.cancel();
-    _connectionSubscription?.cancel();
+    _updateState(BleConnectionState.disconnecting);
+    _keepAliveManager.stopKeepAlive();
 
     try {
       if (_connectedDevice != null) {
-        await _connectedDevice!.disconnect();
+        await _connectionManager.disconnect(_connectedDevice!);
       }
     } catch (e) {
       _deviceStateController.add("Disconnect error: $e");
@@ -178,113 +261,9 @@ class BleService {
     }
   }
 
-  void dispose() {
-    disconnectFromDevice();
-    _deviceStateController.close();
-    _connectionStatusController.close();
-  }
-
-  Future<void> updateEmission1Duration(String deviceId, Duration duration) async {
-    if (!_isConnected || _switchCharacteristic == null) {
-      throw Exception('Device not connected');
-    }
-    try {
-      // Convert duration to bytes and send
-      final bytes = [BleConstants.CMD_EMISSION1_DURATION, duration.inSeconds];
-      await _switchCharacteristic!.write(bytes);
-    } catch (e) {
-      throw Exception('Failed to update emission 1 duration: $e');
-    }
-  }
-
-  Future<void> updateEmission2Duration(String deviceId, Duration duration) async {
-    if (!_isConnected || _switchCharacteristic == null) {
-      throw Exception('Device not connected');
-    }
-    try {
-      final bytes = [BleConstants.CMD_EMISSION2_DURATION, duration.inSeconds];
-      await _switchCharacteristic!.write(bytes);
-    } catch (e) {
-      throw Exception('Failed to update emission 2 duration: $e');
-    }
-  }
-
-  Future<void> updateInterval1(String deviceId, Duration interval) async {
-    if (!_isConnected || _switchCharacteristic == null) {
-      throw Exception('Device not connected');
-    }
-    try {
-      final bytes = [BleConstants.CMD_INTERVAL1, interval.inSeconds];
-      await _switchCharacteristic!.write(bytes);
-    } catch (e) {
-      throw Exception('Failed to update interval 1: $e');
-    }
-  }
-
-  Future<void> updateInterval2(String deviceId, Duration interval) async {
-    if (!_isConnected || _switchCharacteristic == null) {
-      throw Exception('Device not connected');
-    }
-    try {
-      final bytes = [BleConstants.CMD_INTERVAL2, interval.inSeconds];
-      await _switchCharacteristic!.write(bytes);
-    } catch (e) {
-      throw Exception('Failed to update interval 2: $e');
-    }
-  }
-
-  Future<void> updatePeriodicEmission1(String deviceId, bool enabled) async {
-    if (!_isConnected || _switchCharacteristic == null) {
-      throw Exception('Device not connected');
-    }
-    try {
-      final bytes = [BleConstants.CMD_PERIODIC1, enabled ? 1 : 0];
-      await _switchCharacteristic!.write(bytes);
-    } catch (e) {
-      throw Exception('Failed to update periodic emission 1: $e');
-    }
-  }
-
-  Future<void> updatePeriodicEmission2(String deviceId, bool enabled) async {
-    if (!_isConnected || _switchCharacteristic == null) {
-      throw Exception('Device not connected');
-    }
-    try {
-      final bytes = [BleConstants.CMD_PERIODIC2, enabled ? 1 : 0];
-      await _switchCharacteristic!.write(bytes);
-    } catch (e) {
-      throw Exception('Failed to update periodic emission 2: $e');
-    }
-  }
-
-  Future<void> updateHeartRateThreshold(String deviceId, int threshold) async {
-    if (!_isConnected || _switchCharacteristic == null) {
-      throw Exception('Device not connected');
-    }
-    try {
-      final bytes = [BleConstants.CMD_HEARTRATE, threshold];
-      await _switchCharacteristic!.write(bytes);
-    } catch (e) {
-      throw Exception('Failed to update heart rate threshold: $e');
-    }
-  }
-
-  Future<List<BluetoothDevice>> scanForHeartRateMonitors() async {
-    if (_isConnecting) return [];
-
-    try {
-      await FlutterBluePlus.startScan(
-        timeout: const Duration(seconds: 4),
-        withServices: [Guid(BleConstants.HEARTRATE_SERVICE_UUID)],
-      );
-
-      final results = await FlutterBluePlus.scanResults.first;
-      return results
-          .where((r) => r.device.platformName.toLowerCase().contains("heart"))
-          .map((r) => r.device)
-          .toList();
-    } finally {
-      await FlutterBluePlus.stopScan();
+  void _ensureConnected() {
+    if (_connectionState != BleConnectionState.connected) {
+      throw BleException('Device not connected');
     }
   }
 
@@ -303,9 +282,7 @@ class BleService {
   }
 
   Future<void> updateDeviceSettings(String deviceId, Map<String, dynamic> settings) async {
-    if (!_isConnected || _switchCharacteristic == null) {
-      throw Exception('Device not connected');
-    }
+    _ensureConnected();
 
     for (final entry in settings.entries) {
       try {
@@ -319,8 +296,25 @@ class BleService {
         // Add cases for other settings...
         }
       } catch (e) {
-        throw Exception('Failed to update ${entry.key}: $e');
+        throw BleException('Failed to update ${entry.key}: $e');
       }
     }
   }
+
+  void dispose() {
+    disconnectFromDevice();
+    _deviceStateController.close();
+    _connectionStatusController.close();
+    _connectionManager.dispose();
+    _characteristicsManager.dispose();
+    _keepAliveManager.dispose();
+  }
+}
+
+class BleException implements Exception {
+  final String message;
+  BleException(this.message);
+
+  @override
+  String toString() => message;
 }

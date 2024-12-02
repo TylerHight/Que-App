@@ -7,7 +7,7 @@ import 'package:que_app/core/models/device_list.dart';
 import 'package:que_app/core/models/device/index.dart';
 import 'package:que_app/features/device_control/dialogs/add_device/add_device_dialog.dart';
 import 'package:que_app/features/device_control/dialogs/not_connected_dialog.dart';
-import 'package:que_app/features/device_control/widgets/device_remote_card.dart';
+import 'package:que_app/features/device_control/widgets/device_remote.dart';
 import 'package:que_app/core/services/ble/ble_service.dart';
 
 class DeviceControlScreen extends StatefulWidget {
