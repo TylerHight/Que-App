@@ -54,7 +54,7 @@ The app follows a clean architecture pattern with:
 ## Development Status
 - [ ] Core BLE communication
 - [ ] Heart rate monitoring
-- [ ] Necklace control interface
+- [x] Necklace control interface
 - [ ] Scheduled releases
 - [ ] Data storage and analytics
 - [ ] User authentication
