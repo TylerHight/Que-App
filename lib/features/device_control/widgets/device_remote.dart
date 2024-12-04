@@ -282,6 +282,7 @@ class _DeviceRemoteState extends State<DeviceRemote> {
                         ],
                       ),
                     ),
+                    const SizedBox(width: 12),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
