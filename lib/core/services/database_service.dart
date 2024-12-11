@@ -28,33 +28,34 @@ class DatabaseService {
   }
 
   Future _createDB(Database db, int version) async {
-    const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
+    const idType = 'TEXT PRIMARY KEY';
     const textType = 'TEXT NOT NULL';
+    const intType = 'INTEGER NOT NULL';
+    const boolType = 'INTEGER NOT NULL';  // SQLite doesn't have boolean, uses INTEGER
 
     await db.execute('''
 CREATE TABLE devices ( 
-  id $idType, 
+  id $idType,
   deviceName $textType,
-  connectedQueueName $textType
-  )
+  connectedQueName $textType,
+  emission1Duration $intType,
+  emission2Duration $intType,
+  releaseInterval1 $intType,
+  releaseInterval2 $intType,
+  isBleConnected $boolType,
+  isPeriodicEmissionEnabled $boolType,
+  isPeriodicEmissionEnabled2 $boolType,
+  heartrateThreshold $intType,
+  bluetoothServiceCharacteristics TEXT
+)
 ''');
 
     await db.execute('''
 CREATE TABLE notes (
   id $idType,
   content $textType,
-  creationDate TEXT,
-  deviceId INTEGER,
-  FOREIGN KEY (deviceId) REFERENCES devices (id)
-  )
-''');
-
-    await db.execute('''
-CREATE TABLE deviceSettings (
-  id $idType,
-  deviceId INTEGER,
-  settingName $textType,
-  settingValue TEXT,
+  creationDate TEXT NOT NULL,
+  deviceId TEXT,
   FOREIGN KEY (deviceId) REFERENCES devices (id)
   )
 ''');
@@ -290,5 +291,15 @@ CREATE TABLE deviceSettings (
       return DateTime.tryParse(value) as T?;
     }
     return null;
+  }
+
+  // handles database upgrades if needed
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // Drop existing tables
+    await db.execute('DROP TABLE IF EXISTS devices');
+    await db.execute('DROP TABLE IF EXISTS notes');
+
+    // Recreate tables
+    await _createDB(db, newVersion);
   }
 }

@@ -1,12 +1,17 @@
 // lib/features/device_settings/widgets/settings_groups/device_settings.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import '../../bloc/device_settings_bloc.dart';
 import '../../bloc/device_settings_event.dart';
 import '../../bloc/device_settings_state.dart';
 import '../base/settings_group.dart';
 import '../base/settings_list_tile.dart';
 import '../../dialogs/device_info_dialog.dart';
+import '../../dialogs/delete_device_dialog.dart';
+import 'package:que_app/core/models/device/index.dart';
+import 'package:que_app/core/models/device_list.dart';
 
 class DeviceSettings extends StatelessWidget {
   final VoidCallback? onDeleteRequested;
@@ -15,6 +20,33 @@ class DeviceSettings extends StatelessWidget {
     Key? key,
     this.onDeleteRequested,
   }) : super(key: key);
+
+  Future<void> _showDeleteConfirmation(BuildContext context, Device device) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => DeleteDeviceDialog(device: device),
+    );
+
+    if (confirmed == true && context.mounted) {
+      try {
+        final deviceList = Provider.of<DeviceList>(context, listen: false);
+        await deviceList.removeDevice(device);
+
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Pop settings screen
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to delete device: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +59,12 @@ class DeviceSettings extends StatelessWidget {
               subtitle: 'View device details and status',
               icon: Icons.info_outline,
               iconColor: Colors.blue,
-              onTap: () => _showDeviceInfo(context, state),
+              onTap: () => showDialog(
+                context: context,
+                builder: (context) => DeviceInfoDialog(
+                  device: state.device,
+                ),
+              ),
             ),
             SettingsListTile(
               title: 'Firmware Update',
@@ -39,7 +76,9 @@ class DeviceSettings extends StatelessWidget {
                   ? Colors.orange
                   : Colors.grey,
               onTap: state.firmwareUpdateAvailable
-                  ? () => _startFirmwareUpdate(context)
+                  ? () => context.read<DeviceSettingsBloc>().add(
+                const StartFirmwareUpdate(),
+              )
                   : null,
             ),
             SettingsListTile(
@@ -54,7 +93,7 @@ class DeviceSettings extends StatelessWidget {
               icon: Icons.delete_outline,
               iconColor: Colors.red,
               textColor: Colors.red,
-              onTap: onDeleteRequested,
+              onTap: () => _showDeleteConfirmation(context, state.device),
             ),
           ],
         );
@@ -62,23 +101,8 @@ class DeviceSettings extends StatelessWidget {
     );
   }
 
-  void _showDeviceInfo(BuildContext context, DeviceSettingsState state) {
-    showDialog(
-      context: context,
-      builder: (context) => DeviceInfoDialog(
-        device: state.device,
-      ),
-    );
-  }
-
-  void _startFirmwareUpdate(BuildContext context) {
-    context.read<DeviceSettingsBloc>().add(
-      const StartFirmwareUpdate(),
-    );
-  }
-
-  void _showFactoryResetConfirmation(BuildContext context) {
-    showDialog(
+  Future<void> _showFactoryResetConfirmation(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Factory Reset'),
@@ -88,7 +112,7 @@ class DeviceSettings extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pop(false),
             child: const Text('CANCEL'),
           ),
           TextButton(
@@ -96,7 +120,7 @@ class DeviceSettings extends StatelessWidget {
               foregroundColor: Colors.red,
             ),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(true);
               context.read<DeviceSettingsBloc>().add(
                 const FactoryResetDevice(),
               );
@@ -106,5 +130,13 @@ class DeviceSettings extends StatelessWidget {
         ],
       ),
     );
+
+    if (confirmed == true) {
+      if (context.mounted) {
+        context.read<DeviceSettingsBloc>().add(
+          const FactoryResetDevice(),
+        );
+      }
+    }
   }
 }

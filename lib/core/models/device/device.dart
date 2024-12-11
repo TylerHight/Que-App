@@ -1,4 +1,5 @@
 // lib/core/models/device/device.dart
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -167,7 +168,21 @@ class Device extends ChangeNotifier with EquatableMixin {
     );
   }
 
-  Future<void> delete() => _ble.deleteDevice();
+  Future<void> delete() async {
+    try {
+      if (bluetoothDevice != null && isBleConnected) {
+        await bleService.disconnectFromDevice();
+      }
+
+      // Clear any stored settings
+      await bleService.forgetDevice(id);
+
+      notifyListeners();
+    } catch (e) {
+      print('Error deleting device: $e');
+      rethrow;
+    }
+  }
 
   @override
   List<Object?> get props => [
