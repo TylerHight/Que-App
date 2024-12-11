@@ -54,13 +54,27 @@ class BleService {
       _updateState(BleConnectionState.connecting);
       _deviceStateController.add("Connecting to device...");
 
-      final success = await _connectionManager.connectWithRetry(device);
-      if (!success) {
-        throw BleException("Failed to establish stable connection");
+      await device.connect(timeout: BleConstants.CONNECTION_TIMEOUT);
+      _connectedDevice = device;
+
+      // Request MTU
+      await device.requestMtu(512);
+
+      // Discover services immediately after connection
+      final services = await device.discoverServices();
+
+      // Verify required service and characteristic exist
+      final hasRequiredService = services.any(
+              (service) => service.uuid.toString().toLowerCase() == BleConstants.LED_SERVICE_UUID.toLowerCase()
+      );
+
+      if (!hasRequiredService) {
+        throw BleException('Required BLE service not found on device');
       }
 
-      _connectedDevice = device;
-      await _initializeDevice(device);
+      _updateState(BleConnectionState.connected);
+      _deviceStateController.add("Connected successfully");
+      _connectionStatusController.add(true);
 
     } catch (e) {
       _handleConnectionError(e);
@@ -127,17 +141,32 @@ class BleService {
 
   // Device Operations
   Future<void> setLedColor(int colorCommand) async {
-    _ensureConnected();
+    if (_connectedDevice == null) {
+      throw BleException('No device connected');
+    }
 
     try {
-      await _characteristicsManager.writeCharacteristic(
-        BleConstants.SWITCH_CHARACTERISTIC_UUID,
-        [colorCommand],
+      // Discover services if not already done
+      final services = await _connectedDevice!.discoverServices();
+
+      // Find the LED service
+      final ledService = services.firstWhere(
+            (service) => service.uuid.toString().toLowerCase() == BleConstants.LED_SERVICE_UUID.toLowerCase(),
+        orElse: () => throw BleException('LED service not found'),
       );
+
+      // Find the switch characteristic
+      final switchCharacteristic = ledService.characteristics.firstWhere(
+            (char) => char.uuid.toString().toLowerCase() == BleConstants.SWITCH_CHARACTERISTIC_UUID.toLowerCase(),
+        orElse: () => throw BleException('Switch characteristic not found'),
+      );
+
+      // Write the color command
+      await switchCharacteristic.write([colorCommand], withoutResponse: false);
       _deviceStateController.add("LED command sent: $colorCommand");
     } catch (e) {
       _deviceStateController.add("Failed to set LED: $e");
-      rethrow;
+      throw BleException('Failed to set LED color: $e');
     }
   }
 

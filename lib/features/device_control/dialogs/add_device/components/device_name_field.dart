@@ -18,29 +18,26 @@ class DeviceNameField extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
         controller: controller,
+        enabled: enabled,
         decoration: const InputDecoration(
-          labelText: 'Name',
-          border: OutlineInputBorder(),
+          labelText: 'Device Name',
           helperText: 'Enter a name for your device',
           helperMaxLines: 2,
+          border: OutlineInputBorder(),
+          filled: true,
         ),
-        enabled: enabled,
-        textInputAction: TextInputAction.next,
-        autofocus: true,
         validator: (value) {
           if (value == null || value.trim().isEmpty) {
-            return 'Please enter a name';
+            return 'Please enter a device name';
           }
-          // Add length validation
           if (value.length > 50) {
             return 'Name must be 50 characters or less';
           }
           return null;
         },
-        onEditingComplete: () {
-          // Move focus to next field when done
-          FocusScope.of(context).nextFocus();
-        },
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        keyboardType: TextInputType.text,
+        textInputAction: TextInputAction.next,
       ),
     );
   }

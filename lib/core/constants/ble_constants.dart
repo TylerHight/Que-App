@@ -4,13 +4,24 @@ class BleConstants {
   // Device Information
   static const String DEVICE_NAME = "Nano 33 BLE";
 
-  // Timeout values
+  // Connection settings
   static const Duration CONNECTION_TIMEOUT = Duration(seconds: 10);
   static const Duration KEEP_ALIVE_INTERVAL = Duration(seconds: 15);
 
-  // Service UUIDs
-  static const String LED_SERVICE_UUID = "0000180a-0000-1000-8000-00805f9b34fb";
-  static const String SWITCH_CHARACTERISTIC_UUID = "00002a57-0000-1000-8000-00805f9b34fb";
+  // In ble_constants.dart
+  static const String LED_SERVICE_UUID = "180A";
+  static const String SETTINGS_SERVICE_UUID = "180F";
+  static const String HEARTRATE_SERVICE_UUID = "180d";
+
+  // Characteristic UUIDs
+  static const String SWITCH_CHARACTERISTIC_UUID = "2A57";
+  static const String EMISSION1_CHARACTERISTIC_UUID = "00002a19-0000-1000-8000-00805f9b34fb";
+  static const String EMISSION2_CHARACTERISTIC_UUID = "00002a1a-0000-1000-8000-00805f9b34fb";
+  static const String INTERVAL1_CHARACTERISTIC_UUID = "00002a1b-0000-1000-8000-00805f9b34fb";
+  static const String INTERVAL2_CHARACTERISTIC_UUID = "00002a1c-0000-1000-8000-00805f9b34fb";
+  static const String PERIODIC1_CHARACTERISTIC_UUID = "00002a1d-0000-1000-8000-00805f9b34fb";
+  static const String PERIODIC2_CHARACTERISTIC_UUID = "00002a1e-0000-1000-8000-00805f9b34fb";
+  static const String HEARTRATE_CHARACTERISTIC_UUID = "00002a1f-0000-1000-8000-00805f9b34fb";
 
   // LED Commands
   static const int CMD_LED_OFF = 0;
@@ -26,9 +37,6 @@ class BleConstants {
   static const int CMD_PERIODIC1 = 8;
   static const int CMD_PERIODIC2 = 9;
   static const int CMD_HEARTRATE = 10;
-
-  // Service UUIDs
-  static const String HEARTRATE_SERVICE_UUID = "0000180d-0000-1000-8000-00805f9b34fb";
 
   // Command validation
   static bool isValidLedCommand(int command) =>

@@ -18,8 +18,8 @@ class TimedBinaryButton extends StatefulWidget {
   final Duration periodicEmissionTimerDuration;
   final bool periodicEmissionEnabled;
   final bool isConnected;
-  final Device device;  // Add device parameter
-  final BleService bleService;  // Add bleService parameter
+  final Device device;
+  final BleService bleService;
 
   const TimedBinaryButton({
     Key? key,
@@ -36,8 +36,8 @@ class TimedBinaryButton extends StatefulWidget {
     required this.periodicEmissionTimerDuration,
     this.periodicEmissionEnabled = false,
     required this.isConnected,
-    required this.device,  // Add to constructor
-    required this.bleService,  // Add to constructor
+    required this.device,
+    required this.bleService,
   }) : super(key: key);
 
   @override
@@ -48,16 +48,20 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
   bool isLightOn = false;
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
-  late Timer _autoTurnOffTimer;
+  Timer? _autoTurnOffTimer;
   Timer? _periodicEmissionTimer;
   int _secondsLeft = 0;
   int _periodicEmissionSecondsLeft = 0;
+  bool _isDisposed = false;
 
   @override
   void initState() {
     super.initState();
-    _autoTurnOffTimer = Timer(Duration.zero, () {});
+    _initializeAnimation();
+    _initializeTimers();
+  }
 
+  void _initializeAnimation() {
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
@@ -70,78 +74,105 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
       ),
     );
 
-    _animationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _animationController.reverse();
-        if (isLightOn) {
-          widget.onPressedTurnOff?.call();
-        } else {
-          widget.onPressedTurnOn?.call();
-        }
-      }
-    });
+    _animationController.addStatusListener(_handleAnimationStatus);
+  }
 
+  void _handleAnimationStatus(AnimationStatus status) {
+    if (status == AnimationStatus.completed && !_isDisposed) {
+      _animationController.reverse();
+      if (isLightOn) {
+        widget.onPressedTurnOff?.call();
+      } else {
+        widget.onPressedTurnOn?.call();
+      }
+    }
+  }
+
+  void _initializeTimers() {
     if (widget.autoTurnOffEnabled) {
       _secondsLeft = widget.autoTurnOffDuration.inSeconds;
-      _autoTurnOffTimer = _startAutoTurnOffTimer();
-      print('Auto Turn-Off Timer started');
+      _startAutoTurnOffTimer();
     }
 
     if (widget.periodicEmissionEnabled) {
       _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
-      _periodicEmissionTimer = _startPeriodicEmissionTimer();
-      print('Periodic Emission Timer started');
+      _startPeriodicEmissionTimer();
     }
   }
 
-  Timer _startAutoTurnOffTimer() {
-    return Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_secondsLeft > 0) {
-        setState(() {
-          _secondsLeft--;
-        });
-      } else {
-        if (isLightOn) {
-          toggleLight();
-          widget.onPressedTurnOff?.call();
+  void _startAutoTurnOffTimer() {
+    _autoTurnOffTimer?.cancel();
+    if (!_isDisposed) {
+      _autoTurnOffTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (_isDisposed) {
+          timer.cancel();
+          return;
         }
-        timer.cancel();
-      }
-    });
+
+        if (_secondsLeft > 0) {
+          if (mounted) {
+            setState(() {
+              _secondsLeft--;
+            });
+          }
+        } else {
+          if (isLightOn && mounted) {
+            toggleLight();
+            widget.onPressedTurnOff?.call();
+          }
+          timer.cancel();
+        }
+      });
+    }
   }
 
-  Timer _startPeriodicEmissionTimer() {
-    return Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_periodicEmissionSecondsLeft > 0) {
-        setState(() {
-          _periodicEmissionSecondsLeft--;
-        });
-      } else {
-        if (!isLightOn) {
-          toggleLight();
-          widget.onPressedTurnOn?.call();
+  void _startPeriodicEmissionTimer() {
+    _periodicEmissionTimer?.cancel();
+    if (!_isDisposed) {
+      _periodicEmissionTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (_isDisposed) {
+          timer.cancel();
+          return;
         }
-        _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
-        timer.cancel();
-      }
-    });
+
+        if (_periodicEmissionSecondsLeft > 0) {
+          if (mounted) {
+            setState(() {
+              _periodicEmissionSecondsLeft--;
+            });
+          }
+        } else {
+          if (!isLightOn && mounted) {
+            toggleLight();
+            widget.onPressedTurnOn?.call();
+          }
+          if (mounted) {
+            setState(() {
+              _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
+            });
+          }
+          timer.cancel();
+        }
+      });
+    }
   }
 
-  void toggleLight() async {
+  Future<void> toggleLight() async {
+    if (!mounted) return;
+
     if (!widget.isConnected) {
       await showNotConnectedDialog(
         context: context,
         device: widget.device,
         bleService: widget.bleService,
         onConnected: () {
-          // Try the operation again after connection
-          if (!isLightOn) {
+          if (!_isDisposed && !isLightOn) {
             setState(() {
               isLightOn = true;
             });
             if (widget.autoTurnOffEnabled) {
               _secondsLeft = widget.autoTurnOffDuration.inSeconds;
-              _autoTurnOffTimer = _startAutoTurnOffTimer();
+              _startAutoTurnOffTimer();
             }
             widget.onPressedTurnOn?.call();
           }
@@ -150,44 +181,42 @@ class _TimedBinaryButtonState extends State<TimedBinaryButton> with SingleTicker
       return;
     }
 
-    setState(() {
-      isLightOn = !isLightOn;
+    if (!_isDisposed && mounted) {
+      setState(() {
+        isLightOn = !isLightOn;
 
-      if (!isLightOn) {
-        _secondsLeft = 0;
-        if (_autoTurnOffTimer.isActive) {
-          _autoTurnOffTimer.cancel();
-        }
-        widget.onPressedTurnOff?.call();
-      } else {
-        if (widget.autoTurnOffEnabled) {
-          _secondsLeft = widget.autoTurnOffDuration.inSeconds;
-          _autoTurnOffTimer = _startAutoTurnOffTimer();
-        }
+        if (!isLightOn) {
+          _secondsLeft = 0;
+          _autoTurnOffTimer?.cancel();
+          widget.onPressedTurnOff?.call();
+        } else {
+          if (widget.autoTurnOffEnabled) {
+            _secondsLeft = widget.autoTurnOffDuration.inSeconds;
+            _startAutoTurnOffTimer();
+          }
 
-        if (widget.periodicEmissionEnabled) {
-          _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
-          _periodicEmissionTimer = _startPeriodicEmissionTimer();
+          if (widget.periodicEmissionEnabled) {
+            _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
+            _startPeriodicEmissionTimer();
+          }
+          widget.onPressedTurnOn?.call();
         }
-        widget.onPressedTurnOn?.call();
+      });
+
+      if (!isLightOn && widget.periodicEmissionEnabled) {
+        _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
+        _startPeriodicEmissionTimer();
       }
-    });
-
-    if (!isLightOn && widget.periodicEmissionEnabled) {
-      _periodicEmissionSecondsLeft = widget.periodicEmissionTimerDuration.inSeconds;
-      _startPeriodicEmissionTimer();
-    }
-
-    if (isLightOn) {
-      print('Button turned on');
     }
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
-    _autoTurnOffTimer.cancel();
+    _isDisposed = true;
+    _autoTurnOffTimer?.cancel();
     _periodicEmissionTimer?.cancel();
+    _animationController.removeStatusListener(_handleAnimationStatus);
+    _animationController.dispose();
     super.dispose();
   }
 

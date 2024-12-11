@@ -52,7 +52,6 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   void _handleStateChange(AddDeviceState newState) {
     if (!mounted || !_stateUpdateEnabled) return;
     setState(() {
-      // Preserve selected device when updating state
       final currentDevice = _state.selectedDevice;
       _state.update(newState);
       if (currentDevice != null) {
@@ -67,23 +66,27 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
 
   Future<void> _handleDeviceSelection(BluetoothDevice? device) async {
     if (!mounted) return;
-    _stateUpdateEnabled = false;  // Temporarily disable state updates
+    _stateUpdateEnabled = false;
     setState(() {
       _state.setSelectedDevice(device);
     });
     await Future.delayed(const Duration(milliseconds: 100));
-    _stateUpdateEnabled = true;  // Re-enable state updates
+    _stateUpdateEnabled = true;
   }
 
   Future<void> _handleAddDevice() async {
-    if (!_formKey.currentState!.validate()) return;
+    final name = _nameController.text.trim();
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a device name')),
+      );
+      return;
+    }
 
-    final name = _nameController.text;
-    final selectedDevice = _state.selectedDevice;
-
-    // Return name and selected device to parent
-    widget.onDeviceAdded(name, selectedDevice);
-    Navigator.of(context).pop();
+    widget.onDeviceAdded(name, _state.selectedDevice);
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -95,58 +98,67 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text(
-        'Add Que',
-        style: TextStyle(color: Colors.black),
-      ),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                if (widget.includeNameField)
-                  DeviceNameField(
-                    controller: _nameController,
-                    enabled: !_state.isConnecting,
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Center(
+        child: Card(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    'Add Device',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                DeviceSelector(
-                  devices: _state.nearbyDevices,
-                  selectedDevice: _state.selectedDevice,
-                  isConnecting: _state.isConnecting,
-                  onDeviceSelected: _handleDeviceSelection,
-                ),
-                BluetoothStatus(
-                  isScanning: _state.isScanning,
-                  isConnecting: _state.isConnecting,
-                  statusMessage: _state.statusMessage,
-                  onScanPressed: () => _bleManager.startScan(),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  if (widget.includeNameField)
+                    DeviceNameField(
+                      controller: _nameController,
+                      enabled: !_state.isConnecting,
+                    ),
+                  DeviceSelector(
+                    devices: _state.nearbyDevices,
+                    selectedDevice: _state.selectedDevice,
+                    isConnecting: _state.isConnecting,
+                    onDeviceSelected: _handleDeviceSelection,
+                  ),
+                  BluetoothStatus(
+                    isScanning: _state.isScanning,
+                    isConnecting: _state.isConnecting,
+                    statusMessage: _state.statusMessage,
+                    onScanPressed: () => _bleManager.startScan(),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: _state.isConnecting
+                            ? null
+                            : () => Navigator.of(context).pop(),
+                        child: const Text('Cancel'),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: _state.isConnecting ? null : _handleAddDevice,
+                        child: const Text('Add'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-      actions: <Widget>[
-        TextButton(
-          onPressed: _state.isConnecting ? null : () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: _state.isConnecting ? null : () {
-            if (_formKey.currentState?.validate() ?? false) {
-              _handleAddDevice();
-            }
-          },
-          child: const Text('Add'),
-        ),
-      ],
     );
   }
 }
