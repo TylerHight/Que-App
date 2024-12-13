@@ -31,13 +31,13 @@ class BleCharacteristicsManager {
       print('\nSearching for LED service: ${BleConstants.LED_SERVICE_UUID}');
       final ledService = services.firstWhere(
             (s) => s.uuid.toString().toLowerCase() == BleConstants.LED_SERVICE_UUID.toLowerCase(),
-        orElse: () => throw BleException('LED service not found'),
+        orElse: () => throw BleException(BleConstants.ERR_SERVICE_NOT_FOUND),
       );
 
       print('Found LED service. Checking for switch characteristic...');
       final switchChar = ledService.characteristics.firstWhere(
             (c) => c.uuid.toString().toLowerCase() == BleConstants.SWITCH_CHARACTERISTIC_UUID.toLowerCase(),
-        orElse: () => throw BleException('Switch characteristic not found'),
+        orElse: () => throw BleException(BleConstants.ERR_CHARACTERISTIC_NOT_FOUND),
       );
 
       _characteristics[BleConstants.SWITCH_CHARACTERISTIC_UUID.toLowerCase()] = switchChar;
@@ -45,8 +45,12 @@ class BleCharacteristicsManager {
 
     } catch (e) {
       print('Error during service discovery: $e');
-      onError('Failed to discover characteristics: $e');
-      rethrow;
+      if (e is BleException) {
+        onError(e.message);
+        rethrow;
+      }
+      onError(BleConstants.ERR_SERVICE_NOT_FOUND);
+      throw BleException(BleConstants.ERR_SERVICE_NOT_FOUND);
     }
   }
 
@@ -67,8 +71,8 @@ class BleCharacteristicsManager {
       final char = _getCharacteristic(uuid);
       return await char.read();
     } catch (e) {
-      onError('Failed to read characteristic $uuid: $e');
-      rethrow;
+      onError('Failed to read characteristic: $e');
+      throw BleException(BleConstants.ERR_CHARACTERISTIC_NOT_FOUND);
     }
   }
 
@@ -78,8 +82,8 @@ class BleCharacteristicsManager {
       print('Writing to characteristic $uuid: $data');
       await char.write(data, withoutResponse: false);
     } catch (e) {
-      onError('Failed to write to characteristic $uuid: $e');
-      rethrow;
+      onError('Failed to write to characteristic: $e');
+      throw BleException(BleConstants.ERR_CHARACTERISTIC_NOT_FOUND);
     }
   }
 
@@ -88,11 +92,7 @@ class BleCharacteristicsManager {
     final char = _characteristics[normalizedUuid];
 
     if (char == null) {
-      final availableCharacteristics = _characteristics.keys.join(', ');
-      throw BleException('''
-Characteristic not found: $uuid
-Available characteristics: $availableCharacteristics
-''');
+      throw BleException(BleConstants.ERR_CHARACTERISTIC_NOT_FOUND);
     }
 
     return char;

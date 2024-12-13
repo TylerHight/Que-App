@@ -6,6 +6,10 @@ enum BleConnectionState {
   disconnecting
 }
 
+typedef ErrorCallback = void Function(String message);
+typedef StateChangeCallback = void Function(BleConnectionState state);
+typedef KeepAliveFailedCallback = void Function();
+
 class BleException implements Exception {
   final String message;
   BleException(this.message);
@@ -13,7 +17,3 @@ class BleException implements Exception {
   @override
   String toString() => message;
 }
-
-typedef ErrorCallback = void Function(String message);
-typedef StateChangeCallback = void Function(BleConnectionState state);
-typedef KeepAliveFailedCallback = void Function();
