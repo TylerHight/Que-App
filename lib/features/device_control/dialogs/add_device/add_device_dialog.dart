@@ -3,11 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:que_app/core/services/ble/ble_service.dart';
-import './managers/ble_connection_manager.dart';
-import './models/add_device_state.dart';
-import './components/device_name_field.dart';
-import './components/device_selector.dart';
-import './components/bluetooth_status.dart';
+import '../../handlers/device_creation_handler.dart';
+import 'package:que_app/core/utils/ble/ble_utils.dart';
 
 class AddDeviceDialog extends StatefulWidget {
   final Function(String name, BluetoothDevice? device) onDeviceAdded;
@@ -26,139 +23,268 @@ class AddDeviceDialog extends StatefulWidget {
 }
 
 class _AddDeviceDialogState extends State<AddDeviceDialog> {
-  late final BleConnectionManager _bleManager;
-  late final AddDeviceState _state;
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  bool _stateUpdateEnabled = true;
+  bool _isScanning = false;
+  bool _isConnecting = false;
+  String _status = '';
+  List<BluetoothDevice> _nearbyDevices = [];
+  BluetoothDevice? _selectedDevice;
 
   @override
   void initState() {
     super.initState();
-    _state = AddDeviceState();
+    _initializeBluetooth();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _bleManager = BleConnectionManager(
-      bleService: widget.bleService,
-      onStateChanged: _handleStateChange,
-      context: context,
-    );
-    _bleManager.initialize();
-  }
-
-  void _handleStateChange(AddDeviceState newState) {
-    if (!mounted || !_stateUpdateEnabled) return;
-    setState(() {
-      final currentDevice = _state.selectedDevice;
-      _state.update(newState);
-      if (currentDevice != null) {
-        final matchingDevice = newState.nearbyDevices.firstWhere(
-              (device) => device.remoteId.str == currentDevice.remoteId.str,
-          orElse: () => currentDevice,
-        );
-        _state.setSelectedDevice(matchingDevice);
+  Future<void> _initializeBluetooth() async {
+    try {
+      if (!await FlutterBluePlus.isSupported) {
+        setState(() => _status = 'Bluetooth not supported on this device');
+        return;
       }
+
+      if (!await FlutterBluePlus.isOn) {
+        await FlutterBluePlus.turnOn();
+      }
+
+      _startScan();
+    } catch (e) {
+      setState(() => _status = 'Initialization error: $e');
+    }
+  }
+
+  Future<void> _startScan() async {
+    if (_isScanning) return;
+
+    setState(() {
+      _isScanning = true;
+      _status = 'Scanning for devices...';
     });
+
+    try {
+      await FlutterBluePlus.startScan(
+        timeout: const Duration(seconds: 4),
+        androidScanMode: AndroidScanMode.lowLatency,
+      );
+
+      FlutterBluePlus.scanResults.listen((results) {
+        setState(() {
+          _nearbyDevices = results
+              .where((result) => result.device.platformName.isNotEmpty)
+              .map((result) => result.device)
+              .toList();
+          _status = 'Found ${_nearbyDevices.length} devices';
+        });
+      });
+
+      await Future.delayed(const Duration(seconds: 4));
+
+      setState(() {
+        _isScanning = false;
+        if (_nearbyDevices.isEmpty) {
+          _status = 'No devices found';
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _isScanning = false;
+        _status = 'Scan error: $e';
+      });
+    }
   }
 
   Future<void> _handleDeviceSelection(BluetoothDevice? device) async {
-    if (!mounted) return;
-    _stateUpdateEnabled = false;
     setState(() {
-      _state.setSelectedDevice(device);
+      _selectedDevice = device;
+      _status = device != null ? 'Selected ${device.platformName}' : '';
     });
-    await Future.delayed(const Duration(milliseconds: 100));
-    _stateUpdateEnabled = true;
   }
 
   Future<void> _handleAddDevice() async {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a device name')),
-      );
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
-    widget.onDeviceAdded(name, _state.selectedDevice);
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
+    final name = _nameController.text.trim();
+
+    await DeviceCreationHandler.validateAndCreateDevice(
+      name: name,
+      bluetoothDevice: _selectedDevice,
+      onDeviceCreated: (device) {
+        widget.onDeviceAdded(name, _selectedDevice);
+        Navigator.of(context).pop();
+      },
+      onError: (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      },
+    );
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _bleManager.dispose();
+    FlutterBluePlus.stopScan();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 0,
       backgroundColor: Colors.transparent,
-      body: Center(
-        child: Card(
-          margin: const EdgeInsets.symmetric(horizontal: 24),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
                 children: [
+                  const Icon(Icons.add_circle_outline, color: Colors.blue),
+                  const SizedBox(width: 8),
                   const Text(
                     'Add Device',
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  if (widget.includeNameField)
-                    DeviceNameField(
-                      controller: _nameController,
-                      enabled: !_state.isConnecting,
-                    ),
-                  DeviceSelector(
-                    devices: _state.nearbyDevices,
-                    selectedDevice: _state.selectedDevice,
-                    isConnecting: _state.isConnecting,
-                    onDeviceSelected: _handleDeviceSelection,
-                  ),
-                  BluetoothStatus(
-                    isScanning: _state.isScanning,
-                    isConnecting: _state.isConnecting,
-                    statusMessage: _state.statusMessage,
-                    onScanPressed: () => _bleManager.startScan(),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: _state.isConnecting
-                            ? null
-                            : () => Navigator.of(context).pop(),
-                        child: const Text('Cancel'),
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        onPressed: _state.isConnecting ? null : _handleAddDevice,
-                        child: const Text('Add'),
-                      ),
-                    ],
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 20),
+              if (widget.includeNameField)
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Device Name',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.devices),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter a device name';
+                    }
+                    return null;
+                  },
+                  enabled: !_isConnecting,
+                ),
+              const SizedBox(height: 16),
+              _buildDeviceDropdown(),
+              const SizedBox(height: 16),
+              _buildScanButton(),
+              if (_status.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  _status,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: _getStatusColor(_status),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: _isConnecting
+                        ? null
+                        : () => Navigator.of(context).pop(),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: _isConnecting ? null : _handleAddDevice,
+                    child: const Text('Add Device'),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildDeviceDropdown() {
+    return InputDecorator(
+      decoration: const InputDecoration(
+        labelText: 'Select Device',
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(Icons.bluetooth),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<BluetoothDevice>(
+          isExpanded: true,
+          value: _selectedDevice,
+          hint: const Text('No device selected'),
+          onChanged: _isConnecting ? null : _handleDeviceSelection,
+          items: [
+            ..._nearbyDevices.map((device) => DropdownMenuItem(
+              value: device,
+              child: Text(device.platformName),
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScanButton() {
+    return ElevatedButton.icon(
+      onPressed: _isScanning || _isConnecting ? null : _startScan,
+      icon: _isScanning
+          ? const SizedBox(
+        width: 16,
+        height: 16,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
+      )
+          : const Icon(Icons.refresh),
+      label: Text(_isScanning ? 'Scanning...' : 'Scan for Devices'),
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+      ),
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    if (status.contains('error') || status.contains('failed')) {
+      return Colors.red;
+    }
+    if (status.contains('Scanning')) {
+      return Colors.blue;
+    }
+    if (status.contains('Found') || status.contains('Selected')) {
+      return Colors.green;
+    }
+    return Colors.grey;
   }
 }

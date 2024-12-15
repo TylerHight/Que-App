@@ -1,138 +1,80 @@
 // lib/core/models/device/device.dart
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import '../../services/ble/ble_service.dart';
-import 'device_state.dart';
-import 'device_ble.dart';
-import 'device_utils.dart';
 
-class Device extends ChangeNotifier with EquatableMixin {
+class Device extends Equatable {
+  static const Duration defaultEmissionDuration = Duration(seconds: 10);
+  static const Duration defaultReleaseInterval = Duration(minutes: 5);
+  static const int defaultHeartRateThreshold = 90;
+
   final String id;
   final String deviceName;
-  String connectedQueName;
-  BluetoothDevice? bluetoothDevice;
-  final BleService bleService;
-  final DeviceState _state;
-  late final DeviceBle _ble;
+  final String connectedQueName;
+  final BluetoothDevice? bluetoothDevice;
+  final Duration emission1Duration;
+  final Duration emission2Duration;
+  final Duration releaseInterval1;
+  final Duration releaseInterval2;
+  final bool isPeriodicEmissionEnabled;
+  final bool isPeriodicEmissionEnabled2;
+  final bool isBleConnected;
+  final int heartrateThreshold;
 
-  static const Duration defaultEmissionDuration = Duration(seconds: 10);
-
-  // Forward state getters
-  Duration get emission1Duration => _state.emission1Duration;
-  Duration get emission2Duration => _state.emission2Duration;
-  Duration get releaseInterval1 => _state.releaseInterval1;
-  Duration get releaseInterval2 => _state.releaseInterval2;
-  bool get isPeriodicEmissionEnabled => _state.isPeriodicEmissionEnabled;
-  bool get isPeriodicEmissionEnabled2 => _state.isPeriodicEmissionEnabled2;
-  bool get isBleConnected => _state.isBleConnected;
-  int get heartrateThreshold => _state.heartrateThreshold;
-  Map<String, List<String>> get bluetoothServiceCharacteristics => _ble.serviceCharacteristics;
   bool get isConnected => isBleConnected;
 
-  set isBleConnected(bool value) {
-    _state.isBleConnected = value;
-    notifyListeners();
-  }
-
-  Device._({
+  const Device({
     required this.id,
     required this.deviceName,
     required this.connectedQueName,
-    required this.bleService,
-    required DeviceState state,
-    required Map<String, List<String>> serviceCharacteristics,
     this.bluetoothDevice,
-  }) : _state = state {
-    _ble = DeviceBle(
-      device: this,
-      bleService: bleService,
-      serviceCharacteristics: serviceCharacteristics,
-    );
-  }
+    required this.emission1Duration,
+    required this.emission2Duration,
+    required this.releaseInterval1,
+    required this.releaseInterval2,
+    required this.isPeriodicEmissionEnabled,
+    required this.isPeriodicEmissionEnabled2,
+    required this.isBleConnected,
+    required this.heartrateThreshold,
+  });
 
-  factory Device({
-    String? id,
-    required String deviceName,
-    required String connectedQueName,
+  // Factory constructor for creating a new device
+  factory Device.create({
+    required String name,
     BluetoothDevice? bluetoothDevice,
-    Duration? emission1Duration,
-    Duration? emission2Duration,
-    Duration? releaseInterval1,
-    Duration? releaseInterval2,
-    bool? isBleConnected,
-    bool? isPeriodicEmissionEnabled = false,
-    bool? isPeriodicEmissionEnabled2 = false,
-    Map<String, List<String>>? bluetoothServiceCharacteristics,
-    int heartrateThreshold = 90,
-    BleService? bleService,
   }) {
-    final generatedId = id ?? DeviceUtils.generateRandomId();
-    final service = bleService ?? BleService();
-
-    final state = DeviceState(
-      emission1Duration: emission1Duration ?? defaultEmissionDuration,
-      emission2Duration: emission2Duration ?? defaultEmissionDuration,
-      releaseInterval1: releaseInterval1 ?? const Duration(seconds: 5),
-      releaseInterval2: releaseInterval2 ?? const Duration(seconds: 5),
-      isBleConnected: isBleConnected ?? false,
-      isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? false,
-      isPeriodicEmissionEnabled2: isPeriodicEmissionEnabled2 ?? false,
-      heartrateThreshold: heartrateThreshold,
-    );
-
-    return Device._(
-      id: generatedId,
-      deviceName: deviceName,
-      connectedQueName: connectedQueName,
+    return Device(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      deviceName: name,
+      connectedQueName: bluetoothDevice?.platformName ?? 'Unnamed Device',
       bluetoothDevice: bluetoothDevice,
-      bleService: service,
-      state: state,
-      serviceCharacteristics: bluetoothServiceCharacteristics ?? {},
+      emission1Duration: defaultEmissionDuration,
+      emission2Duration: defaultEmissionDuration,
+      releaseInterval1: defaultReleaseInterval,
+      releaseInterval2: defaultReleaseInterval,
+      isPeriodicEmissionEnabled: false,
+      isPeriodicEmissionEnabled2: false,
+      isBleConnected: false,
+      heartrateThreshold: defaultHeartRateThreshold,
     );
   }
 
-  // Forward state updates
-  void updateEmission1Duration(Duration duration) {
-    _state.updateEmission1Duration(duration);
-    notifyListeners();
+  // Factory for creating an empty device
+  factory Device.empty() {
+    return const Device(
+      id: '',
+      deviceName: '',
+      connectedQueName: '',
+      emission1Duration: defaultEmissionDuration,
+      emission2Duration: defaultEmissionDuration,
+      releaseInterval1: defaultReleaseInterval,
+      releaseInterval2: defaultReleaseInterval,
+      isPeriodicEmissionEnabled: false,
+      isPeriodicEmissionEnabled2: false,
+      isBleConnected: false,
+      heartrateThreshold: defaultHeartRateThreshold,
+    );
   }
-
-  void updateEmission2Duration(Duration duration) {
-    _state.updateEmission2Duration(duration);
-    notifyListeners();
-  }
-
-  void updateReleaseInterval1(Duration interval) {
-    _state.updateReleaseInterval1(interval);
-    notifyListeners();
-  }
-
-  void updateReleaseInterval2(Duration interval) {
-    _state.updateReleaseInterval2(interval);
-    notifyListeners();
-  }
-
-  void updatePeriodicEmission1(bool enabled) {
-    _state.updatePeriodicEmission1(enabled);
-    notifyListeners();
-  }
-
-  void updatePeriodicEmission2(bool enabled) {
-    _state.updatePeriodicEmission2(enabled);
-    notifyListeners();
-  }
-
-  void updateHeartRateThreshold(int threshold) {
-    _state.updateHeartRateThreshold(threshold);
-    notifyListeners();
-  }
-
-  // Forward BLE operations
-  String? getCharacteristicUUID(String serviceUUID) => _ble.getCharacteristicUUID(serviceUUID);
-  Future<void> connectToDevice() => _ble.connect();
-  Stream<bool> get bleConnectionStatusStream => _ble.connectionStatusStream;
 
   Device copyWith({
     String? id,
@@ -143,12 +85,10 @@ class Device extends ChangeNotifier with EquatableMixin {
     Duration? emission2Duration,
     Duration? releaseInterval1,
     Duration? releaseInterval2,
-    bool? isBleConnected,
     bool? isPeriodicEmissionEnabled,
     bool? isPeriodicEmissionEnabled2,
-    Map<String, List<String>>? bluetoothServiceCharacteristics,
+    bool? isBleConnected,
     int? heartrateThreshold,
-    BleService? bleService,
   }) {
     return Device(
       id: id ?? this.id,
@@ -159,29 +99,47 @@ class Device extends ChangeNotifier with EquatableMixin {
       emission2Duration: emission2Duration ?? this.emission2Duration,
       releaseInterval1: releaseInterval1 ?? this.releaseInterval1,
       releaseInterval2: releaseInterval2 ?? this.releaseInterval2,
-      isBleConnected: isBleConnected ?? this.isBleConnected,
       isPeriodicEmissionEnabled: isPeriodicEmissionEnabled ?? this.isPeriodicEmissionEnabled,
       isPeriodicEmissionEnabled2: isPeriodicEmissionEnabled2 ?? this.isPeriodicEmissionEnabled2,
-      bluetoothServiceCharacteristics: bluetoothServiceCharacteristics ?? this.bluetoothServiceCharacteristics,
+      isBleConnected: isBleConnected ?? this.isBleConnected,
       heartrateThreshold: heartrateThreshold ?? this.heartrateThreshold,
-      bleService: bleService ?? this.bleService,
     );
   }
 
-  Future<void> delete() async {
-    try {
-      if (bluetoothDevice != null && isBleConnected) {
-        await bleService.disconnectFromDevice();
-      }
+  Device updateConnectionStatus(bool isConnected) {
+    return copyWith(isBleConnected: isConnected);
+  }
 
-      // Clear any stored settings
-      await bleService.forgetDevice(id);
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'deviceName': deviceName,
+      'connectedQueName': connectedQueName,
+      'emission1Duration': emission1Duration.inSeconds,
+      'emission2Duration': emission2Duration.inSeconds,
+      'releaseInterval1': releaseInterval1.inSeconds,
+      'releaseInterval2': releaseInterval2.inSeconds,
+      'isPeriodicEmissionEnabled': isPeriodicEmissionEnabled ? 1 : 0,
+      'isPeriodicEmissionEnabled2': isPeriodicEmissionEnabled2 ? 1 : 0,
+      'isBleConnected': isBleConnected ? 1 : 0,
+      'heartrateThreshold': heartrateThreshold,
+    };
+  }
 
-      notifyListeners();
-    } catch (e) {
-      print('Error deleting device: $e');
-      rethrow;
-    }
+  factory Device.fromJson(Map<String, dynamic> json) {
+    return Device(
+      id: json['id'] as String,
+      deviceName: json['deviceName'] as String,
+      connectedQueName: json['connectedQueName'] as String,
+      emission1Duration: Duration(seconds: json['emission1Duration'] as int),
+      emission2Duration: Duration(seconds: json['emission2Duration'] as int),
+      releaseInterval1: Duration(seconds: json['releaseInterval1'] as int),
+      releaseInterval2: Duration(seconds: json['releaseInterval2'] as int),
+      isPeriodicEmissionEnabled: (json['isPeriodicEmissionEnabled'] as int) == 1,
+      isPeriodicEmissionEnabled2: (json['isPeriodicEmissionEnabled2'] as int) == 1,
+      isBleConnected: (json['isBleConnected'] as int) == 1,
+      heartrateThreshold: json['heartrateThreshold'] as int,
+    );
   }
 
   @override
@@ -190,13 +148,13 @@ class Device extends ChangeNotifier with EquatableMixin {
     deviceName,
     connectedQueName,
     bluetoothDevice,
-    _state,
-    _ble,
+    emission1Duration,
+    emission2Duration,
+    releaseInterval1,
+    releaseInterval2,
+    isPeriodicEmissionEnabled,
+    isPeriodicEmissionEnabled2,
+    isBleConnected,
+    heartrateThreshold,
   ];
-
-  @override
-  void dispose() {
-    _ble.dispose();
-    super.dispose();
-  }
 }

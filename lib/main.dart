@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'core/services/database_service.dart';
+import 'core/services/ble/ble_service.dart';
+import 'features/device_control/bloc/device_control_bloc.dart';
 import 'features/device_control/views/device_control_screen.dart';
 import 'features/notes/views/notes_screen.dart';
 import 'package:que_app/core/models/notes_list.dart';
-import 'core/models/device_list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +22,15 @@ class MyApp extends StatelessWidget {
         Provider<DatabaseService>.value(
           value: DatabaseService.instance,
         ),
-        ChangeNotifierProvider(create: (_) => DeviceList()),
+        Provider<BleService>(
+          create: (_) => BleService(),
+        ),
+        BlocProvider(
+          create: (context) => DeviceControlBloc(
+            databaseService: context.read<DatabaseService>(),
+            bleService: context.read<BleService>(),
+          ),
+        ),
         ChangeNotifierProvider(create: (_) => NotesList()),
       ],
       child: MaterialApp(
@@ -30,23 +40,6 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           appBarTheme: const AppBarTheme(
             iconTheme: IconThemeData(color: Colors.white),
-          ),
-          dialogTheme: const DialogTheme(
-            titleTextStyle: TextStyle(
-              color: Colors.black87,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-            contentTextStyle: TextStyle(
-              color: Colors.black87,
-              fontSize: 16,
-            ),
-            backgroundColor: Colors.white,
-          ),
-          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-            backgroundColor: Colors.white,
-            selectedItemColor: Colors.blue,
-            unselectedItemColor: Colors.grey,
           ),
         ),
         initialRoute: '/',
@@ -97,9 +90,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        iconSize: 30.0,
-        selectedLabelStyle: const TextStyle(fontSize: 15.0),
-        unselectedLabelStyle: const TextStyle(fontSize: 13.0),
       ),
     );
   }

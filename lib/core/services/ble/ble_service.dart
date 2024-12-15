@@ -136,7 +136,11 @@ class BleService {
     _updateState(BleConnectionState.disconnected);
     _connectedDevice = null;
     _keepAliveManager.stopKeepAlive();
-    _connectionStatusController.add(false);
+
+    // Only add to streams if they're still active
+    if (!_connectionStatusController.isClosed) {
+      _connectionStatusController.add(false);
+    }
   }
 
   // Device Operations
@@ -276,15 +280,17 @@ class BleService {
   }
 
   Future<void> disconnectFromDevice() async {
-    _updateState(BleConnectionState.disconnecting);
-    _keepAliveManager.stopKeepAlive();
-
     try {
+      if (_connectionState == BleConnectionState.disconnecting) return;
+
+      _updateState(BleConnectionState.disconnecting);
+      _keepAliveManager.stopKeepAlive();
+
       if (_connectedDevice != null) {
         await _connectionManager.disconnect(_connectedDevice!);
       }
     } catch (e) {
-      _deviceStateController.add("Disconnect error: $e");
+      _deviceStateController.addError('Disconnect error: $e');
     } finally {
       _handleDisconnection();
     }
@@ -330,10 +336,35 @@ class BleService {
     }
   }
 
-  void dispose() {
-    disconnectFromDevice();
-    _deviceStateController.close();
-    _connectionStatusController.close();
+  Future<void> startScan() async {
+    try {
+      await FlutterBluePlus.startScan(
+        timeout: const Duration(seconds: 4),
+        androidScanMode: AndroidScanMode.lowLatency,
+      );
+    } catch (e) {
+      throw BleException('Failed to start scan: $e');
+    }
+  }
+
+  Future<void> stopScan() async {
+    try {
+      await FlutterBluePlus.stopScan();
+    } catch (e) {
+      throw BleException('Failed to stop scan: $e');
+    }
+  }
+
+  void dispose() async {
+    try {
+      await disconnectFromDevice();
+    } catch (_) {
+      // Ignore disconnect errors during disposal
+    }
+
+    // Close streams
+    await _deviceStateController.close();
+    await _connectionStatusController.close();
     _connectionManager.dispose();
     _characteristicsManager.dispose();
     _keepAliveManager.dispose();

@@ -11,22 +11,35 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_blue_plus: ^1.31.8
-  flutter_svg: ^0.22.0
+  flutter_svg: ^2.0.9  # Upgraded from 0.22.0 for Flutter 3 compatibility
   syncfusion_flutter_charts: ^23.1.39
-  provider: ^6.0.0
+  provider: ^6.1.1  # Upgraded for latest fixes
   permission_handler: ^11.0.1
-  sqflite: ^2.0.0+4
+  sqflite: ^2.3.0  # Upgraded for better null safety
   numberpicker: ^2.1.0
   cupertino_icons: ^1.0.2
-  intl: any
+  intl: ^0.18.1  # Pinned version for consistency
   flutter_bloc: ^8.1.3
   equatable: ^2.0.5
+  path: ^1.8.3  # Pinned version for consistency
 
-  path: any
+  # Added dependencies for new architecture
+  get_it: ^7.6.4  # For dependency injection
+  sqflite_common_ffi: ^2.3.0+2  # For better SQLite support
+  synchronized: ^3.1.0  # For thread-safe database operations
+  logging: ^1.2.0  # For better debug logging
+  uuid: ^4.2.1  # For generating unique IDs
+  rxdart: ^0.27.7  # For better stream handling
+  drift: ^2.13.0  # Optional: Modern SQLite ORM alternative
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  build_runner: ^2.4.6  # For code generation
+  drift_dev: ^2.13.0  # Optional: For Drift code generation
+  mocktail: ^1.0.1  # For testing
+  bloc_test: ^9.1.4  # For testing BLoCs
 
 flutter:
   uses-material-design: true

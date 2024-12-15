@@ -1,10 +1,7 @@
 // lib/features/device_settings/bloc/mixins/device_connection_mixin.dart
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../../services/settings_service.dart';
-import '../../../../core/services/ble/ble_service.dart';
-import '../device_settings_bloc.dart';
 import '../device_settings_event.dart';
 import '../device_settings_state.dart';
 

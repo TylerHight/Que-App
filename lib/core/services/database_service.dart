@@ -93,7 +93,7 @@ CREATE TABLE notes (
     );
 
     if (maps.isNotEmpty) {
-      return DevicePersistence.fromJson(maps.first);
+      return Device.fromJson(maps.first);
     }
     return null;
   }
@@ -101,7 +101,7 @@ CREATE TABLE notes (
   Future<List<Device>> getAllDevices() async {
     final db = await instance.database;
     final result = await db.query('devices');
-    return result.map((json) => DevicePersistence.fromJson(json)).toList();
+    return result.map((json) => Device.fromJson(json)).toList();
   }
 
   Future<List<Note>> getDeviceNotes(String deviceId) async {
