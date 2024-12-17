@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:que_app/core/services/ble/ble_service.dart';
 import '../../handlers/device_creation_handler.dart';
-import 'package:que_app/core/utils/ble/ble_utils.dart';
+import './managers/ble_connection_manager.dart';
+import './models/add_device_state.dart';
 
 class AddDeviceDialog extends StatefulWidget {
   final Function(String name, BluetoothDevice? device) onDeviceAdded;
@@ -59,7 +60,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
 
     setState(() {
       _isScanning = true;
-      _status = 'Scanning for devices...';
+      _status = 'Searching for devices...';
     });
 
     try {
@@ -69,36 +70,33 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
       );
 
       FlutterBluePlus.scanResults.listen((results) {
-        setState(() {
-          _nearbyDevices = results
-              .where((result) => result.device.platformName.isNotEmpty)
-              .map((result) => result.device)
-              .toList();
-          _status = 'Found ${_nearbyDevices.length} devices';
-        });
-      });
-
-      await Future.delayed(const Duration(seconds: 4));
-
-      setState(() {
-        _isScanning = false;
-        if (_nearbyDevices.isEmpty) {
-          _status = 'No devices found';
+        if (mounted) {
+          setState(() {
+            _nearbyDevices = results
+                .where((result) => result.device.platformName.isNotEmpty)
+                .map((result) => result.device)
+                .toList();
+            _status = _nearbyDevices.isEmpty ? 'No devices found' : 'Select a device';
+          });
         }
       });
     } catch (e) {
-      setState(() {
-        _isScanning = false;
-        _status = 'Scan error: $e';
-      });
+      if (mounted) {
+        setState(() {
+          _isScanning = false;
+          _status = 'Scan error: $e';
+        });
+      }
     }
   }
 
   Future<void> _handleDeviceSelection(BluetoothDevice? device) async {
-    setState(() {
-      _selectedDevice = device;
-      _status = device != null ? 'Selected ${device.platformName}' : '';
-    });
+    if (mounted) {
+      setState(() {
+        _selectedDevice = device;
+        _status = device != null ? 'Selected ${device.platformName}' : '';
+      });
+    }
   }
 
   Future<void> _handleAddDevice() async {
@@ -110,13 +108,17 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
       name: name,
       bluetoothDevice: _selectedDevice,
       onDeviceCreated: (device) {
-        widget.onDeviceAdded(name, _selectedDevice);
-        Navigator.of(context).pop();
+        if (mounted) {
+          widget.onDeviceAdded(name, _selectedDevice);
+          Navigator.of(context).pop();
+        }
       },
       onError: (error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error)),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error)),
+          );
+        }
       },
     );
   }
@@ -176,7 +178,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                 ],
               ),
               const SizedBox(height: 20),
-              if (widget.includeNameField)
+              if (widget.includeNameField) ...[
                 TextFormField(
                   controller: _nameController,
                   decoration: const InputDecoration(
@@ -192,17 +194,36 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                   },
                   enabled: !_isConnecting,
                 ),
-              const SizedBox(height: 16),
-              _buildDeviceDropdown(),
-              const SizedBox(height: 16),
-              _buildScanButton(),
-              if (_status.isNotEmpty) ...[
+                const SizedBox(height: 16),
+              ],
+              SizedBox(
+                height: 56,
+                child: DropdownButtonFormField<BluetoothDevice>(
+                  value: _selectedDevice,
+                  hint: const Text('No device selected'),
+                  decoration: const InputDecoration(
+                    labelText: 'Select Device',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.bluetooth),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+                  ),
+                  isExpanded: true,
+                  onChanged: _isConnecting ? null : _handleDeviceSelection,
+                  items: [
+                    ..._nearbyDevices.map((device) => DropdownMenuItem(
+                      value: device,
+                      child: Text(device.platformName),
+                    )),
+                  ],
+                ),
+              ),
+              if (_status.contains('error')) ...[
                 const SizedBox(height: 8),
                 Text(
                   _status,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
-                    color: _getStatusColor(_status),
+                    color: Colors.red,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -212,9 +233,7 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: _isConnecting
-                        ? null
-                        : () => Navigator.of(context).pop(),
+                    onPressed: _isConnecting ? null : () => Navigator.of(context).pop(),
                     child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 8),
@@ -232,45 +251,25 @@ class _AddDeviceDialogState extends State<AddDeviceDialog> {
   }
 
   Widget _buildDeviceDropdown() {
-    return InputDecorator(
-      decoration: const InputDecoration(
-        labelText: 'Select Device',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.bluetooth),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<BluetoothDevice>(
-          isExpanded: true,
-          value: _selectedDevice,
-          hint: const Text('No device selected'),
-          onChanged: _isConnecting ? null : _handleDeviceSelection,
-          items: [
-            ..._nearbyDevices.map((device) => DropdownMenuItem(
-              value: device,
-              child: Text(device.platformName),
-            )),
-          ],
+    return SizedBox(
+      height: 56, // Standard TextFormField height
+      child: DropdownButtonFormField<BluetoothDevice>(
+        value: _selectedDevice,
+        hint: const Text('No device selected'),
+        decoration: const InputDecoration(
+          labelText: 'Select Device',
+          border: OutlineInputBorder(),
+          prefixIcon: Icon(Icons.bluetooth),
+          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 0),
         ),
-      ),
-    );
-  }
-
-  Widget _buildScanButton() {
-    return ElevatedButton.icon(
-      onPressed: _isScanning || _isConnecting ? null : _startScan,
-      icon: _isScanning
-          ? const SizedBox(
-        width: 16,
-        height: 16,
-        child: CircularProgressIndicator(
-          strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-        ),
-      )
-          : const Icon(Icons.refresh),
-      label: Text(_isScanning ? 'Scanning...' : 'Scan for Devices'),
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        isExpanded: true,
+        onChanged: _isConnecting ? null : _handleDeviceSelection,
+        items: [
+          ..._nearbyDevices.map((device) => DropdownMenuItem(
+            value: device,
+            child: Text(device.platformName),
+          )),
+        ],
       ),
     );
   }

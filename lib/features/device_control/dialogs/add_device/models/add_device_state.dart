@@ -5,11 +5,10 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 class AddDeviceState {
   bool _isScanning = false;
   bool _isConnecting = false;
-  bool _isCompleted = false;
   String _statusMessage = '';
   List<BluetoothDevice> _nearbyDevices = [];
   BluetoothDevice? _selectedDevice;
-  int _connectionRetries = 0;
+  int _scanRetries = 0;
   DateTime? _lastScanTime;
 
   static const int maxRetries = 3;
@@ -17,45 +16,38 @@ class AddDeviceState {
   // Getters
   bool get isScanning => _isScanning;
   bool get isConnecting => _isConnecting;
-  bool get isCompleted => _isCompleted;
   String get statusMessage => _statusMessage;
   List<BluetoothDevice> get nearbyDevices => List.unmodifiable(_nearbyDevices);
   BluetoothDevice? get selectedDevice => _selectedDevice;
-  int get connectionRetries => _connectionRetries;
+  int get scanRetries => _scanRetries;
   DateTime? get lastScanTime => _lastScanTime;
 
-  // State update methods
   void setScanning(bool value) {
     _isScanning = value;
     if (value) {
       _nearbyDevices.clear();
-      _selectedDevice = null;
     }
   }
 
   void setConnecting(bool value) {
     _isConnecting = value;
     if (!value) {
-      _connectionRetries = 0;
+      _scanRetries = 0;
     }
-  }
-
-  void setCompleted(bool value) {
-    _isCompleted = value;
   }
 
   void setStatusMessage(String message) {
     _statusMessage = message;
   }
 
-  void setNearbyDevices(List<BluetoothDevice> devices) {
+  void updateDevices(List<BluetoothDevice> devices) {
     _nearbyDevices = devices;
     _statusMessage = devices.isEmpty ? "No devices found" : "";
   }
 
   void setSelectedDevice(BluetoothDevice? device) {
     _selectedDevice = device;
-    _connectionRetries = 0;
+    _scanRetries = 0;
   }
 
   void setLastScanTime(DateTime time) {
@@ -63,58 +55,20 @@ class AddDeviceState {
   }
 
   void incrementRetries() {
-    _connectionRetries++;
+    _scanRetries++;
   }
 
   bool canRetry() {
-    return _connectionRetries < maxRetries;
+    return _scanRetries < maxRetries;
   }
 
-  // Update multiple properties at once
-  void update(AddDeviceState other) {
-    _isScanning = other._isScanning;
-    _isConnecting = other._isConnecting;
-    _isCompleted = other._isCompleted;
-    _statusMessage = other._statusMessage;
-    _nearbyDevices = other._nearbyDevices;
-    _selectedDevice = other._selectedDevice;
-    _connectionRetries = other._connectionRetries;
-    _lastScanTime = other._lastScanTime;
-  }
-
-  // Create a copy with updated values
-  AddDeviceState copyWith({
-    bool? isScanning,
-    bool? isConnecting,
-    bool? isCompleted,
-    String? statusMessage,
-    List<BluetoothDevice>? nearbyDevices,
-    BluetoothDevice? selectedDevice,
-    int? connectionRetries,
-    DateTime? lastScanTime,
-  }) {
-    final newState = AddDeviceState()
-      .._isScanning = isScanning ?? _isScanning
-      .._isConnecting = isConnecting ?? _isConnecting
-      .._isCompleted = isCompleted ?? _isCompleted
-      .._statusMessage = statusMessage ?? _statusMessage
-      .._nearbyDevices = nearbyDevices ?? _nearbyDevices
-      .._selectedDevice = selectedDevice ?? _selectedDevice
-      .._connectionRetries = connectionRetries ?? _connectionRetries
-      .._lastScanTime = lastScanTime ?? _lastScanTime;
-
-    return newState;
-  }
-
-  // Reset state
   void reset() {
     _isScanning = false;
     _isConnecting = false;
-    _isCompleted = false;
     _statusMessage = '';
     _nearbyDevices.clear();
     _selectedDevice = null;
-    _connectionRetries = 0;
+    _scanRetries = 0;
     _lastScanTime = null;
   }
 }

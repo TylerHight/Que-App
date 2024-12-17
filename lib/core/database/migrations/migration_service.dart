@@ -10,6 +10,9 @@ class MigrationService {
   static Future<Database> initializeDatabase() async {
     final String path = join(await getDatabasesPath(), databaseName);
 
+    // Force delete the existing database to handle schema changes
+    await deleteDatabase(path);
+
     return await openDatabase(
       path,
       version: currentVersion,
@@ -19,23 +22,15 @@ class MigrationService {
   }
 
   static Future<void> _onCreate(Database db, int version) async {
-    await _createInitialTables(db);
+    await _createTables(db);
   }
 
-  static Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Run migrations sequentially
-    for (var i = oldVersion + 1; i <= newVersion; i++) {
-      await _runMigration(db, i);
-    }
-  }
-
-  static Future<void> _createInitialTables(Database db) async {
-    // Create devices table
+  static Future<void> _createTables(dynamic db) async {
     await db.execute('''
       CREATE TABLE devices ( 
         id TEXT PRIMARY KEY,
         deviceName TEXT NOT NULL,
-        connectedQueName TEXT NOT NULL,
+        connectedQueName TEXT NOT NULL DEFAULT '',
         emission1Duration INTEGER NOT NULL,
         emission2Duration INTEGER NOT NULL,
         releaseInterval1 INTEGER NOT NULL,
@@ -48,7 +43,6 @@ class MigrationService {
       )
     ''');
 
-    // Create notes table
     await db.execute('''
       CREATE TABLE notes (
         id TEXT PRIMARY KEY,
@@ -58,54 +52,26 @@ class MigrationService {
         FOREIGN KEY (deviceId) REFERENCES devices (id)
       )
     ''');
-
-    // Create device settings table
-    await db.execute('''
-      CREATE TABLE deviceSettings (
-        deviceId TEXT NOT NULL,
-        settingName TEXT NOT NULL,
-        settingValue TEXT NOT NULL,
-        PRIMARY KEY (deviceId, settingName),
-        FOREIGN KEY (deviceId) REFERENCES devices (id)
-      )
-    ''');
   }
 
-  static Future<void> _runMigration(Database db, int version) async {
-    switch (version) {
-      case 2:
-        await _migrationV2(db);
-        break;
-    // Add future migrations here
-    }
+  static Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    // For now, we'll recreate the database when schema changes
+    await _recreateDatabase(db);
   }
 
-  static Future<void> _migrationV2(Database db) async {
-    // Migration to add connectedQueName column if it doesn't exist
-    try {
-      await db.execute('''
-        ALTER TABLE devices 
-        ADD COLUMN connectedQueName TEXT NOT NULL DEFAULT ''
-      ''');
-    } catch (e) {
-      print('Migration V2 error (can be ignored if column exists): $e');
-    }
+  static Future<void> _recreateDatabase(Database db) async {
+    await db.transaction((txn) async {
+      // Drop existing tables
+      await txn.execute('DROP TABLE IF EXISTS notes');
+      await txn.execute('DROP TABLE IF EXISTS devices');
+
+      // Recreate with current schema
+      await _createTables(txn);
+    });
   }
 
   static Future<void> resetDatabase() async {
     final String path = join(await getDatabasesPath(), databaseName);
-    final db = await openDatabase(path);
-
-    // Drop all tables
-    await db.transaction((txn) async {
-      await txn.execute('DROP TABLE IF EXISTS deviceSettings');
-      await txn.execute('DROP TABLE IF EXISTS notes');
-      await txn.execute('DROP TABLE IF EXISTS devices');
-    });
-
-    await db.close();
-
-    // Delete the database file
     await deleteDatabase(path);
   }
 }
