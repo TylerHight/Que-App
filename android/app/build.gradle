@@ -8,7 +8,7 @@ if (localPropertiesFile.exists()) {
 
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+    throw new IllegalStateException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
 }
 
 apply plugin: 'com.android.application'
@@ -16,7 +16,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     namespace "com.example.que_app"
-    compileSdkVersion 34  // Updated to 34 as required by plugins
+    compileSdkVersion 34  // Updated to latest version
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -30,7 +30,7 @@ android {
     defaultConfig {
         applicationId "com.example.que_app"
         minSdkVersion 21
-        targetSdkVersion 34  // Updated to match compileSdkVersion
+        targetSdkVersion 34  // Consistency with compileSdkVersion
         versionCode 1
         versionName "1.0"
     }
@@ -57,12 +57,13 @@ flutter {
 dependencies {
     implementation 'androidx.window:window:1.0.0'
     implementation 'androidx.window:window-java:1.0.0'
+
     constraints {
         implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10') {
-            because 'kotlin-stdlib-jdk7 is now a part of kotlin-stdlib'
+            because 'kotlin-stdlib-jdk7 is now part of kotlin-stdlib'
         }
         implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10') {
-            because 'kotlin-stdlib-jdk8 is now a part of kotlin-stdlib'
+            because 'kotlin-stdlib-jdk8 is now part of kotlin-stdlib'
         }
     }
 }
