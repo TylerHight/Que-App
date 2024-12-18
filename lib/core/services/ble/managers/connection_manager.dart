@@ -1,4 +1,5 @@
 // lib/core/services/ble/managers/connection_manager.dart
+
 import 'dart:async';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import '../ble_types.dart';
@@ -12,6 +13,12 @@ class BleConnectionManager {
 
   StreamSubscription? _connectionSubscription;
   Timer? _rssiCheckTimer;
+  Timer? _keepAliveTimer;
+  Timer? _connectionWatchdog;
+  BluetoothDevice? _currentDevice;
+
+  static const Duration keepAliveInterval = Duration(seconds: 15);
+  static const Duration watchdogTimeout = Duration(seconds: 70);
 
   BleConnectionManager({
     required this.onStateChange,
@@ -21,6 +28,7 @@ class BleConnectionManager {
   Future<bool> connectWithRetry(BluetoothDevice device) async {
     int attempts = 0;
     bool connected = false;
+    _currentDevice = device;
 
     while (attempts < _maxRetries && !connected) {
       try {
@@ -60,8 +68,9 @@ class BleConnectionManager {
   }
 
   void _setupConnectionMonitoring(BluetoothDevice device) {
+    _cleanupMonitoring();
+
     // Monitor connection state
-    _connectionSubscription?.cancel();
     _connectionSubscription = device.connectionState.listen(
             (BluetoothConnectionState state) {
           if (state == BluetoothConnectionState.disconnected) {
@@ -77,7 +86,6 @@ class BleConnectionManager {
     );
 
     // Monitor signal strength periodically
-    _rssiCheckTimer?.cancel();
     _rssiCheckTimer = Timer.periodic(const Duration(seconds: 10), (_) async {
       try {
         final rssi = await device.readRssi();
@@ -88,13 +96,42 @@ class BleConnectionManager {
         // Ignore RSSI read errors
       }
     });
+
+    // Setup keep-alive timer
+    _keepAliveTimer = Timer.periodic(keepAliveInterval, (_) {
+      _sendKeepAlive(device);
+    });
+
+    // Setup connection watchdog
+    _resetWatchdog();
   }
 
-  void _cleanupMonitoring() {
-    _connectionSubscription?.cancel();
-    _rssiCheckTimer?.cancel();
-    _connectionSubscription = null;
-    _rssiCheckTimer = null;
+  Future<void> _sendKeepAlive(BluetoothDevice device) async {
+    try {
+      final services = await device.discoverServices();
+      final service = services.firstWhere(
+            (s) => s.uuid.toString().toLowerCase() == BleConstants.LED_SERVICE_UUID.toLowerCase(),
+      );
+
+      final characteristic = service.characteristics.firstWhere(
+            (c) => c.uuid.toString().toLowerCase() == BleConstants.SWITCH_CHARACTERISTIC_UUID.toLowerCase(),
+      );
+
+      await characteristic.write([0], withoutResponse: true);
+      _resetWatchdog();
+    } catch (e) {
+      onError('Keep-alive failed: $e');
+    }
+  }
+
+  void _resetWatchdog() {
+    _connectionWatchdog?.cancel();
+    _connectionWatchdog = Timer(watchdogTimeout, () {
+      onError('Connection watchdog timeout');
+      if (_currentDevice != null) {
+        disconnect(_currentDevice!);
+      }
+    });
   }
 
   Future<void> disconnect(BluetoothDevice device) async {
@@ -103,13 +140,37 @@ class BleConnectionManager {
       await device.disconnect();
     } finally {
       _cleanupMonitoring();
+      _currentDevice = null;
       onStateChange(BleConnectionState.disconnected);
     }
   }
 
+  void _cleanupMonitoring() {
+    _connectionSubscription?.cancel();
+    _rssiCheckTimer?.cancel();
+    _keepAliveTimer?.cancel();
+    _connectionWatchdog?.cancel();
+    _connectionSubscription = null;
+    _rssiCheckTimer = null;
+    _keepAliveTimer = null;
+    _connectionWatchdog = null;
+  }
+
   Future<bool> attemptRecovery(BluetoothDevice device) async {
     onError('Attempting connection recovery...');
-    return await connectWithRetry(device);
+    _cleanupMonitoring();
+
+    try {
+      // First try to disconnect cleanly
+      await device.disconnect();
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Attempt to reconnect
+      return await connectWithRetry(device);
+    } catch (e) {
+      onError('Recovery failed: $e');
+      return false;
+    }
   }
 
   Future<List<BluetoothDevice>> scanForDevices({
@@ -147,6 +208,9 @@ class BleConnectionManager {
   }
 
   void dispose() {
+    if (_currentDevice != null) {
+      disconnect(_currentDevice!);
+    }
     _cleanupMonitoring();
   }
 }
